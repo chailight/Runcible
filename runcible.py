@@ -1,13 +1,10 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
-#fix grid 2 input limits
-#remove extraneous note display on grid 1 
 #check for cutting / looping input on both grids
-#pass in midi out port from main loop
-#add pages for duration, velocity, octave and probability
-#- this might be tricky - requiring message passing between grids
-#- is there access to a global mode value?
+#solve message passing from one grid to another - can there be a global variable or some kind of handler?
+#add second channel to Grid2 as per Grid1, based on setting the current channel via global variable or handler
+#add input/display for duration, velocity, octave and probability, as per kria
 #add presets: store and recall - likewise a global preset value? 
 #add persistence of presets
 #add scale setting for both grids - global value?
@@ -15,7 +12,7 @@
 import asyncio
 import monome
 import clocks
-import synths
+#import synths
 import pygame
 import pygame.midi
 from pygame.locals import *
@@ -37,7 +34,8 @@ class GridSeq1(monome.Monome):
     def ready(self):
         print ("using grid on port :%s" % self.id)
         self.current_pos = 0
-        self.step = [[0 for col in range(self.width)] for row in range(self.height)]
+        self.step_ch1 = [[0 for col in range(self.width)] for row in range(self.height)]
+        self.step_ch2 = [[0 for col in range(self.width)] for row in range(self.height)]
         self.play_position = 0
         self.next_position = 0
         self.cutting = False
@@ -45,6 +43,7 @@ class GridSeq1(monome.Monome):
         self.loop_end = self.width - 1
         self.keys_held = 0
         self.key_last = 0
+        self.current_channel = 1
         #pygame.init()
         #pygame.midi.init()
         #self.midiport = 2
@@ -66,9 +65,12 @@ class GridSeq1(monome.Monome):
                 # TRIGGER SOMETHING
                 for y in range(self.height):
                     #print("y:",y, "pos:", self.play_position)
-                    if self.step[y][self.play_position] == 1:
+                    if self.step_ch1[y][self.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
-                        asyncio.async(self.trigger(abs(y-7)))
+                        asyncio.async(self.trigger(abs(y-7),0))
+                    if self.step_ch2[y][self.play_position] == 1:
+                        #print("Grid 1:", self.play_position,abs(y-7))
+                        asyncio.async(self.trigger(abs(y-7),1))
 
 #                if self.cutting:
 #                    self.play_position = self.next_position
@@ -100,14 +102,14 @@ class GridSeq1(monome.Monome):
         return [abs(x-7),abs(y-7)]
 
     @asyncio.coroutine
-    def trigger(self, i):
+    def trigger(self, i, ch):
         #print("Grid1", i)
         self.current_note = 40+i
         #print("G1: note: " + str(self.current_note) + " channel: " + str(self.channel))
-        self.midi_out.note_on(self.current_note, 60, self.channel)
+        self.midi_out.note_on(self.current_note, 60, self.channel+ch)
         yield from self.clock.sync(self.ticks)
         #yield from asyncio.sleep(0.01)
-        self.midi_out.note_off(self.current_note, 0, self.channel)
+        self.midi_out.note_off(self.current_note, 0, self.channel+ch)
 
     @asyncio.coroutine
     def clock_out(self):
@@ -132,14 +134,17 @@ class GridSeq1(monome.Monome):
 
             for y in range(self.height):
                 render_pos = self.spanToGrid(x,y)
-                buffer.led_level_set(render_pos[0], render_pos[1], self.step[y][x] * 11 + highlight)
+                if self.current_channel == 1:
+               	    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
+                else:
+               	    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch2[y][x] * 11 + highlight)
 
         # draw trigger bar and on-states
 #        for x in range(self.width):
 #            buffer.led_level_set(x, 6, 4)
 
 #        for y in range(6):
-#            if self.step[y][self.play_position] == 1:
+#            if self.step_ch1[y][self.play_position] == 1:
 #                buffer.led_level_set(self.play_position, 6, 15)
 
         # draw play position
@@ -150,7 +155,7 @@ class GridSeq1(monome.Monome):
  #           print("Pos",self.play_position)
             buffer.led_level_set(render_pos[0], render_pos[1], 15)
         else:
-            buffer.led_level_set(render_pos[0], render_pos[1], 0)
+            buffer.led_level_set(render_pos[0], render_pos[1], 0) # change this to restore the original state of the led
 
 
         # update grid
@@ -162,10 +167,17 @@ class GridSeq1(monome.Monome):
         y = corrected[1]
         # toggle steps
         if s == 1 and y > 0:
-            self.step[y][x] ^= 1
+            if self.current_channel == 1:
+                self.step_ch1[y][x] ^= 1
+            else:
+                self.step_ch2[y][x] ^= 1
             self.draw()
-        # cut and loop
         elif y == 0:
+            if x == 0:
+                self.current_channel = 1
+            elif x == 1:
+                self.current_channel = 2
+        # cut and loop
             self.keys_held = self.keys_held + (s * 2) - 1
             # cut
             if s == 1 and self.keys_held == 1:
@@ -190,7 +202,8 @@ class GridSeq2(monome.Monome):
     def ready(self):
         print ("using grid on port :%s" % self.id)
         self.current_pos = 0
-        self.step = [[0 for row in range(self.width)] for col in range(self.height)]
+        self.step_ch1 = [[0 for row in range(self.width)] for col in range(self.height)]
+        self.step_ch2 = [[0 for row in range(self.width)] for col in range(self.height)]
         self.play_position = 0
         self.next_position = 0
         self.cutting = False
@@ -220,7 +233,7 @@ class GridSeq2(monome.Monome):
                 # TRIGGER SOMETHING
                 #print("G2:",self.play_position)
                 for y in range(self.height):
-                    if self.step[y][self.play_position] == 1:
+                    if self.step_ch1[y][self.play_position] == 1:
                         #print("Grid 2:", self.play_position,y)
                         asyncio.async(self.trigger(y))
 
@@ -267,14 +280,14 @@ class GridSeq2(monome.Monome):
                 highlight = 0
 
             for x in range(self.height):
-                buffer.led_level_set(y, x, self.step[y][x] * 11 + highlight)
+                buffer.led_level_set(y, x, self.step_ch1[y][x] * 11 + highlight)
 
         # draw trigger bar and on-states
         #for y in range(self.width):
         #    buffer.led_level_set(1, y, 4)
 
         #for x in range(6):
-        #    if self.step[x][self.play_position] == 1:
+        #    if self.step_ch1[x][self.play_position] == 1:
         #        buffer.led_level_set(1, self.play_position, 15)
 
         # draw play position
@@ -300,10 +313,10 @@ class GridSeq2(monome.Monome):
         #print (x,y)
         # toggle steps
         if s == 1 and y < 7:
-            self.step[y][x] ^= 1
+            self.step_ch1[y][x] ^= 1
             self.draw()
-        # cut and loop
         elif y == 7:
+        # cut and loop
             self.keys_held = self.keys_held + (s * 2) - 1
             # cut
             if s == 1 and self.keys_held == 1:
@@ -373,7 +386,7 @@ if __name__ == '__main__':
     print ("using output_id : %s " % midiport)
     midi_out = pygame.midi.Output(midiport, 0)
     print ("using clock source: %s " % clock_out)
-    channel_out = 3
+    channel_out = 2
     page = 1
     #midi_out=None
 
