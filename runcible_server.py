@@ -30,6 +30,11 @@ class RuncibleServer(aiosc.OSCProtocol):
             '/{}/tilt'.format(self.prefix): lambda addr, path, n, x, y, z: self.tilt(n, x, y, z),
             '//*': self.echo,
         })
+        self.clock = clock
+        self.ticks = ticks
+        self.midi_out = midi_out
+        self.channel = channel_out
+        self.clock_ch= clock_out
 
     def exit(self, *args):
         asyncio.get_event_loop().stop()
@@ -71,7 +76,19 @@ class RuncibleServer(aiosc.OSCProtocol):
             self.ready()
 
     def ready(self):
-        pass
+        print ("using grid on port :%s" % self.id)
+        self.current_pos = 0
+        self.step_ch1 = [[0 for col in range(self.width)] for row in range(self.height)]
+        self.step_ch2 = [[0 for col in range(self.width)] for row in range(self.height)]
+        self.play_position = 0
+        self.next_position = 0
+        self.cutting = False
+        self.loop_start = 0
+        self.loop_end = self.width - 1
+        self.keys_held = 0
+        self.key_last = 0
+        self.current_channel = 1
+        #asyncio.async(self.play())
 
     def grid_key(self, addr, path, *args):
         #translate grid_key from device grid coords to spanned grid coords
