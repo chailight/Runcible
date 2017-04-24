@@ -11,6 +11,7 @@
 
 import asyncio
 import monome
+import spanned_monome
 import clocks
 #import synths
 import pygame
@@ -22,14 +23,14 @@ def cancel_task(task):
         task.cancel()
 
 class GridSeq1(monome.Monome):
-    def __init__(self, clock, ticks, midi_out,channel_out,clock_out,page):
+    def __init__(self, clock, ticks, midi_out,channel_out,clock_out,other):
         super().__init__('/monome')
         self.clock = clock
         self.ticks = ticks 
         self.midi_out = midi_out
         self.channel = channel_out
         self.clock_ch= clock_out
-        self.page = page 
+        self.other = other 
 
     def ready(self):
         print ("using grid on port :%s" % self.id)
@@ -101,7 +102,7 @@ class GridSeq1(monome.Monome):
         #return [y,abs(x-7)]
         return [abs(x-7),abs(y-7)]
 
-    @asyncio.coroutine
+    @asyncio.coroutine  #make this take two channels simultaneously as I think there's timing issues with calling it twice for the same "instant"
     def trigger(self, i, ch):
         #print("Grid1", i)
         self.current_note = 40+i
@@ -175,8 +176,10 @@ class GridSeq1(monome.Monome):
         elif y == 0:
             if x == 0:
                 self.current_channel = 1
+                self.other.set_channel(1)
             elif x == 1:
                 self.current_channel = 2
+                self.other.set_channel(2)
         # cut and loop
             self.keys_held = self.keys_held + (s * 2) - 1
             # cut
@@ -190,14 +193,14 @@ class GridSeq1(monome.Monome):
                 self.loop_end = x
 
 class GridSeq2(monome.Monome):
-    def __init__(self,clock,ticks,midi_out,channel_out,clock_out,page):
+    def __init__(self,clock,ticks,midi_out,channel_out,clock_out,other):
         super().__init__('/monome')
         self.clock = clock
         self.ticks = ticks 
         self.midi_out = midi_out
         self.channel = channel_out
         self.clock_out= clock_out 
-        self.page = page 
+        self.other = other 
 
     def ready(self):
         print ("using grid on port :%s" % self.id)
@@ -212,6 +215,7 @@ class GridSeq2(monome.Monome):
         self.keys_held = 0
         self.key_last = 0
         self.x_offset=0
+        self.current_channel = 1
         #pygame.init()
         #pygame.midi.init()
         #self.midiport = 2
@@ -260,6 +264,11 @@ class GridSeq2(monome.Monome):
             self.play_position = ((self.current_pos//self.ticks)%16)-8
 
     @asyncio.coroutine
+    def set_channel(self,ch):
+        self.current_channel = ch
+        self.draw()
+
+    @asyncio.coroutine
     def trigger(self, i):
         #print("Grid2", i)
         self.current_note = 40+i
@@ -280,7 +289,10 @@ class GridSeq2(monome.Monome):
                 highlight = 0
 
             for x in range(self.height):
-                buffer.led_level_set(y, x, self.step_ch1[y][x] * 11 + highlight)
+                if self.current_channel == 1:
+               	    buffer.led_level_set(y, x, self.step_ch1[y][x] * 11 + highlight)
+                else:
+               	    buffer.led_level_set(y, x, self.step_ch2[y][x] * 11 + highlight)
 
         # draw trigger bar and on-states
         #for y in range(self.width):
@@ -366,6 +378,22 @@ class Test2(monome.Monome):
         span_coord = self.gridToSpan(x,y) 
         print("grid 2: ", x,y, span_coord, self.spanToGrid(span_coord[0],span_coord[1]))
 
+class Test3(spanned_monome.SpannedMonome):
+    def __init__(self):
+        super().__init__('/hello')
+
+    def ready(self):
+        self.x_offset=0
+
+    #def grid_key(self, x, y, s):
+        #self.led_set(x, y, s)
+        #print("runcible: ", x,y)
+
+class Test4(spanned_monome.SpannedMonome):
+    def __init__(self):
+        super().__init__('/hello')
+        aiosc(('127.0.0.1', 9000), '/hello', 'world')
+
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
 
@@ -398,14 +426,23 @@ if __name__ == '__main__':
     #g2 = lambda: GridSeq2(clock,24,midi_out,channel_out,clock_out,page)
 
     clock = clocks.RtMidiClock()
-    g1 = lambda: GridSeq1(clock,6,midi_out,channel_out,clock_out,page)
-    g2 = lambda: GridSeq2(clock,6,midi_out,channel_out,clock_out,page)
+    #g1 = lambda: None 
+    #g2 = lambda: GridSeq2(clock,6,midi_out,channel_out,clock_out,g1)
+    g1 = lambda: GridSeq1(clock,6,midi_out,channel_out,clock_out,None)
+    r1 = lambda: Test1() 
+    r2 = lambda: Test2() 
+    sg1 = lambda: Test3() 
 
     #g1 = lambda: Test1()
     #g2 = lambda: Test2()
-    coro = monome.create_serialosc_connection({
-          'm40h-001': g1,
-          'm40h-002': g2,
+    #coro = monome.create_serialosc_connection({
+    #      'm40h-001': g1,
+    #      'm40h-002': g2,
+    #}, loop=loop)
+
+    #coro, g1_coro  = monome.create_spanned_serialosc_connection({
+    coro = spanned_monome.create_spanned_serialosc_connection({
+          'runcible': sg1,
     }, loop=loop)
 
     # create synth
@@ -413,9 +450,10 @@ if __name__ == '__main__':
 #    transport, renoise = loop.run_until_complete(coro)
 
 #    coro = monome.create_serialosc_connection(lambda: Flin(clock, renoise, 0))
+    #g1_serialosc = loop.run_until_complete(g1_coro)
     serialosc = loop.run_until_complete(coro)
 
-    try:
+    try: # can we all methods in the app which handle page setting updates? If so, then we just need something which returns a value to the main without breaking the loop
         loop.run_forever()
     except KeyboardInterrupt:
         for apps in serialosc.app_instances.values():

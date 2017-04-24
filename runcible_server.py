@@ -1,7 +1,23 @@
 #! /usr/bin/env python3
 
+#RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
+#TODO:
+#check for cutting / looping input on both grids
+#solve message passing from one grid to another - can there be a global variable or some kind of handler?
+#add second channel to Grid2 as per Grid1, based on setting the current channel via global variable or handler
+#add input/display for duration, velocity, octave and probability, as per kria
+#add presets: store and recall - likewise a global preset value? 
+#add persistence of presets
+#add scale setting for both grids - global value?
+
 import asyncio
 import aiosc
+
+import clocks
+#import synths
+import pygame
+import pygame.midi
+from pygame.locals import *
 
 class RuncibleServer(aiosc.OSCProtocol):
     def __init__(self):
