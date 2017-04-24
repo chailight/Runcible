@@ -19,9 +19,17 @@ import pygame
 import pygame.midi
 from pygame.locals import *
 
-class RuncibleServer(aiosc.OSCProtocol):
-    def __init__(self):
-        self.prefix = 'runcible'
+class VirtualGrid(aiosc.OSCProtocol):
+    def __init__(self,id, xsize, ysize, port=0):
+        #self.prefix = 'runcible'
+        self.id = id
+        self.width = xsize
+        self.height = ysize
+        self.rotation = None
+        self.varibright = False
+        self.app_host = DEFAULT_APP_HOST
+        self.app_port = DEFAULT_APP_PORT
+        self.prefix = id
         super().__init__(handlers={
             '/sys/exit': self.exit,
             '/sys/disconnect': lambda *args: self.disconnect,
@@ -30,11 +38,6 @@ class RuncibleServer(aiosc.OSCProtocol):
             '/{}/tilt'.format(self.prefix): lambda addr, path, n, x, y, z: self.tilt(n, x, y, z),
             '//*': self.echo,
         })
-        self.clock = clock
-        self.ticks = ticks
-        self.midi_out = midi_out
-        self.channel = channel_out
-        self.clock_ch= clock_out
 
     def exit(self, *args):
         asyncio.get_event_loop().stop()
@@ -195,7 +198,7 @@ class RuncibleServer(aiosc.OSCProtocol):
 
 loop = asyncio.get_event_loop()
 
-coro = loop.create_datagram_endpoint(RuncibleServer, local_addr=('127.0.0.1', 9000))
+coro = loop.create_datagram_endpoint(VirtualGrid('runcible',16,8), local_addr=('127.0.0.1', 9000))
 transport, protocol = loop.run_until_complete(coro)
 
 loop.run_forever()
