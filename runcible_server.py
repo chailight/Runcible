@@ -27,8 +27,8 @@ class VirtualGrid(aiosc.OSCProtocol):
         self.height = ysize
         self.rotation = None
         self.varibright = False
-        self.app_host = DEFAULT_APP_HOST
-        self.app_port = DEFAULT_APP_PORT
+        #self.app_host = DEFAULT_APP_HOST
+        #self.app_port = DEFAULT_APP_PORT
         self.prefix = id
         super().__init__(handlers={
             '/sys/exit': self.exit,
@@ -38,6 +38,7 @@ class VirtualGrid(aiosc.OSCProtocol):
             '/{}/tilt'.format(self.prefix): lambda addr, path, n, x, y, z: self.tilt(n, x, y, z),
             '//*': self.echo,
         })
+        print("Virtual Grid: ", self.id, "X: ", self.width, "Y: ", self.height)
 
     def exit(self, *args):
         asyncio.get_event_loop().stop()
@@ -197,8 +198,8 @@ class VirtualGrid(aiosc.OSCProtocol):
 
 
 loop = asyncio.get_event_loop()
-
-coro = loop.create_datagram_endpoint(VirtualGrid('runcible',16,8), local_addr=('127.0.0.1', 9000))
+g1 = lambda: VirtualGrid('runcible',16,8)
+coro = loop.create_datagram_endpoint(g1, local_addr=('127.0.0.1', 9000))
 transport, protocol = loop.run_until_complete(coro)
 
 loop.run_forever()
