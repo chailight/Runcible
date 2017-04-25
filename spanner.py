@@ -22,7 +22,7 @@ class Gate(aiosc.OSCProtocol):
             '/{}/grid/led/map'.format(self.prefix):
                 lambda addr, path, x_offset, y_offset, *s:
                     #self.bridge.led_map(x_offset, y_offset, list(itertools.chain(*[monome.unpack_row(r) for r in s]))),
-                    self.bridge.led_map(x_offset, y_offset, *s)),
+                    self.bridge.led_map(x_offset, y_offset, *s),
             '/{}/grid/led/row'.format(self.prefix):
                 lambda addr, path, x_offset, y, *s:
                     self.bridge.led_row(x_offset, y, list(itertools.chain(*[monome.unpack_row(r) for r in s]))),
