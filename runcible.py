@@ -125,6 +125,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.midi_out = midi_out
         self.channel = channel_out
         self.clock_ch= clock_out
+        self.ready()
         #self.other = other 
 
     def ready(self):
@@ -432,7 +433,7 @@ if __name__ == '__main__':
 
     #coro, g1_coro  = monome.create_spanned_serialosc_connection({
     coro = spanned_monome.create_spanned_serialosc_connection({
-          'runcible': sg2,
+          'runcible': g1,
     }, loop=loop)
 
     # create synth
