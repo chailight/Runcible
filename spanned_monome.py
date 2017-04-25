@@ -208,6 +208,7 @@ class VirtualGrid(aiosc.OSCProtocol):
         if x_offset == 0:
             #rotate 180
             rotated = list(zip(*data[::-1]))
+            rotated = list(zip(*data[::-1]))
             args = [pack_row(rotated[i]) for i in range(8)]
             #self.send('/{}/grid/led/map'.format(self.prefix), x_offset, y_offset, *args)
             path = '/m40h-001/grid/led/map'
@@ -215,6 +216,10 @@ class VirtualGrid(aiosc.OSCProtocol):
             print(path,x_offset, y_offset,args)
         else:
             #set the x_offset to 0 for the rightmost grid
+            rotated = list(zip(*data[::-1]))
+            rotated = list(zip(*rotated[::-1]))
+            rotated = list(zip(*rotated[::-1]))
+            args = [pack_row(rotated[i]) for i in range(8)]
             path = '/m40h-002/grid/led/map'
             asyncio.async(aiosc.send(('127.0.0.1', 8001), path, 0, y_offset, *args))
             print(path,x_offset, y_offset,args)
