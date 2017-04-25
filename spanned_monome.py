@@ -70,7 +70,8 @@ class Virtual(aiosc.OSCProtocol):
     #    pass
 
     def echo(self, addr, path, *args):
-        print("incoming message from {}: {} {}".format(addr, path, args))
+        pass
+        #print("incoming message from {}: {} {}".format(addr, path, args))
         # echo the message
         #self.send(path, *args, addr=addr)
 
@@ -121,7 +122,8 @@ class VirtualGrid(aiosc.OSCProtocol):
         asyncio.get_event_loop().stop()
 
     def echo(self, addr, path, *args):
-        print("incoming message from {}: {} {}".format(addr, path, args))
+        pass
+        #print("incoming message from {}: {} {}".format(addr, path, args))
         # echo the message
         #self.send(path, *args, addr=addr)
 
@@ -165,15 +167,15 @@ class VirtualGrid(aiosc.OSCProtocol):
         #translate grid_key from device grid coords to spanned grid coords
         #print(args)
         x, y, s = args
-        print("raw grid_key: ",path,x,y,s)
+        #print("raw grid_key: ",path,x,y,s)
         if path == '/m40h-001/grid/key':
             x=abs(x-7)
-            print("spanned grid_key: ",x,y,s)
+            #print("spanned grid_key: ",x,y,s)
         elif path == '/m40h-002/grid/key':
             r = x
             x = y+8
             y = r
-            print("spanned grid_key: ",x,y,s)
+            #print("spanned grid_key: ",x,y,s)
         return x,y,s
 
 
@@ -188,19 +190,23 @@ class VirtualGrid(aiosc.OSCProtocol):
         #TODO: use the destination ports defined in the config file instead of hardcoding
         if x < 8: 
             x = abs(7-x)
-            print("sending /mh40h-001/grid/led/set", x,y,s)
+            #print("sending /mh40h-001/grid/led/set", x,y,s)
             path = '/m40h-001/grid/led/set'
             asyncio.async(aiosc.send(('127.0.0.1', 8000), path, x, y, s))
         else:
             r = y
             y = abs(x-8)
             x = r
-            print("sending /m40h-002/grid/key ", x,y,s)
+            #print("sending /m40h-002/grid/key ", x,y,s)
             path = '/m40h-002/grid/led/set'
             asyncio.async(aiosc.send(('127.0.0.1', 8001), path, x, y, s))
 
     def led_all(self, s):
-        pass
+        path = '/m40h-001/grid/led/all'
+        asyncio.async(aiosc.send(('127.0.0.1', 8000), path, s))
+        path = '/m40h-002/grid/led/all'
+        asyncio.async(aiosc.send(('127.0.0.1', 8001), path, s))
+        #pass
         #self.send('/{}/grid/led/all'.format(self.prefix), s)
 
     def led_map(self, x_offset, y_offset, data):
@@ -213,7 +219,7 @@ class VirtualGrid(aiosc.OSCProtocol):
             #self.send('/{}/grid/led/map'.format(self.prefix), x_offset, y_offset, *args)
             path = '/m40h-001/grid/led/map'
             asyncio.async(aiosc.send(('127.0.0.1', 8000), path, x_offset, y_offset, *args))
-            print(path,x_offset, y_offset,args)
+            #print(path,x_offset, y_offset,args)
         else:
             #set the x_offset to 0 for the rightmost grid
             rotated1 = list(zip(*data[::-1]))
@@ -222,7 +228,7 @@ class VirtualGrid(aiosc.OSCProtocol):
             args = [pack_row(rotated1[i]) for i in range(8)]
             path = '/m40h-002/grid/led/map'
             asyncio.async(aiosc.send(('127.0.0.1', 8001), path, 0, y_offset, *args))
-            print(path,x_offset, y_offset,args)
+            #print(path,x_offset, y_offset,args)
 
     def led_row(self, x_offset, y, data):
         args = [pack_row(data[i*8:(i+1)*8]) for i in range(len(data) // 8)]

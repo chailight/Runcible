@@ -156,7 +156,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.current_pos = yield from self.clock.sync()
         self.play_position = (self.current_pos//self.ticks)%16
         while True:
-            if ((self.current_pos//self.ticks)%16) < 8:
+            if ((self.current_pos//self.ticks)%16) < 16:
                 #print("G1:",(self.current_pos//self.ticks)%16)
                 self.draw()
                 # TRIGGER SOMETHING
@@ -264,15 +264,17 @@ class Runcible(spanned_monome.VirtualGrid):
         # toggle steps
         if s == 1 and y > 0:
             if self.current_channel == 1:
-                self.step_ch1[y][x] ^= 1
+                self.step_ch1[7-y][x] ^= 1
             else:
-                self.step_ch2[y][x] ^= 1
+                self.step_ch2[7-y][x] ^= 1
             self.draw()
         elif y == 0:
             if x == 0:
+                print("Selected Channel 1")
                 self.current_channel = 1
                 #self.other.set_channel(1)
             elif x == 1:
+                print("Selected Channel 2")
                 self.current_channel = 2
                 #self.other.set_channel(2)
         # cut and loop
