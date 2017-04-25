@@ -26,6 +26,7 @@ def cancel_task(task):
 class GridStudies(spanned_monome.VirtualGrid):
     def __init__(self):
         super().__init__('runcible')
+        self.ready()
 
     def ready(self):
         print("Getting ready....")
