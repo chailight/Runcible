@@ -190,14 +190,12 @@ class Runcible(spanned_monome.VirtualGrid):
             self.current_pos = yield from self.clock.sync()
             self.play_position = (self.current_pos//self.ticks)%16
 
-# remove correction
-    #def gridToSpan(self,x,y):
-    #    #return [abs(y-7),x]
-    #    return [abs(x-7),abs(y-7)]
-         
-    #def spanToGrid(self,x,y):
-    #    #return [y,abs(x-7)]
-    #    return [abs(x-7),abs(y-7)]
+# to be removed 
+    def gridToSpan(self,x,y):
+        return [x,y]
+
+    def spanToGrid(self,x,y):
+        return [x,y]
 
     @asyncio.coroutine  #make this take two channels simultaneously as I think there's timing issues with calling it twice for the same "instant"
     def trigger(self, i, ch):
