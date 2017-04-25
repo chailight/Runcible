@@ -31,7 +31,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.midi_out = midi_out
         self.channel = channel_out
         self.clock_ch= clock_out
-        self.other = other 
+        #self.other = other 
 
     def ready(self):
         print ("using grid on port :%s" % self.id)
@@ -178,10 +178,10 @@ class Runcible(spanned_monome.VirtualGrid):
         elif y == 0:
             if x == 0:
                 self.current_channel = 1
-                self.other.set_channel(1)
+                #self.other.set_channel(1)
             elif x == 1:
                 self.current_channel = 2
-                self.other.set_channel(2)
+                #self.other.set_channel(2)
         # cut and loop
             self.keys_held = self.keys_held + (s * 2) - 1
             # cut
