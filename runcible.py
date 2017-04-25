@@ -245,9 +245,9 @@ class Runcible(spanned_monome.VirtualGrid):
 
         # draw play position
         #current_pos = yield from self.clock.sync()
-        print("runcible:",(self.current_pos//self.ticks)%16)
+        #print("runcible:",(self.current_pos//self.ticks)%16)
         render_pos = self.spanToGrid(self.play_position, 0)
-        if ((self.current_pos//self.ticks)%16) < 8:
+        if ((self.current_pos//self.ticks)%16) < 16:
  #           print("Pos",self.play_position)
             buffer.led_level_set(render_pos[0], render_pos[1], 15)
         else:

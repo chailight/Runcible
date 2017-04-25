@@ -32,70 +32,20 @@ DEFAULT_APP_PORT = 8000
 DEFAULT_APP_PREFIX = '/monome'
 
 
-class Virtual(aiosc.OSCProtocol):
-    def __init__(self, id, xsize, ysize, port=0):
-        #OSCServer.__init__(self, ('', port))
-        self.id = id
-        self.width = xsize
-        self.height = ysize
-        self.rotation = None
-        self.varibright = False 
-        self.app_host = DEFAULT_APP_HOST
-        self.app_port = DEFAULT_APP_PORT
-        self.prefix = DEFAULT_APP_PREFIX
-
-        super().__init__(handlers={
-            '/sys/disconnect': lambda *args: self.disconnect,
-            #'/sys/connect': lambda *args: self.connect,
-            #'/sys/{id,size,host,port,prefix,rotation}': self.sys_info,
-            '//*': self.echo,
-            #'/{}/grid/key'.format(self.prefix): lambda addr, path, x, y, s: self.grid_key(x, y, s),
-            #'/{}/tilt'.format(self.prefix): lambda addr, path, n, x, y, z: self.tilt(n, x, y, z),
-        })
-
-        #self.addMsgHandler('default', self.waffle_handler)
-        #self.addMsgHandler('/sys/port', self.sys_port)
-        #self.addMsgHandler('/sys/host', self.sys_host)
-        #self.addMsgHandler('/sys/prefix', self.sys_prefix)
-
-        #self.addMsgHandler('/sys/connect', self.sys_misc)
-        #self.addMsgHandler('/sys/disconnect', self.sys_misc)
-        #self.addMsgHandler('/sys/rotation', self.sys_misc)
-
-        #self.addMsgHandler('/sys/info', self.sys_info)
-
-        #self.app_callback = None
-
-    #def sys_misc(self, addr, tags, data, client_address):
-    #    pass
-
-    def echo(self, addr, path, *args):
-        pass
-        #print("incoming message from {}: {} {}".format(addr, path, args))
-        # echo the message
-        #self.send(path, *args, addr=addr)
-
-    def sys_info(self, addr, path, *args):
-        if path == '/sys/id':
-            self.id = args[0]
-        elif path == '/sys/size':
-            self.width, self.height = (args[0], args[1])
-        elif path == '/sys/rotation':
-            self.rotation = args[0]
 def pack_row(row):
     return row[7] << 7 | row[6] << 6 | row[5] << 5 | row[4] << 4 | row[3] << 3 | row[2] << 2 | row[1] << 1 | row[0]
 
-    def unpack_row(val):
-        return [
-            val & 1,
-            val >> 1 & 1,
-            val >> 2 & 1,
-            val >> 3 & 1,
-            val >> 4 & 1,
-            val >> 5 & 1,
-            val >> 6 & 1,
-            val >> 7 & 1,
-        ]
+def unpack_row(val):
+    return [
+        val & 1,
+        val >> 1 & 1,
+        val >> 2 & 1,
+        val >> 3 & 1,
+        val >> 4 & 1,
+        val >> 5 & 1,
+        val >> 6 & 1,
+        val >> 7 & 1,
+    ]
 
 class VirtualGrid(aiosc.OSCProtocol):
     def __init__(self,id):
@@ -140,6 +90,8 @@ class VirtualGrid(aiosc.OSCProtocol):
         #self.send('/sys/info', self.host, self.port)
 
     def disconnect(self):
+        print("Disconnecting....")
+        self.led_all(0)
         self.transport.close()
 
     def sys_info(self, addr, path, *args):
