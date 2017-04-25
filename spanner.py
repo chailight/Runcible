@@ -21,8 +21,8 @@ class Gate(aiosc.OSCProtocol):
                     self.bridge.led_all(s),
             '/{}/grid/led/map'.format(self.prefix):
                 lambda addr, path, x_offset, y_offset, *s:
-                    #self.bridge.led_map(x_offset, y_offset, list(itertools.chain(*[monome.unpack_row(r) for r in s]))),
-                    self.bridge.led_map(x_offset, y_offset, *s),
+                    self.bridge.led_map(x_offset, y_offset, list(itertools.chain([monome.unpack_row(r) for r in s]))),
+                    #self.bridge.led_map(x_offset, y_offset, s),
             '/{}/grid/led/row'.format(self.prefix):
                 lambda addr, path, x_offset, y, *s:
                     self.bridge.led_row(x_offset, y, list(itertools.chain(*[monome.unpack_row(r) for r in s]))),
@@ -39,7 +39,7 @@ class Gate(aiosc.OSCProtocol):
         })
 
     def echo(self, addr, path, *args):
-        print("incoming message from {}: {} {}".format(addr, path, *args))
+        print("incoming message from {}: {} {}".format(addr, path, args))
         # echo the message
         #self.send(path, *args, addr=addr)
 
