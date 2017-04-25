@@ -323,7 +323,7 @@ if __name__ == '__main__':
     clock = clocks.RtMidiClock()
     #g1 = lambda: None 
     #g2 = lambda: GridSeq2(clock,6,midi_out,channel_out,clock_out,g1)
-    g1 = lambda: GridSeq1(clock,6,midi_out,channel_out,clock_out,None)
+    g1 = lambda: Runcible(clock,6,midi_out,channel_out,clock_out,None)
 #    r1 = lambda: Test1() 
 #    r2 = lambda: Test2() 
     sg1 = lambda: Test3() 
@@ -337,7 +337,7 @@ if __name__ == '__main__':
 
     #coro, g1_coro  = monome.create_spanned_serialosc_connection({
     coro = spanned_monome.create_spanned_serialosc_connection({
-          'runcible': sg1,
+          'runcible': g1,
     }, loop=loop)
 
     # create synth
