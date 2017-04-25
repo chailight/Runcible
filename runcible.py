@@ -239,7 +239,7 @@ class Test2(monome.Monome):
 
 class Test3(spanned_monome.VirtualGrid):
     def __init__(self):
-        super().__init__('/hello')
+        super().__init__('runcible',16,8) #maybe just setting the name of the virtual grid here allows the size to be looked up?
 
     def ready(self):
         self.x_offset=0
@@ -248,7 +248,7 @@ class Test3(spanned_monome.VirtualGrid):
         #self.led_set(x, y, s)
         #print("runcible: ", x,y)
 
-class Test4(spanned_monome.SpannedMonome):
+class Test4(spanned_monome.VirtualGrid):
     def __init__(self):
         super().__init__('/hello')
         aiosc(('127.0.0.1', 9000), '/hello', 'world')

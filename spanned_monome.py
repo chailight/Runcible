@@ -300,13 +300,12 @@ class SpannedSerialOsc(monome.BaseSerialOsc):
                 else: self.transtbl[s] = [device]
                 if device in self.transtbl: self.transtbl[device].append(s)
                 else: self.transtbl[device] = [s]
-            # don't add a virtual device - the virtual grid is created by the child app
-            #self.add_virtual(s, xsize, ysize, port)
-            self.device_added(s, xsize, ysize, port)
+            self.add_virtual(s, xsize, ysize, port)
+            #self.device_added(s, xsize, ysize, port)
 
     def add_virtual(self, name, xsize, ysize, port=0):
-        device = VirtualGrid(name, xsize, ysize, port)
-        self.devices[name] = device
+        #device = VirtualGrid(name, xsize, ysize, port)
+        #self.devices[name] = device
         asyncio.async(self.autoconnect(name, self.app_factories[name], port)) # this may not be the right app
         print("add_virtual:",name,self.app_factories[name],port)
         print("actual devices: ", self.transtbl[name])
