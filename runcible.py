@@ -252,7 +252,7 @@ class Test3(spanned_monome.VirtualGrid):
         #print("runcible: ", x,y)
 
     def grid_key(self, addr, path, *args):
-        x, y, s = self.translate_key(addr,path, args)
+        x, y, s = self.translate_key(addr,path, *args)
         self.led_set(x, y, s)
 
 class Test4(spanned_monome.VirtualGrid):
