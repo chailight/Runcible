@@ -90,9 +90,12 @@ class GridStudies(spanned_monome.VirtualGrid):
         buffer.led_level_set(self.play_position, 7, 15)
 
         # update grid
+        print("rendering: ", buffer.get_level_map(0,0))
         buffer.render(self)
 
-    def grid_key(self, x, y, s):
+    #def grid_key(self, x, y, s):
+    def grid_key(self, addr, path, *args):
+        x, y, s = self.translate_key(addr,path, *args)
         # toggle steps
         if s == 1 and y < 6:
             self.step[y][x] ^= 1
