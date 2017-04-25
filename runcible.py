@@ -25,9 +25,10 @@ def cancel_task(task):
 
 class GridStudies(spanned_monome.VirtualGrid):
     def __init__(self):
-        super().__init__('/monome')
+        super().__init__('runcible')
 
     def ready(self):
+        print("Getting ready....")
         self.step = [[0 for col in range(self.width)] for row in range(6)]
         self.play_position = 0
         self.next_position = 0
