@@ -3,6 +3,7 @@
 import asyncio
 import aiosc
 import monome
+import itertools
 
 class Gate(aiosc.OSCProtocol):
     def __init__(self, prefix, bridge):
