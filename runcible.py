@@ -164,13 +164,10 @@ class Runcible(spanned_monome.VirtualGrid):
         # update grid
         buffer.render(self)
 
-# remove correction
-    def grid_key(self, grid_x, grid_y, s):
-        #corrected=self.gridToSpan(grid_x,grid_y)
-        #x = corrected[0]
-        #y = corrected[1]
-        x = grid_x
-        y = grid_y
+    def grid_key(self, addr, path, *args):
+        x, y, s = self.translate_key(addr,path, *args)
+        #self.led_set(x, y, s)
+
         # toggle steps
         if s == 1 and y > 0:
             if self.current_channel == 1:

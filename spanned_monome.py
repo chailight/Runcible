@@ -81,7 +81,20 @@ class Virtual(aiosc.OSCProtocol):
             self.width, self.height = (args[0], args[1])
         elif path == '/sys/rotation':
             self.rotation = args[0]
+def pack_row(row):
+    return row[7] << 7 | row[6] << 6 | row[5] << 5 | row[4] << 4 | row[3] << 3 | row[2] << 2 | row[1] << 1 | row[0]
 
+    def unpack_row(val):
+        return [
+            val & 1,
+            val >> 1 & 1,
+            val >> 2 & 1,
+            val >> 3 & 1,
+            val >> 4 & 1,
+            val >> 5 & 1,
+            val >> 6 & 1,
+            val >> 7 & 1,
+        ]
 
 class VirtualGrid(aiosc.OSCProtocol):
     def __init__(self,id):
@@ -191,8 +204,16 @@ class VirtualGrid(aiosc.OSCProtocol):
         #self.send('/{}/grid/led/all'.format(self.prefix), s)
 
     def led_map(self, x_offset, y_offset, data):
+        # send the data to the relevant subgrid, depending on the x offset -  
         args = [pack_row(data[i]) for i in range(8)]
-        #self.send('/{}/grid/led/map'.format(self.prefix), x_offset, y_offset, *args)
+        if x_offset == 0:
+            #self.send('/{}/grid/led/map'.format(self.prefix), x_offset, y_offset, *args)
+            path = '/m40h-001/grid/map'
+            asyncio.async(aiosc.send(('127.0.0.1', 8000), path, x_offset, y_offset, args))
+        else:
+            #set the x_offset to 0 for the rightmost grid
+            path = '/m40h-002/grid/map'
+            asyncio.async(aiosc.send(('127.0.0.1', 8001), path, 0, y_offset, args))
 
     def led_row(self, x_offset, y, data):
         args = [pack_row(data[i*8:(i+1)*8]) for i in range(len(data) // 8)]
@@ -227,8 +248,8 @@ class VirtualGrid(aiosc.OSCProtocol):
             args = itertools.chain(*data)
             #self.send('/{}/grid/led/level/map'.format(self.prefix), x_offset, y_offset, *args)
         else:
-            pass
-            #self.led_map(x_offset, y_offset, [[l >> 3 & 1 for l in row] for row in data])
+            #pass
+            self.led_map(x_offset, y_offset, [[l >> 3 & 1 for l in row] for row in data])
 
     def led_level_row(self, x_offset, y, data):
         if self.varibright:
