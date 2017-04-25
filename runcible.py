@@ -277,9 +277,12 @@ class Test3(spanned_monome.VirtualGrid):
                 [0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0]]
-
-        self.led_map(0,0,clear_all)
-        self.led_map(8,0,clear_all)
+        if x == 0 and y == 0:
+            self.led_map(0,0,data1)
+            self.led_map(8,0,data2)
+        else:
+            self.led_map(0,0,clear_all)
+            self.led_map(8,0,clear_all)
 
 class Test4(spanned_monome.VirtualGrid):
     def __init__(self):
