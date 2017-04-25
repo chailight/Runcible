@@ -207,7 +207,7 @@ class VirtualGrid(aiosc.OSCProtocol):
         # send the data to the relevant subgrid, depending on the x offset -  
         if x_offset == 0:
             #rotate 180
-            rotated = zip(*data[::-1])
+            rotated = list(zip(*data[::-1]))
             args = [pack_row(rotated[i]) for i in range(8)]
             #self.send('/{}/grid/led/map'.format(self.prefix), x_offset, y_offset, *args)
             path = '/m40h-001/grid/led/map'
