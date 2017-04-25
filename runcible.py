@@ -22,7 +22,8 @@ def cancel_task(task):
     if task:
         task.cancel()
 
-class GridSeq1(monome.Monome):
+#the sequencer logic, based on ansible kria
+class Runcible(monome.Monome):
     def __init__(self, clock, ticks, midi_out,channel_out,clock_out,other):
         super().__init__('/monome')
         self.clock = clock
@@ -94,13 +95,14 @@ class GridSeq1(monome.Monome):
             self.current_pos = yield from self.clock.sync()
             self.play_position = (self.current_pos//self.ticks)%16
 
-    def gridToSpan(self,x,y):
-        #return [abs(y-7),x]
-        return [abs(x-7),abs(y-7)]
+# remove correction
+    #def gridToSpan(self,x,y):
+    #    #return [abs(y-7),x]
+    #    return [abs(x-7),abs(y-7)]
          
-    def spanToGrid(self,x,y):
-        #return [y,abs(x-7)]
-        return [abs(x-7),abs(y-7)]
+    #def spanToGrid(self,x,y):
+    #    #return [y,abs(x-7)]
+    #    return [abs(x-7),abs(y-7)]
 
     @asyncio.coroutine  #make this take two channels simultaneously as I think there's timing issues with calling it twice for the same "instant"
     def trigger(self, i, ch):
@@ -162,10 +164,13 @@ class GridSeq1(monome.Monome):
         # update grid
         buffer.render(self)
 
+# remove correction
     def grid_key(self, grid_x, grid_y, s):
-        corrected=self.gridToSpan(grid_x,grid_y)
-        x = corrected[0]
-        y = corrected[1]
+        #corrected=self.gridToSpan(grid_x,grid_y)
+        #x = corrected[0]
+        #y = corrected[1]
+        x = grid_x
+        y = grid_y
         # toggle steps
         if s == 1 and y > 0:
             if self.current_channel == 1:
@@ -192,153 +197,6 @@ class GridSeq1(monome.Monome):
                 self.loop_start = self.key_last
                 self.loop_end = x
 
-class GridSeq2(monome.Monome):
-    def __init__(self,clock,ticks,midi_out,channel_out,clock_out,other):
-        super().__init__('/monome')
-        self.clock = clock
-        self.ticks = ticks 
-        self.midi_out = midi_out
-        self.channel = channel_out
-        self.clock_out= clock_out 
-        self.other = other 
-
-    def ready(self):
-        print ("using grid on port :%s" % self.id)
-        self.current_pos = 0
-        self.step_ch1 = [[0 for row in range(self.width)] for col in range(self.height)]
-        self.step_ch2 = [[0 for row in range(self.width)] for col in range(self.height)]
-        self.play_position = 0
-        self.next_position = 0
-        self.cutting = False
-        self.loop_start = 0
-        self.loop_end = self.width - 1
-        self.keys_held = 0
-        self.key_last = 0
-        self.x_offset=0
-        self.current_channel = 1
-        #pygame.init()
-        #pygame.midi.init()
-        #self.midiport = 2
-        #print ("using output_id :%s:" % self.midiport)
-        #self.midi_out = pygame.midi.Output(self.midiport, 0)
-        asyncio.async(self.play())
-
-    def disconnect(self):
-        self.led_all(0)
-
-    @asyncio.coroutine
-    def play(self):
-        self.current_pos = yield from self.clock.sync()
-        self.play_position = ((self.current_pos//self.ticks)%16)-8
-        while True:
-            #print((current_pos//self.ticks)%4)
-            if ((self.current_pos//self.ticks)%16) > 7:
-                self.draw()
-                # TRIGGER SOMETHING
-                #print("G2:",self.play_position)
-                for y in range(self.height):
-                    if self.step_ch1[y][self.play_position] == 1:
-                        #print("Grid 2:", self.play_position,y)
-                        asyncio.async(self.trigger(y))
-
-                #print("G2:",(current_pos//self.ticks)%16)
-                #if self.cutting:
-                #    self.play_position = self.next_position
-                #elif self.play_position == self.width - 1:
-                #    self.play_position = 0
-                #elif self.play_position == self.loop_end:
-                #    self.play_position = self.loop_start
-                #else:
-                #    self.play_position += 1
-
-                self.cutting = False
-            else:
-                #buffer = monome.LedBuffer(self.width, self.height)
-                #buffer.led_level_set(0, 0, 0)
-                #buffer.render(self)
-                self.draw()
-
-            #yield from asyncio.sleep(0.2)
-            yield from self.clock.sync(6)
-            self.current_pos = yield from self.clock.sync()
-            self.play_position = ((self.current_pos//self.ticks)%16)-8
-
-    @asyncio.coroutine
-    def set_channel(self,ch):
-        self.current_channel = ch
-        self.draw()
-
-    @asyncio.coroutine
-    def trigger(self, i):
-        #print("Grid2", i)
-        self.current_note = 40+i
-        self.midi_out.note_on(self.current_note, 60, self.channel)
-        yield from self.clock.sync(self.ticks)
-        #yield from asyncio.sleep(0.01)
-        self.midi_out.note_off(self.current_note, 0, self.channel)
-
-    def draw(self):
-        buffer = monome.LedBuffer(self.width, self.height)
-
-        # display steps
-        for y in range(self.width):
-            # highlight the play position
-            if y == self.play_position:
-                highlight = 4
-            else:
-                highlight = 0
-
-            for x in range(self.height):
-                if self.current_channel == 1:
-               	    buffer.led_level_set(y, x, self.step_ch1[y][x] * 11 + highlight)
-                else:
-               	    buffer.led_level_set(y, x, self.step_ch2[y][x] * 11 + highlight)
-
-        # draw trigger bar and on-states
-        #for y in range(self.width):
-        #    buffer.led_level_set(1, y, 4)
-
-        #for x in range(6):
-        #    if self.step_ch1[x][self.play_position] == 1:
-        #        buffer.led_level_set(1, self.play_position, 15)
-
-        # draw play position
-        #print("G2:",(self.current_pos//self.ticks)%16)
-        if ((self.current_pos//self.ticks)%16) > 7:
-            buffer.led_level_set(7, self.play_position, 15)
-        else:
-            buffer.led_level_set(7, self.play_position, 0)
-
-        # update grid
-        buffer.render(self)
-
-    def gridToSpan(self,x,y):
-        return [abs(y+self.x_offset),abs(x)]
-
-    def spanToGrid(self,x,y):
-        return [abs(y-7),abs(x-self.x_offset)]
-         
-    def grid_key(self, grid_x, grid_y, s):
-        corrected=self.gridToSpan(grid_x,grid_y)
-        x = corrected[0]
-        y = corrected[1]
-        #print (x,y)
-        # toggle steps
-        if s == 1 and y < 7:
-            self.step_ch1[y][x] ^= 1
-            self.draw()
-        elif y == 7:
-        # cut and loop
-            self.keys_held = self.keys_held + (s * 2) - 1
-            # cut
-            if s == 1 and self.keys_held == 1:
-                self.cutting = True
-                self.next_position = x
-                self.key_last = x
-            # set loop points
-            elif s == 1 and self.keys_held == 2:
-                self.loop_start = self.key_last
-                self.loop_end = x
 
 class Test1(monome.Monome):
     def __init__(self):
@@ -347,18 +205,19 @@ class Test1(monome.Monome):
     def ready(self):
         self.x_offset=0
 
-    def gridToSpan(self,x,y):
+    #def gridToSpan(self,x,y):
         #return [abs(y-7),x]
-        return [abs(x-7),abs(y-7)]
-         
-    def spanToGrid(self,x,y):
+    #    return [abs(x-7),abs(y-7)]
+
+    #def spanToGrid(self,x,y):
         #return [y,abs(x-7)]
-        return [abs(x-7),abs(y-7)]
-         
+    #    return [abs(x-7),abs(y-7)]
+
+    # replace with VirtualGrid code??
     def grid_key(self, x, y, s):
         self.led_set(x, y, s)
-        span_coord = self.gridToSpan(x,y) 
-        print("grid 1: ", x,y, span_coord, self.spanToGrid(span_coord[0],span_coord[1]))
+    #    span_coord = self.gridToSpan(x,y) 
+    #    print("grid 1: ", x,y, span_coord, self.spanToGrid(span_coord[0],span_coord[1]))
 
 class Test2(monome.Monome):
     def __init__(self):
@@ -378,7 +237,7 @@ class Test2(monome.Monome):
         span_coord = self.gridToSpan(x,y) 
         print("grid 2: ", x,y, span_coord, self.spanToGrid(span_coord[0],span_coord[1]))
 
-class Test3(spanned_monome.SpannedMonome):
+class Test3(spanned_monome.VirtualGrid):
     def __init__(self):
         super().__init__('/hello')
 
@@ -429,8 +288,8 @@ if __name__ == '__main__':
     #g1 = lambda: None 
     #g2 = lambda: GridSeq2(clock,6,midi_out,channel_out,clock_out,g1)
     g1 = lambda: GridSeq1(clock,6,midi_out,channel_out,clock_out,None)
-    r1 = lambda: Test1() 
-    r2 = lambda: Test2() 
+#    r1 = lambda: Test1() 
+#    r2 = lambda: Test2() 
     sg1 = lambda: Test3() 
 
     #g1 = lambda: Test1()
