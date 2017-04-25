@@ -250,7 +250,6 @@ class Test3(spanned_monome.VirtualGrid):
 
     def grid_key(self, addr, path, *args):
         x, y, s = self.translate_key(addr,path, *args)
-        self.led_set(x, y, s)
         data1 = [[1,1,1,1,1,1,1,1],
                 [0,0,0,0,0,0,0,0],
                 [1,1,1,1,1,1,1,1],
@@ -283,6 +282,7 @@ class Test3(spanned_monome.VirtualGrid):
         else:
             self.led_map(0,0,clear_all)
             self.led_map(8,0,clear_all)
+            self.led_set(x, y, s)
 
 class Test4(spanned_monome.VirtualGrid):
     def __init__(self):
