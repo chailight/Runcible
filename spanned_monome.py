@@ -208,12 +208,12 @@ class VirtualGrid(aiosc.OSCProtocol):
         args = [pack_row(data[i]) for i in range(8)]
         if x_offset == 0:
             #self.send('/{}/grid/led/map'.format(self.prefix), x_offset, y_offset, *args)
-            path = '/m40h-001/grid/map'
+            path = '/m40h-001/grid/led/map'
             asyncio.async(aiosc.send(('127.0.0.1', 8000), path, x_offset, y_offset, *args))
             print(path,x_offset, y_offset,args)
         else:
             #set the x_offset to 0 for the rightmost grid
-            path = '/m40h-002/grid/map'
+            path = '/m40h-002/grid/led/map'
             asyncio.async(aiosc.send(('127.0.0.1', 8001), path, 0, y_offset, *args))
             print(path,x_offset, y_offset,args)
 
