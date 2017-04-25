@@ -23,9 +23,9 @@ def cancel_task(task):
         task.cancel()
 
 #the sequencer logic, based on ansible kria
-class Runcible(monome.Monome):
+class Runcible(spanned_monome.VirtualGrid):
     def __init__(self, clock, ticks, midi_out,channel_out,clock_out,other):
-        super().__init__('/monome')
+        super().__init__('runcible')
         self.clock = clock
         self.ticks = ticks 
         self.midi_out = midi_out
@@ -138,9 +138,9 @@ class Runcible(monome.Monome):
             for y in range(self.height):
                 render_pos = self.spanToGrid(x,y)
                 if self.current_channel == 1:
-               	    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
+                    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
                 else:
-               	    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch2[y][x] * 11 + highlight)
+                    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch2[y][x] * 11 + highlight)
 
         # draw trigger bar and on-states
 #        for x in range(self.width):
@@ -205,11 +205,13 @@ class Test1(monome.Monome):
     def ready(self):
         self.x_offset=0
 
-    #def gridToSpan(self,x,y):
+    def gridToSpan(self,x,y):
+        return [x,y]
         #return [abs(y-7),x]
     #    return [abs(x-7),abs(y-7)]
 
-    #def spanToGrid(self,x,y):
+    def spanToGrid(self,x,y):
+        return [x,y]
         #return [y,abs(x-7)]
     #    return [abs(x-7),abs(y-7)]
 
@@ -239,14 +241,19 @@ class Test2(monome.Monome):
 
 class Test3(spanned_monome.VirtualGrid):
     def __init__(self):
-        super().__init__('runcible',16,8) #maybe just setting the name of the virtual grid here allows the size to be looked up?
+        super().__init__('runcible') #maybe just setting the name of the virtual grid here allows the size to be looked up?
 
     def ready(self):
         self.x_offset=0
 
     #def grid_key(self, x, y, s):
-        #self.led_set(x, y, s)
+    #    x, y, s = self.translate_key(x, y, s)
+    #    self.led_set(x, y, s)
         #print("runcible: ", x,y)
+
+    def grid_key(self, addr, path, *args):
+        x, y, s = self.translate_key(addr,path, args)
+        self.led_set(x, y, s)
 
 class Test4(spanned_monome.VirtualGrid):
     def __init__(self):

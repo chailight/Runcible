@@ -84,11 +84,11 @@ class Virtual(aiosc.OSCProtocol):
 
 
 class VirtualGrid(aiosc.OSCProtocol):
-    def __init__(self,id, xsize, ysize, port=0):
+    def __init__(self,id):
         #self.prefix = 'runcible'
         self.id = id
-        self.width = xsize
-        self.height = ysize
+        self.width = 16 #initialise from config
+        self.height = 8 #initialise from config 
         self.rotation = None
         self.varibright = False
         #self.app_host = DEFAULT_APP_HOST
@@ -148,7 +148,7 @@ class VirtualGrid(aiosc.OSCProtocol):
 
     #maybe this code moves into a utility function so that child classes can over-ride grid_key and easily covert
     #also conversion messages should be taken from config not hard caded
-    def grid_key(self, addr, path, *args):
+    def translate_key(self, addr, path, *args):
         #translate grid_key from device grid coords to spanned grid coords
         #print(args)
         x, y, s = args
@@ -161,8 +161,11 @@ class VirtualGrid(aiosc.OSCProtocol):
             x = y+8
             y = r
             print("spanned grid_key: ",x,y,s)
+        return x,y,s
 
-        self.led_set(x,y,s)
+
+    def grid_key(self, addr, path, *args):
+        pass
 
     def tilt(self, n, x, y, z):
         pass
