@@ -1,13 +1,15 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
-#check for cutting / looping input on both grids
-#solve message passing from one grid to another - can there be a global variable or some kind of handler?
-#add second channel to Grid2 as per Grid1, based on setting the current channel via global variable or handler
+#add display toggle for current page, etc on bottom status line
+#fix note glitches when using 2 channels - probably use a single call to trigger which sends on both channels
+#enable cutting / looping controls on both channels (should be independent)
 #add input/display for duration, velocity, octave and probability, as per kria
-#add presets: store and recall - likewise a global preset value? 
+#add presets: store and recall - as per kria 
 #add persistence of presets
-#add scale setting for both grids - global value?
+#add scale setting for both channels - global value?
+#make note entry screen monophonic - clear off other notes in that column if new note is entered 
+#fix clear all on disconnect
 
 import asyncio
 import monome
@@ -23,100 +25,7 @@ def cancel_task(task):
         task.cancel()
 
 
-class GridStudies(spanned_monome.VirtualGrid):
-    def __init__(self):
-        super().__init__('runcible')
-        self.ready()
-
-    def ready(self):
-        print("Getting ready....")
-        self.step = [[0 for col in range(self.width)] for row in range(6)]
-        self.play_position = 0
-        self.next_position = 0
-        self.cutting = False
-        self.loop_start = 0
-        self.loop_end = self.width - 1
-        self.keys_held = 0
-        self.key_last = 0
-
-        asyncio.async(self.play())
-
-    @asyncio.coroutine
-    def play(self):
-        while True:
-            if self.cutting:
-                self.play_position = self.next_position
-            elif self.play_position == self.width - 1:
-                self.play_position = 0
-            elif self.play_position == self.loop_end:
-                self.play_position = self.loop_start
-            else:
-                self.play_position += 1
-
-            # TRIGGER SOMETHING
-            for y in range(6):
-                if self.step[y][self.play_position] == 1:
-                    self.trigger(y)
-
-            self.cutting = False
-            self.draw()
-
-            yield from asyncio.sleep(0.1)
-
-    def trigger(self, i):
-        print("triggered", i)
-
-    def draw(self):
-        buffer = monome.LedBuffer(self.width, self.height)
-
-        # display steps
-        for x in range(self.width):
-            # highlight the play position
-            if x == self.play_position:
-                highlight = 4
-            else:
-                highlight = 0
-
-            for y in range(6):
-                buffer.led_level_set(x, y, self.step[y][x] * 11 + highlight)
-
-        # draw trigger bar and on-states
-        for x in range(self.width):
-            buffer.led_level_set(x, 6, 4)
-
-        for y in range(6):
-            if self.step[y][self.play_position] == 1:
-                buffer.led_level_set(self.play_position, 6, 15)
-
-        # draw play position
-        buffer.led_level_set(self.play_position, 7, 15)
-
-        # update grid
-        print("rendering: ", buffer.get_level_map(0,0))
-        buffer.render(self)
-
-    #def grid_key(self, x, y, s):
-    def grid_key(self, addr, path, *args):
-        x, y, s = self.translate_key(addr,path, *args)
-        # toggle steps
-        if s == 1 and y < 6:
-            self.step[y][x] ^= 1
-            self.draw()
-        # cut and loop
-        elif y == 7:
-            self.keys_held = self.keys_held + (s * 2) - 1
-            # cut
-            if s == 1 and self.keys_held == 1:
-                self.cutting = True
-                self.next_position = x
-                self.key_last = x
-            # set loop points
-            elif s == 1 and self.keys_held == 2:
-                self.loop_start = self.key_last
-                self.loop_end = x
-
-
-#the sequencer logic, based on ansible kria
+#runcible sequencer, based on ansible kria
 class Runcible(spanned_monome.VirtualGrid):
     def __init__(self, clock, ticks, midi_out,channel_out,clock_out,other):
         super().__init__('runcible')
@@ -160,14 +69,21 @@ class Runcible(spanned_monome.VirtualGrid):
                 #print("G1:",(self.current_pos//self.ticks)%16)
                 self.draw()
                 # TRIGGER SOMETHING
+                ch1_note = None
+                ch2_note = None
                 for y in range(self.height):
                     #print("y:",y, "pos:", self.play_position)
                     if self.step_ch1[y][self.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
-                        asyncio.async(self.trigger(abs(y-7),0))
+                        #asyncio.async(self.trigger(abs(y-7),0))
+                        ch1_note = abs(y-7) #eventually look up the scale function for this note
                     if self.step_ch2[y][self.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
-                        asyncio.async(self.trigger(abs(y-7),1))
+                        #asyncio.async(self.trigger(abs(y-7),1))
+                        ch2_note = abs(y-7) #eventually look up the scale function for this note
+                    asyncio.async(self.trigger(ch1_note,ch2_note))
+                    ch1_note = None
+                    ch2_note = None
 
 #                if self.cutting:
 #                    self.play_position = self.next_position
@@ -198,14 +114,24 @@ class Runcible(spanned_monome.VirtualGrid):
         return [x,y]
 
     @asyncio.coroutine  #make this take two channels simultaneously as I think there's timing issues with calling it twice for the same "instant"
-    def trigger(self, i, ch):
-        #print("Grid1", i)
-        self.current_note = 40+i
-        #print("G1: note: " + str(self.current_note) + " channel: " + str(self.channel))
-        self.midi_out.note_on(self.current_note, 60, self.channel+ch)
+    def trigger(self, ch1_note, ch2_note):
+        ch1_scaled = 0
+        ch2_scaled = 0
+        if not ch1_note is None:
+            #self.current_note = 40+i #maybe do the scale lookup here
+            #print("G1: note: " + str(self.current_note) + " channel: " + str(self.channel))
+            ch1_scaled = 40+ch1_note
+            self.midi_out.note_on(ch1_scaled, 60, self.channel+0)
+        if not ch2_note is None:
+            #self.current_note = 40+i #maybe do the scale lookup here
+            #print("G1: note: " + str(self.current_note) + " channel: " + str(self.channel))
+            ch2_scaled = 40+ch2_note
+            self.midi_out.note_on(ch2_scaled, 60, self.channel+1)
         yield from self.clock.sync(self.ticks)
-        #yield from asyncio.sleep(0.01)
-        self.midi_out.note_off(self.current_note, 0, self.channel+ch)
+        if not ch1_note is None:
+            self.midi_out.note_off(ch1_scaled, 0, self.channel+0)
+        if not ch2_note is None:
+            self.midi_out.note_off(ch2_scaled, 0, self.channel+1)
 
     @asyncio.coroutine
     def clock_out(self):
@@ -231,8 +157,12 @@ class Runcible(spanned_monome.VirtualGrid):
             for y in range(self.height):
                 render_pos = self.spanToGrid(x,y)
                 if self.current_channel == 1:
+                    buffer.led_level_set(0,7,15) #set the channel 1 indicator on
+                    buffer.led_level_set(1,7,0)  #set the channel 2 indicator off
                     buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
                 else:
+                    buffer.led_level_set(0,7,0)   #set the channel 1 indicator off 
+                    buffer.led_level_set(1,7,15)  #set the channel 2 indicator on 
                     buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch2[y][x] * 11 + highlight)
 
         # draw trigger bar and on-states

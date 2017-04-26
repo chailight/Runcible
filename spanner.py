@@ -10,7 +10,7 @@ class Gate(aiosc.OSCProtocol):
         self.prefix = prefix.strip('/')
         self.bridge = bridge
         #print(self.prefix)
-        print('/{}/grid/led/set'.format(self.prefix))
+        print('{}'.format(self.prefix))
 
         super().__init__(handlers={
             '/{}/grid/led/set'.format(self.prefix):
@@ -39,7 +39,7 @@ class Gate(aiosc.OSCProtocol):
         })
 
     def echo(self, addr, path, *args):
-        print("incoming message from {}: {} {}".format(addr, path, args))
+        #print("incoming message from {}: {} {}".format(addr, path, args))
         # echo the message
         #self.send(path, *args, addr=addr)
 
@@ -48,7 +48,7 @@ class Gate(aiosc.OSCProtocol):
         #aiosc.send(('127.0.0.1', 3333), '/hello', 'world')
         path = '/{}/grid/key'.format(self.prefix)
         args = str(x+1) + ' ' + str(y) + ' ' + str(s)
-        print(self.bridge.id,path, args, self.bridge.app_port)
+        #print(self.bridge.id,path, args, self.bridge.app_port)
 
 class Grid(monome.Monome):
     def __init__(self, app_host = '127.0.0.1', app_port = 8000, loop=None):
