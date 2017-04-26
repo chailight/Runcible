@@ -155,8 +155,10 @@ class VirtualGrid(aiosc.OSCProtocol):
 
     def led_all(self, s):
         path = '/m40h-001/grid/led/all'
+        print("sending: ", path)
         asyncio.async(aiosc.send(('127.0.0.1', 8000), path, s))
         path = '/m40h-002/grid/led/all'
+        print("sending: ", path)
         asyncio.async(aiosc.send(('127.0.0.1', 8001), path, s))
         #pass
         #self.send('/{}/grid/led/all'.format(self.prefix), s)
