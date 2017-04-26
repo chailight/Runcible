@@ -1,15 +1,15 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
-#add display toggle for current page, etc on bottom status line
-#fix note glitches when using 2 channels - probably use a single call to trigger which sends on both channels
-#enable cutting / looping controls on both channels (should be independent)
+#fix clear all on disconnect
+#fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops?
 #add input/display for duration, velocity, octave and probability, as per kria
+#add scale setting for both channels - global value?
+#add mutes per channel - long press on the channel?
+#enable cutting / looping controls on both channels (should be independent)
 #add presets: store and recall - as per kria 
 #add persistence of presets
-#add scale setting for both channels - global value?
 #make note entry screen monophonic - clear off other notes in that column if new note is entered 
-#fix clear all on disconnect
 
 import asyncio
 import monome
@@ -57,8 +57,8 @@ class Runcible(spanned_monome.VirtualGrid):
         #self.midi_out = pygame.midi.Output(self.midiport, 0)
         asyncio.async(self.play())
 
-    def disconnect(self):
-        self.led_all(0)
+    #def disconnect(self):
+    #    self.led_all(0)
 
     @asyncio.coroutine
     def play(self):

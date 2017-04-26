@@ -54,8 +54,8 @@ class Gate(aiosc.OSCProtocol):
 class Grid(monome.Monome):
     def __init__(self, app_host = '127.0.0.1', app_port = 8000, loop=None):
         super().__init__('/hello')
-        self.app_host = app_host 
-        self.app_port = app_port 
+        self.app_host = app_host
+        self.app_port = app_port
         if loop is None:
             loop = asyncio.get_event_loop()
         self.loop = loop
