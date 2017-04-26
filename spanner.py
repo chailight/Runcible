@@ -18,7 +18,7 @@ class Gate(aiosc.OSCProtocol):
                     self.bridge.led_set(int(x), int(y), int(s)),
             '/{}/grid/led/all'.format(self.prefix):
                 lambda addr, path, s:
-                    self.bridge.led_all(s),
+                    self.bridge.led_all(int(s)),
             '/{}/grid/led/map'.format(self.prefix):
                 lambda addr, path, x_offset, y_offset, *s:
                     self.bridge.led_map(x_offset, y_offset, list(itertools.chain([monome.unpack_row(r) for r in s]))),
