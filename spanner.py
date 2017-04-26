@@ -39,6 +39,7 @@ class Gate(aiosc.OSCProtocol):
         })
 
     def echo(self, addr, path, *args):
+        pass
         #print("incoming message from {}: {} {}".format(addr, path, args))
         # echo the message
         #self.send(path, *args, addr=addr)
