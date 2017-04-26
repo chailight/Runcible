@@ -92,7 +92,7 @@ class VirtualGrid(aiosc.OSCProtocol):
     def disconnect(self):
         print("Disconnecting....")
         self.led_all(0)
-        self.transport.close()
+        #self.transport.close()
 
     def sys_info(self, addr, path, *args):
         if path == '/sys/id':
