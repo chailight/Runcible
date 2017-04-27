@@ -305,7 +305,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 self.k_mode = Modes.mScale
             elif x == 15:
                 print("Selected Pattern Mode ")
-               self.k_mode = Modes.mPattern
+                self.k_mode = Modes.mPattern
 
         # cut and loop
             self.keys_held = self.keys_held + (s * 2) - 1
@@ -319,9 +319,9 @@ class Runcible(spanned_monome.VirtualGrid):
                 self.loop_start = self.key_last
                 self.loop_end = x
 
-    def calc_scale(self, s)
+    def calc_scale(self, s):
         self.cur_scale[0] = self.scale_data[s][0]
-        for(i1=1;i1<8;i1++):
+        for i1 in range(1,8):
             self.cur_scale[i1] = self.cur_scale[i1-1] + self.scale_data[s][i1]
 
 
