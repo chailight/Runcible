@@ -206,14 +206,6 @@ class Runcible(spanned_monome.VirtualGrid):
                     buffer.led_level_set(8,7,0)
                     buffer.led_level_set(14,7,0)
                     buffer.led_level_set(15,7,0)
-                    #buffer.led_level_set(render_pos[0], render_pos[1], self.Tr[y][x] * 11 + highlight)
-                elif self.k_mode == Modes.mOct:
-                    buffer.led_level_set(5,7,0)
-                    buffer.led_level_set(6,7,0)
-                    buffer.led_level_set(7,7,15)
-                    buffer.led_level_set(8,7,0)
-                    buffer.led_level_set(14,7,0)
-                    buffer.led_level_set(15,7,0)
                     if self.current_channel == 1:
                         buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
                     elif self.current_channel == 2:
@@ -222,6 +214,13 @@ class Runcible(spanned_monome.VirtualGrid):
                     #    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
                     #elif self.current_channel == 4:
                     #    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
+                elif self.k_mode == Modes.mOct:
+                    buffer.led_level_set(5,7,0)
+                    buffer.led_level_set(6,7,0)
+                    buffer.led_level_set(7,7,15)
+                    buffer.led_level_set(8,7,0)
+                    buffer.led_level_set(14,7,0)
+                    buffer.led_level_set(15,7,0)
                 elif self.k_mode == Modes.mDur:
                     buffer.led_level_set(5,7,0)
                     buffer.led_level_set(6,7,0)
@@ -315,7 +314,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 self.k_mode = Modes.mDur
                 print("Selected:", self.k_mode)
             elif x == 10:
-                self.k_mode_mode = ModModes.modLoop
+                self.k_mod_mode = ModModes.modLoop
                 print("Selected:", self.k_mod_mode)
             elif x == 11:
                 self.k_mod_mode = ModModes.modTime
