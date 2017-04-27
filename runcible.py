@@ -2,10 +2,11 @@
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
 #fix clear all on disconnect
-#fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops?
-#add input/display for duration, velocity, octave and probability, as per kria
-#add scale setting for both channels - global value?
-#add mutes per channel - long press on the channel?
+#fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops? maybe just close the midi stream?
+#add support for 4 channels
+#add input/display for trigger, note (done already), duration, velocity, octave and probability, as per kria
+#add scale setting for both channels as per kria 
+#add mutes per channel - long press on the channel? 
 #enable cutting / looping controls on both channels (should be independent)
 #add presets: store and recall - as per kria 
 #add persistence of presets
@@ -380,5 +381,6 @@ if __name__ == '__main__':
         for apps in serialosc.app_instances.values():
             for app in apps:
                 app.disconnect()
+        midi_out.close()
         print('kthxbye')
 
