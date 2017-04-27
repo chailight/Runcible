@@ -50,7 +50,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.channel = channel_out
         self.clock_ch= clock_out
         self.cur_scale = [0,0,0,0,0,0,0,0]
-        self.k_mode = Modes.mTr
+        self.k_mode = Modes.mNote
         self.k_mod_mode = ModModes.modNone
         #call ready() directly because virtual device doesn't get triggered
         self.ready()
