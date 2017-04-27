@@ -7,9 +7,9 @@
 #add scale setting for both channels - global value?
 #add mutes per channel - long press on the channel?
 #enable cutting / looping controls on both channels (should be independent)
-#add presets: store and recall - as per kria 
+#add presets: store and recall - as per kria
 #add persistence of presets
-#make note entry screen monophonic - clear off other notes in that column if new note is entered 
+#make note entry screen monophonic - clear off other notes in that column if new note is entered
 
 import asyncio
 import monome
@@ -19,23 +19,40 @@ import clocks
 import pygame
 import pygame.midi
 from pygame.locals import *
+from enum import Enum
 
 def cancel_task(task):
     if task:
         task.cancel()
 
+class Modes(Enum):
+    mTr = 1
+    mNote = 2
+    mOct = 3
+    mDur = 4
+    mScale = 5
+    mPattern = 6
+
+class ModModes(Enum):
+    modNone = 1
+    modLoop = 2
+    modTime = 3
+    modProb = 4
 
 #runcible sequencer, based on ansible kria
 class Runcible(spanned_monome.VirtualGrid):
     def __init__(self, clock, ticks, midi_out,channel_out,clock_out,other):
         super().__init__('runcible')
         self.clock = clock
-        self.ticks = ticks 
+        self.ticks = ticks
         self.midi_out = midi_out
         self.channel = channel_out
         self.clock_ch= clock_out
+        self.cur_scale = [0,0,0,0,0,0,0,0]
+        self.k_mode = Modes.mTr
+        self.k_mod_mode = ModModes.modNone
+        #call ready() directly because virtual device doesn't get triggered
         self.ready()
-        #self.other = other 
 
     def ready(self):
         print ("using grid on port :%s" % self.id)
@@ -50,11 +67,6 @@ class Runcible(spanned_monome.VirtualGrid):
         self.keys_held = 0
         self.key_last = 0
         self.current_channel = 1
-        #pygame.init()
-        #pygame.midi.init()
-        #self.midiport = 2
-        #print ("using output_id :%s:" % self.midiport)
-        #self.midi_out = pygame.midi.Output(self.midiport, 0)
         asyncio.async(self.play())
 
     #def disconnect(self):
@@ -106,7 +118,7 @@ class Runcible(spanned_monome.VirtualGrid):
             self.current_pos = yield from self.clock.sync()
             self.play_position = (self.current_pos//self.ticks)%16
 
-# to be removed 
+# to be removed
     def gridToSpan(self,x,y):
         return [x,y]
 
@@ -155,15 +167,70 @@ class Runcible(spanned_monome.VirtualGrid):
                 highlight = 0
 
             for y in range(self.height):
-                render_pos = self.spanToGrid(x,y)
                 if self.current_channel == 1:
                     buffer.led_level_set(0,7,15) #set the channel 1 indicator on
                     buffer.led_level_set(1,7,0)  #set the channel 2 indicator off
-                    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
-                else:
-                    buffer.led_level_set(0,7,0)   #set the channel 1 indicator off 
-                    buffer.led_level_set(1,7,15)  #set the channel 2 indicator on 
-                    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch2[y][x] * 11 + highlight)
+                    buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
+                    buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
+                    #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
+                elif self.current_channel ==2:
+                    buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
+                    buffer.led_level_set(1,7,15)  #set the channel 2 indicator on
+                    buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
+                    buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
+                elif self.current_channel ==3:
+                    buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
+                    buffer.led_level_set(1,7,0)  #set the channel 2 indicator on
+                    buffer.led_level_set(2,7,15)  #set the channel 3 indicator off
+                    buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
+                elif self.current_channel ==4:
+                    buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
+                    buffer.led_level_set(1,7,0)  #set the channel 2 indicator on
+                    buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
+                    buffer.led_level_set(3,7,15)  #set the channel 4 indicator off
+                if self.k_mode == Modes.mTr:
+                    buffer.led_level_set(5,7,15) #set the channel 1 indicator on
+                    buffer.led_level_set(6,7,0)  #set the channel 2 indicator off
+                    buffer.led_level_set(7,7,0)  #set the channel 3 indicator off
+                    buffer.led_level_set(8,7,0)  #set the channel 4 indicator off
+                    #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
+                elif self.k_mode == Modes.mNote:
+                    buffer.led_level_set(5,7,0)
+                    buffer.led_level_set(6,7,15)
+                    buffer.led_level_set(7,7,0)
+                    buffer.led_level_set(8,7,0)
+                    buffer.led_level_set(14,7,0)
+                    buffer.led_level_set(15,7,0)
+                elif self.k_mode == Modes.mOct:
+                    buffer.led_level_set(5,7,0)
+                    buffer.led_level_set(6,7,0)
+                    buffer.led_level_set(7,7,15)
+                    buffer.led_level_set(8,7,0)
+                    buffer.led_level_set(14,7,0)
+                    buffer.led_level_set(15,7,0)
+                elif self.k_mode == Modes.mDur:
+                    buffer.led_level_set(5,7,0)
+                    buffer.led_level_set(6,7,0)
+                    buffer.led_level_set(7,7,0)
+                    buffer.led_level_set(8,7,15)
+                    buffer.led_level_set(14,7,0)
+                    buffer.led_level_set(15,7,0)
+                elif self.k_mode == Modes.mScale:
+                    buffer.led_level_set(5,7,0)
+                    buffer.led_level_set(6,7,0)
+                    buffer.led_level_set(7,7,0)
+                    buffer.led_level_set(8,7,0)
+                    buffer.led_level_set(14,7,15)
+                    buffer.led_level_set(15,7,0)
+                elif self.k_mode == Modes.mPattern:
+                    buffer.led_level_set(5,7,0)
+                    buffer.led_level_set(6,7,0)
+                    buffer.led_level_set(7,7,0)
+                    buffer.led_level_set(8,7,0)
+                    buffer.led_level_set(14,7,0)
+                    buffer.led_level_set(15,7,15)
+                render_pos = self.spanToGrid(x,y)
+                buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch2[y][x] * 11 + highlight)
 
         # draw trigger bar and on-states
 #        for x in range(self.width):
@@ -202,11 +269,43 @@ class Runcible(spanned_monome.VirtualGrid):
             if x == 0:
                 print("Selected Channel 1")
                 self.current_channel = 1
-                #self.other.set_channel(1)
             elif x == 1:
                 print("Selected Channel 2")
                 self.current_channel = 2
-                #self.other.set_channel(2)
+            elif x == 2:
+                print("Selected Channel 3")
+                self.current_channel = 3
+            elif x == 3:
+                print("Selected Channel 4")
+                self.current_channel = 4
+            elif x == 5:
+                print("Selected Track Mode ")
+                self.k_mode = Modes.mTr
+            elif x == 6:
+                print("Selected Note Mode ")
+                self.k_mode = Modes.mNote
+            elif x == 7:
+                print("Selected Octave Mode ")
+                self.k_mode = Modes.mOct
+            elif x == 8:
+                print("Selected Duration Mode ")
+                self.k_mode = Modes.mDur
+            elif x == 10:
+                print("Selected Loop Mode ")
+                self.k_mode_mode = ModModes.modLoop
+            elif x == 11:
+                print("Selected Time Mode ")
+                self.k_mod_mode = ModModes.modTime
+            elif x == 12:
+                print("Selected Probability Mode ")
+                self.k_mod_mode = ModModes.modProb
+            elif x == 14:
+                print("Selected Scale Mode ")
+                self.k_mode = Modes.mScale
+            elif x == 15:
+                print("Selected Pattern Mode ")
+               self.k_mode = Modes.mPattern
+
         # cut and loop
             self.keys_held = self.keys_held + (s * 2) - 1
             # cut
@@ -218,6 +317,11 @@ class Runcible(spanned_monome.VirtualGrid):
             elif s == 1 and self.keys_held == 2:
                 self.loop_start = self.key_last
                 self.loop_end = x
+
+    def calc_scale(self, s)
+        self.cur_scale[0] = self.scale_data[s][0]
+        for(i1=1;i1<8;i1++):
+            self.cur_scale[i1] = self.cur_scale[i1-1] + self.scale_data[s][i1]
 
 
 class Test1(monome.Monome):
@@ -240,7 +344,7 @@ class Test1(monome.Monome):
     # replace with VirtualGrid code??
     def grid_key(self, x, y, s):
         self.led_set(x, y, s)
-    #    span_coord = self.gridToSpan(x,y) 
+    #    span_coord = self.gridToSpan(x,y)
     #    print("grid 1: ", x,y, span_coord, self.spanToGrid(span_coord[0],span_coord[1]))
 
 class Test2(monome.Monome):
@@ -258,7 +362,7 @@ class Test2(monome.Monome):
 
     def grid_key(self, x, y, s):
         self.led_set(x, y, s)
-        span_coord = self.gridToSpan(x,y) 
+        span_coord = self.gridToSpan(x,y)
         print("grid 2: ", x,y, span_coord, self.spanToGrid(span_coord[0],span_coord[1]))
 
 class Test3(spanned_monome.VirtualGrid):
@@ -327,10 +431,10 @@ if __name__ == '__main__':
     for i in range(device_count):
        info = pygame.midi.get_device_info(i)
        print (str(i) + ": " + str(info[1]) + " " + str(info[2]) + " " + str(info[3]))
-       if 'MIDI 6' in str(info[1]) and info[3] == 1: 
-           midiport = i 
-       #if 'MIDI 1' in str(info[1]) and info[3] == 0: 
-       #   clock_out = i 
+       if 'MIDI 6' in str(info[1]) and info[3] == 1:
+           midiport = i
+       #if 'MIDI 1' in str(info[1]) and info[3] == 0:
+       #   clock_out = i
     print ("using output_id : %s " % midiport)
     midi_out = pygame.midi.Output(midiport, 0)
     print ("using clock source: %s " % clock_out)
@@ -346,13 +450,13 @@ if __name__ == '__main__':
     #g2 = lambda: GridSeq2(clock,24,midi_out,channel_out,clock_out,page)
 
     clock = clocks.RtMidiClock()
-    #g1 = lambda: None 
+    #g1 = lambda: None
     #g2 = lambda: GridSeq2(clock,6,midi_out,channel_out,clock_out,g1)
     g1 = lambda: Runcible(clock,6,midi_out,channel_out,clock_out,None)
-#    r1 = lambda: Test1() 
-#    r2 = lambda: Test2() 
-    sg1 = lambda: Test3() 
-    sg2 = lambda: GridStudies() 
+#    r1 = lambda: Test1()
+#    r2 = lambda: Test2()
+    sg1 = lambda: Test3()
+    sg2 = lambda: GridStudies()
 
     #g1 = lambda: Test1()
     #g2 = lambda: Test2()
