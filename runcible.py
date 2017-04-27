@@ -168,6 +168,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 highlight = 0
 
             for y in range(self.height):
+                render_pos = self.spanToGrid(x,y)
                 if self.current_channel == 1:
                     buffer.led_level_set(0,7,15) #set the channel 1 indicator on
                     buffer.led_level_set(1,7,0)  #set the channel 2 indicator off
@@ -179,22 +180,25 @@ class Runcible(spanned_monome.VirtualGrid):
                     buffer.led_level_set(1,7,15)  #set the channel 2 indicator on
                     buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
                     buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
+                    #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch2[y][x] * 11 + highlight)
                 elif self.current_channel ==3:
                     buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
                     buffer.led_level_set(1,7,0)  #set the channel 2 indicator on
                     buffer.led_level_set(2,7,15)  #set the channel 3 indicator off
                     buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
+                    #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch3[y][x] * 11 + highlight)
                 elif self.current_channel ==4:
                     buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
                     buffer.led_level_set(1,7,0)  #set the channel 2 indicator on
                     buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
                     buffer.led_level_set(3,7,15)  #set the channel 4 indicator off
+                    #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch4[y][x] * 11 + highlight)
                 if self.k_mode == Modes.mTr:
                     buffer.led_level_set(5,7,15) #set the channel 1 indicator on
                     buffer.led_level_set(6,7,0)  #set the channel 2 indicator off
                     buffer.led_level_set(7,7,0)  #set the channel 3 indicator off
                     buffer.led_level_set(8,7,0)  #set the channel 4 indicator off
-                    #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
+                    #buffer.led_level_set(render_pos[0], render_pos[1], self.Tr[y][x] * 11 + highlight)
                 elif self.k_mode == Modes.mNote:
                     buffer.led_level_set(5,7,0)
                     buffer.led_level_set(6,7,15)
@@ -202,6 +206,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     buffer.led_level_set(8,7,0)
                     buffer.led_level_set(14,7,0)
                     buffer.led_level_set(15,7,0)
+                    #buffer.led_level_set(render_pos[0], render_pos[1], self.Tr[y][x] * 11 + highlight)
                 elif self.k_mode == Modes.mOct:
                     buffer.led_level_set(5,7,0)
                     buffer.led_level_set(6,7,0)
@@ -209,6 +214,14 @@ class Runcible(spanned_monome.VirtualGrid):
                     buffer.led_level_set(8,7,0)
                     buffer.led_level_set(14,7,0)
                     buffer.led_level_set(15,7,0)
+                    if self.current_channel == 1:
+                        buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
+                    elif self.current_channel == 2:
+                        buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch2[y][x] * 11 + highlight)
+                    #elif self.current_channel == 3:
+                    #    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
+                    #elif self.current_channel == 4:
+                    #    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
                 elif self.k_mode == Modes.mDur:
                     buffer.led_level_set(5,7,0)
                     buffer.led_level_set(6,7,0)
@@ -242,9 +255,6 @@ class Runcible(spanned_monome.VirtualGrid):
                     buffer.led_level_set(10,7,0)
                     buffer.led_level_set(11,7,0)
                     buffer.led_level_set(12,7,15)
-
-                render_pos = self.spanToGrid(x,y)
-                buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch2[y][x] * 11 + highlight)
 
         # draw trigger bar and on-states
 #        for x in range(self.width):
@@ -293,32 +303,32 @@ class Runcible(spanned_monome.VirtualGrid):
                 print("Selected Channel 4")
                 self.current_channel = 4
             elif x == 5:
-                print("Selected Track Mode ")
                 self.k_mode = Modes.mTr
+                print("Selected:", self.k_mode)
             elif x == 6:
-                print("Selected Note Mode ")
                 self.k_mode = Modes.mNote
+                print("Selected:", self.k_mode)
             elif x == 7:
-                print("Selected Octave Mode ")
                 self.k_mode = Modes.mOct
+                print("Selected:", self.k_mode)
             elif x == 8:
-                print("Selected Duration Mode ")
                 self.k_mode = Modes.mDur
+                print("Selected:", self.k_mode)
             elif x == 10:
-                print("Selected Loop Mode ")
                 self.k_mode_mode = ModModes.modLoop
+                print("Selected:", self.k_mod_mode)
             elif x == 11:
-                print("Selected Time Mode ")
                 self.k_mod_mode = ModModes.modTime
+                print("Selected:", self.k_mod_mode)
             elif x == 12:
-                print("Selected Probability Mode ")
                 self.k_mod_mode = ModModes.modProb
+                print("Selected:", self.k_mod_mode)
             elif x == 14:
-                print("Selected Scale Mode ")
                 self.k_mode = Modes.mScale
+                print("Selected:", self.k_mode)
             elif x == 15:
-                print("Selected Pattern Mode ")
                 self.k_mode = Modes.mPattern
+                print("Selected:", self.k_mode)
 
         # cut and loop
             self.keys_held = self.keys_held + (s * 2) - 1
