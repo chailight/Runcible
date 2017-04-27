@@ -230,6 +230,19 @@ class Runcible(spanned_monome.VirtualGrid):
                     buffer.led_level_set(8,7,0)
                     buffer.led_level_set(14,7,0)
                     buffer.led_level_set(15,7,15)
+                if self.k_mod_mode == ModModes.modLoop:
+                    buffer.led_level_set(10,7,15)
+                    buffer.led_level_set(11,7,0)
+                    buffer.led_level_set(12,7,0)
+                elif self.k_mod_mode == ModModes.modTime
+                    buffer.led_level_set(10,7,0)
+                    buffer.led_level_set(11,7,15)
+                    buffer.led_level_set(12,7,0)
+                elif self.k_mod_mode == ModModes.modProb
+                    buffer.led_level_set(10,7,0)
+                    buffer.led_level_set(11,7,0)
+                    buffer.led_level_set(12,7,15)
+
                 render_pos = self.spanToGrid(x,y)
                 buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch2[y][x] * 11 + highlight)
 
@@ -266,7 +279,7 @@ class Runcible(spanned_monome.VirtualGrid):
             else:
                 self.step_ch2[7-y][x] ^= 1
             self.draw()
-        elif y == 0:
+        elif s ==1 and y == 0:
             if x == 0:
                 print("Selected Channel 1")
                 self.current_channel = 1
