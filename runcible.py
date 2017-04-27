@@ -234,11 +234,11 @@ class Runcible(spanned_monome.VirtualGrid):
                     buffer.led_level_set(10,7,15)
                     buffer.led_level_set(11,7,0)
                     buffer.led_level_set(12,7,0)
-                elif self.k_mod_mode == ModModes.modTime
+                elif self.k_mod_mode == ModModes.modTime:
                     buffer.led_level_set(10,7,0)
                     buffer.led_level_set(11,7,15)
                     buffer.led_level_set(12,7,0)
-                elif self.k_mod_mode == ModModes.modProb
+                elif self.k_mod_mode == ModModes.modProb:
                     buffer.led_level_set(10,7,0)
                     buffer.led_level_set(11,7,0)
                     buffer.led_level_set(12,7,15)
