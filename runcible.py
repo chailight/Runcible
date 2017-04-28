@@ -5,8 +5,8 @@
 #fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops? maybe just close the midi stream?
 #add support for 4 channels
 #add input/display for trigger, note (done already), duration, velocity, octave and probability, as per kria
-#add scale setting for both channels as per kria 
-#add mutes per channel - long press on the channel? 
+#add scale setting for both channels as per kria
+#add mutes per channel - long press on the channel?
 #enable cutting / looping controls on both channels (should be independent)
 #add presets: store and recall - as per kria
 #add persistence of presets
@@ -42,12 +42,12 @@ class ModModes(Enum):
 
 class Track:
     def __init__(self):
-        self.num_params = 4 
+        self.num_params = 4
         self.tr = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         self.octave = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         self.note = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         self.duration = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-        self.params = [[0] * self.num_params for i in range (16)] #initialise a 4x16 array 
+        self.params = [[0] * self.num_params for i in range (16)] #initialise a 4x16 array
         self.dur_mul = 1; #duration multiplier
         self.lstart = [[0] * self.num_params]
         self.lend = [[0] * self.num_params]
@@ -94,6 +94,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.cur_scale = [0,0,0,0,0,0,0,0]
         self.k_mode = Modes.mNote
         self.k_mod_mode = ModModes.modNone
+        self.state = State()
         #call ready() directly because virtual device doesn't get triggered
         self.ready()
 
@@ -174,7 +175,7 @@ class Runcible(spanned_monome.VirtualGrid):
     #need to create a collated note_on and note_off list that is indexed by current position
     #initially just have one note_off per position, i.e. 1/4 notes or longer
     #for 1/8, 1/6, 1/32 length notes, we need a 64 slot queue, and then update the current step every 4 ticks
-    @asyncio.coroutine  
+    @asyncio.coroutine
     def trigger(self, ch1_note, ch2_note):
         ch1_scaled = 0
         ch2_scaled = 0
