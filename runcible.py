@@ -40,6 +40,48 @@ class ModModes(Enum):
     modTime = 3
     modProb = 4
 
+class Track:
+    def __init__(self):
+        self.num_params = 4 
+        self.tr = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        self.octave = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        self.note = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        self.duration = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        self.params = [[0] * self.num_params for i in range (16)] #initialise a 4x16 array 
+        self.dur_mul = 1; #duration multiplier
+        self.lstart = [[0] * self.num_params]
+        self.lend = [[0] * self.num_params]
+        self.swap = [[0] * self.num_params]
+        self.tmul = [[0] * self.num_params]
+
+class Pattern:
+    def __init__(self):
+        self.tracks = [Track() for i in range(4)]
+        self.scale = 0
+
+class Preset:
+    def __init__(self):
+        self.patterns = [Pattern() for i in range(16)]
+        self.current_pattern = 0
+        self.meta_pat[[0] * 64]
+        self.meta_steps [[0] * 64]
+        self.meta_start = 0
+        self.meta_end = 0
+        self.meta_len = 0
+        self.meta_lswap = 0
+        self.glyph = [[0] * 8]
+
+class State:
+    def __init__(self):
+        self.clock_period = 0
+        self.current_preset = 0
+        self.note_sync = True
+        self.loop_sync = 0
+        self.cue_div = 0
+        self.cue_steps = 0
+        self.meta = 0
+        presets = [Preset() for i in range(8)]
+
 #runcible sequencer, based on ansible kria
 class Runcible(spanned_monome.VirtualGrid):
     def __init__(self, clock, ticks, midi_out,channel_out,clock_out,other):
@@ -48,7 +90,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.ticks = ticks
         self.midi_out = midi_out
         self.channel = channel_out
-        self.clock_ch= clock_out
+        self.clock_ch= clock_out)
         self.cur_scale = [0,0,0,0,0,0,0,0]
         self.k_mode = Modes.mNote
         self.k_mod_mode = ModModes.modNone
@@ -58,8 +100,8 @@ class Runcible(spanned_monome.VirtualGrid):
     def ready(self):
         print ("using grid on port :%s" % self.id)
         self.current_pos = 0
-        self.step_ch1 = [[0 for col in range(self.width)] for row in range(self.height)]
-        self.step_ch2 = [[0 for col in range(self.width)] for row in range(self.height)]
+        self.step_ch1 = [[0 for col in range(self.width)] for row in range(self.height)] #replace with tracks object
+        self.step_ch2 = [[0 for col in range(self.width)] for row in range(self.height)] #replace with tracks object
         self.play_position = 0
         self.next_position = 0
         self.cutting = False
@@ -89,11 +131,13 @@ class Runcible(spanned_monome.VirtualGrid):
                     if self.step_ch1[y][self.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
                         #asyncio.async(self.trigger(abs(y-7),0))
+                        #change this to add the note at this position on this track into the trigger schedule
                         ch1_note = abs(y-7) #eventually look up the scale function for this note
                     if self.step_ch2[y][self.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
                         #asyncio.async(self.trigger(abs(y-7),1))
                         ch2_note = abs(y-7) #eventually look up the scale function for this note
+                    #change this to just play out whatever is in the schedule at this point, including note offs
                     asyncio.async(self.trigger(ch1_note,ch2_note))
                     ch1_note = None
                     ch2_note = None
@@ -126,7 +170,11 @@ class Runcible(spanned_monome.VirtualGrid):
     def spanToGrid(self,x,y):
         return [x,y]
 
-    @asyncio.coroutine  #make this take two channels simultaneously as I think there's timing issues with calling it twice for the same "instant"
+    #change this to use midi.write() whatever event is in the note_on and note_off queue at this point in time
+    #need to create a collated note_on and note_off list that is indexed by current position
+    #initially just have one note_off per position, i.e. 1/4 notes or longer
+    #for 1/8, 1/6, 1/32 length notes, we need a 64 slot queue, and then update the current step every 4 ticks
+    @asyncio.coroutine  
     def trigger(self, ch1_note, ch2_note):
         ch1_scaled = 0
         ch2_scaled = 0
