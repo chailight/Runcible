@@ -375,11 +375,11 @@ class Runcible(spanned_monome.VirtualGrid):
         if s == 1 and y > 0:
             if self.current_channel == 1:
                 self.step_ch1[7-y][x] ^= 1
-                self.current_pattern.tracks[0].note[x] = 7-y
+                self.current_pattern.tracks[0].note[x] = y
                 self.current_pattern.tracks[0].tr[x] ^= 1
             else:
                 self.step_ch2[7-y][x] ^= 1
-                self.current_pattern.tracks[1].note[x] = 7-y
+                self.current_pattern.tracks[1].note[x] = y
                 self.current_pattern.tracks[1].tr[x] ^= 1
             self.draw()
         elif s ==1 and y == 0:
