@@ -40,6 +40,13 @@ class ModModes(Enum):
     modTime = 3
     modProb = 4
 
+class Note:
+    def __init__(self,channel_inc = 0, pitch = 0, velocity = 0, duration=0):
+        self.channel_inc = channel_inc #this is the increment to the global base channel
+        self.pitch = pitch
+        self.velocity = velocity
+        self.duration = duration
+
 class Track:
     def __init__(self):
         self.num_params = 4
@@ -90,19 +97,21 @@ class Runcible(spanned_monome.VirtualGrid):
         self.ticks = ticks
         self.midi_out = midi_out
         self.channel = channel_out
-        self.clock_ch= clock_out)
+        self.clock_ch = clock_out
         self.cur_scale = [0,0,0,0,0,0,0,0]
         self.k_mode = Modes.mNote
         self.k_mod_mode = ModModes.modNone
         self.state = State()
+        self.note_on = [[Note()] for i in range(16)]
+        self.note_off = [[Note()] for i in range(16)]  # initialise the Note to have 0 velocity for noteoff?
         #call ready() directly because virtual device doesn't get triggered
         self.ready()
 
     def ready(self):
         print ("using grid on port :%s" % self.id)
         self.current_pos = 0
-        self.step_ch1 = [[0 for col in range(self.width)] for row in range(self.height)] #replace with tracks object
-        self.step_ch2 = [[0 for col in range(self.width)] for row in range(self.height)] #replace with tracks object
+        #self.step_ch1 = [[0 for col in range(self.width)] for row in range(self.height)] #replace with tracks object
+        #self.step_ch2 = [[0 for col in range(self.width)] for row in range(self.height)] #replace with tracks object
         self.play_position = 0
         self.next_position = 0
         self.cutting = False
@@ -111,6 +120,8 @@ class Runcible(spanned_monome.VirtualGrid):
         self.keys_held = 0
         self.key_last = 0
         self.current_channel = 1
+        self.current_preset = self.state[0]
+        self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
         asyncio.async(self.play())
 
     #def disconnect(self):
@@ -125,23 +136,27 @@ class Runcible(spanned_monome.VirtualGrid):
                 #print("G1:",(self.current_pos//self.ticks)%16)
                 self.draw()
                 # TRIGGER SOMETHING
-                ch1_note = None
-                ch2_note = None
+                #ch1_note = None
+                #ch2_note = None
                 for y in range(self.height):
                     #print("y:",y, "pos:", self.play_position)
-                    if self.step_ch1[y][self.play_position] == 1:
-                        #print("Grid 1:", self.play_position,abs(y-7))
-                        #asyncio.async(self.trigger(abs(y-7),0))
-                        #change this to add the note at this position on this track into the trigger schedule
-                        ch1_note = abs(y-7) #eventually look up the scale function for this note
-                    if self.step_ch2[y][self.play_position] == 1:
+                    #if self.step_ch1[y][self.play_position] == 1:
+                    for track in range(4):
+                        if self.current_pattern.tracks[track].tr[self.play_position] == 1:
+                            #print("Grid 1:", self.play_position,abs(y-7))
+                            #asyncio.async(self.trigger(abs(y-7),0))
+                            #change this to add the note at this position on this track into the trigger schedule
+                            #ch1_note = abs(y-7) #eventually look up the scale function for this note
+                            self.insert_note(track, self.play_position, self.current_pattern.tracks[track].note[self.play_position], 65, 4 ) # hard coding velocity and duration 
+                    #if self.step_ch2[y][self.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
                         #asyncio.async(self.trigger(abs(y-7),1))
-                        ch2_note = abs(y-7) #eventually look up the scale function for this note
+                    #    ch2_note = abs(y-7) #eventually look up the scale function for this note
                     #change this to just play out whatever is in the schedule at this point, including note offs
-                    asyncio.async(self.trigger(ch1_note,ch2_note))
-                    ch1_note = None
-                    ch2_note = None
+                    #asyncio.async(self.trigger(ch1_note,ch2_note))
+                    asyncio.async(self.trigger())
+                    #ch1_note = None
+                    #ch2_note = None
 
 #                if self.cutting:
 #                    self.play_position = self.next_position
@@ -164,6 +179,19 @@ class Runcible(spanned_monome.VirtualGrid):
             self.current_pos = yield from self.clock.sync()
             self.play_position = (self.current_pos//self.ticks)%16
 
+    def insert_note(track,position,pitch,velocity,duration):
+        insert_note_on(track,position,pitch,velocity)
+        #calcucate note off posiiton from duration - for now just default to next quarter note
+        insert_note_of(track,position+1,pitch)
+
+    def insert_note_on(track,position,pitch,velocity):
+        new_note = Note(track,pitch,velocity)
+        self.note_on[position].append(new_note)
+
+    def insert_note_off(track,position,pitch):
+        new_note = Note(track,pitch,0)
+        self.note_off[position].append(new_note) 
+
 # to be removed
     def gridToSpan(self,x,y):
         return [x,y]
@@ -171,29 +199,39 @@ class Runcible(spanned_monome.VirtualGrid):
     def spanToGrid(self,x,y):
         return [x,y]
 
+#TODO: setup the note data structure and also change the noteon and noteoff structure to be dynamic lists rather than arrays (so we only pick up actual notes, not empties
+    @asyncio.coroutine
+    def trigger():
+        channel_increment = 0
+        for note in self.note_off[self.play_position]:
+            self.midi_out.write([[[0x90 + note.channel_inc, note.pitch,0],pygame.midi.time()]])
+
+        for note in self.note_on[self.play_position]:
+            self.midi_out.write([[[0x90 + note.channel_inc, note.pitch, note.velocity],pygame.midi.time()]])
+
     #change this to use midi.write() whatever event is in the note_on and note_off queue at this point in time
     #need to create a collated note_on and note_off list that is indexed by current position
     #initially just have one note_off per position, i.e. 1/4 notes or longer
     #for 1/8, 1/6, 1/32 length notes, we need a 64 slot queue, and then update the current step every 4 ticks
-    @asyncio.coroutine
-    def trigger(self, ch1_note, ch2_note):
-        ch1_scaled = 0
-        ch2_scaled = 0
-        if not ch1_note is None:
+    #@asyncio.coroutine
+    #def trigger(self, ch1_note, ch2_note):
+    #    ch1_scaled = 0
+    #    ch2_scaled = 0
+    #    if not ch1_note is None:
             #self.current_note = 40+i #maybe do the scale lookup here
             #print("G1: note: " + str(self.current_note) + " channel: " + str(self.channel))
-            ch1_scaled = 40+ch1_note
-            self.midi_out.note_on(ch1_scaled, 60, self.channel+0)
-        if not ch2_note is None:
+    #        ch1_scaled = 40+ch1_note
+    #        self.midi_out.note_on(ch1_scaled, 60, self.channel+0)
+    #    if not ch2_note is None:
             #self.current_note = 40+i #maybe do the scale lookup here
             #print("G1: note: " + str(self.current_note) + " channel: " + str(self.channel))
-            ch2_scaled = 40+ch2_note
-            self.midi_out.note_on(ch2_scaled, 60, self.channel+1)
-        yield from self.clock.sync(self.ticks)
-        if not ch1_note is None:
-            self.midi_out.note_off(ch1_scaled, 0, self.channel+0)
-        if not ch2_note is None:
-            self.midi_out.note_off(ch2_scaled, 0, self.channel+1)
+    #        ch2_scaled = 40+ch2_note
+    #        self.midi_out.note_on(ch2_scaled, 60, self.channel+1)
+    #    yield from self.clock.sync(self.ticks)
+    #    if not ch1_note is None:
+    #        self.midi_out.note_off(ch1_scaled, 0, self.channel+0)
+    #    if not ch2_note is None:
+    #        self.midi_out.note_off(ch2_scaled, 0, self.channel+1)
 
     @asyncio.coroutine
     def clock_out(self):
