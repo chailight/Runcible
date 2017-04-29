@@ -203,12 +203,12 @@ class Runcible(spanned_monome.VirtualGrid):
     @asyncio.coroutine
     def trigger(self):
         for note in self.note_off[self.play_position]:
-            print("position: ", self.play_position, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
+            #print("position: ", self.play_position, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
             self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
         del self.note_off[self.play_position][:] #clear the current midi output once it's been sent
 
         for note in self.note_on[self.play_position]:
-            print("position: ", self.play_position, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc) 
+            #print("position: ", self.play_position, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc) 
             self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40, note.velocity],pygame.midi.time()]])
         del self.note_on[self.play_position][:] #clear the current midi output once it's been sent
 
