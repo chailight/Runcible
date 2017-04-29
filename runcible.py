@@ -180,9 +180,9 @@ class Runcible(spanned_monome.VirtualGrid):
             self.play_position = (self.current_pos//self.ticks)%16
 
     def insert_note(self,track,position,pitch,velocity,duration):
-        insert_note_on(track,position,pitch,velocity)
+        self.insert_note_on(track,position,pitch,velocity)
         #calcucate note off posiiton from duration - for now just default to next quarter note
-        insert_note_of(track,position+1,pitch)
+        self.insert_note_of(track,position+1,pitch)
 
     def insert_note_on(self,track,position,pitch,velocity):
         new_note = Note(track,pitch,velocity)
