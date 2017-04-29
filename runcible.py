@@ -120,7 +120,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.keys_held = 0
         self.key_last = 0
         self.current_channel = 1
-        self.current_preset = self.state[0]
+        self.current_preset = self.state.presets[0]
         self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
         asyncio.async(self.play())
 
