@@ -70,8 +70,8 @@ class Preset:
     def __init__(self):
         self.patterns = [Pattern() for i in range(16)]
         self.current_pattern = 0
-        self.meta_pat[[0] * 64]
-        self.meta_steps [[0] * 64]
+        self.meta_pat = [[0] * 64]
+        self.meta_steps = [[0] * 64]
         self.meta_start = 0
         self.meta_end = 0
         self.meta_len = 0
