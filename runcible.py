@@ -204,10 +204,10 @@ class Runcible(spanned_monome.VirtualGrid):
     def trigger(self):
         channel_increment = 0
         for note in self.note_off[self.play_position]:
-            self.midi_out.write([[[0x90 + note.channel_inc, note.pitch,0],pygame.midi.time()]])
+            asyncio.async(self.midi_out.write([[[0x90 + note.channel_inc, note.pitch+40,0],pygame.midi.time()]]))
 
         for note in self.note_on[self.play_position]:
-            self.midi_out.write([[[0x90 + note.channel_inc, note.pitch, note.velocity],pygame.midi.time()]])
+            asyncio.async(self.midi_out.write([[[0x90 + note.channel_inc, note.pitch+40, note.velocity],pygame.midi.time()]]))
 
     #change this to use midi.write() whatever event is in the note_on and note_off queue at this point in time
     #need to create a collated note_on and note_off list that is indexed by current position
