@@ -87,7 +87,7 @@ class State:
         self.cue_div = 0
         self.cue_steps = 0
         self.meta = 0
-        presets = [Preset() for i in range(8)]
+        self.presets = [Preset() for i in range(8)]
 
 #runcible sequencer, based on ansible kria
 class Runcible(spanned_monome.VirtualGrid):
