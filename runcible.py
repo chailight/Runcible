@@ -205,10 +205,12 @@ class Runcible(spanned_monome.VirtualGrid):
         for note in self.note_off[self.play_position]:
             print("position: ", self.play_position, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
             self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
+        del self.note_off[self.play_position][:] #clear the current midi output once it's been sent
 
         for note in self.note_on[self.play_position]:
             print("position: ", self.play_position, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc) 
             self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40, note.velocity],pygame.midi.time()]])
+        del self.note_on[self.play_position][:] #clear the current midi output once it's been sent
 
     #change this to use midi.write() whatever event is in the note_on and note_off queue at this point in time
     #need to create a collated note_on and note_off list that is indexed by current position
