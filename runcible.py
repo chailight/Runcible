@@ -110,8 +110,8 @@ class Runcible(spanned_monome.VirtualGrid):
     def ready(self):
         print ("using grid on port :%s" % self.id)
         self.current_pos = 0
-        #self.step_ch1 = [[0 for col in range(self.width)] for row in range(self.height)] #replace with tracks object
-        #self.step_ch2 = [[0 for col in range(self.width)] for row in range(self.height)] #replace with tracks object
+        self.step_ch1 = [[0 for col in range(self.width)] for row in range(self.height)] #replace with tracks object
+        self.step_ch2 = [[0 for col in range(self.width)] for row in range(self.height)] #replace with tracks object
         self.play_position = 0
         self.next_position = 0
         self.cutting = False
@@ -372,8 +372,12 @@ class Runcible(spanned_monome.VirtualGrid):
         if s == 1 and y > 0:
             if self.current_channel == 1:
                 self.step_ch1[7-y][x] ^= 1
+                self.current_pattern.tracks[0].note[x] = 7-y
+                self.current_pattern.tracks[0].tr[x] ^= 1
             else:
                 self.step_ch2[7-y][x] ^= 1
+                self.current_pattern.tracks[1].note[x] = 7-y
+                self.current_pattern.tracks[1].tr[x] ^= 1
             self.draw()
         elif s ==1 and y == 0:
             if x == 0:
