@@ -201,7 +201,7 @@ class Runcible(spanned_monome.VirtualGrid):
 
 #TODO: setup the note data structure and also change the noteon and noteoff structure to be dynamic lists rather than arrays (so we only pick up actual notes, not empties
     @asyncio.coroutine
-    def trigger():
+    def trigger(self):
         channel_increment = 0
         for note in self.note_off[self.play_position]:
             self.midi_out.write([[[0x90 + note.channel_inc, note.pitch,0],pygame.midi.time()]])
