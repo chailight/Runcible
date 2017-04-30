@@ -474,9 +474,8 @@ class Runcible(spanned_monome.VirtualGrid):
             # duration entry
             if self.k_mode == Modes.mDur:
                 if self.current_channel == 1:
-                    enterd_val = 0
                     duration = 0
-                    enterd_val = 7-y
+                    entered_val = 7-y
                     if entered_val == 4:
                         duration = 5
                     elif entered_val == 5:
