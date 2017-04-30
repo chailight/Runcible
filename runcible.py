@@ -319,16 +319,16 @@ class Runcible(spanned_monome.VirtualGrid):
                     #fill a column bottom up in the x position
                     current_oct = self.current_pattern.tracks[0].octave[x]
                     if current_oct >= 0:
-                        for i in range (3,current_oct+3): 
+                        for i in range (6,6-current_oct+3): 
                             buffer.led_level_set(x, i, 15)
-                        for i in range (current_oct+3,7): #ignore top row
+                        for i in range (current_oct+3,1): #ignore top row
                             buffer.led_level_set(x, i, 0)
                         for i in range (1,3): #ignore bottom row
                             buffer.led_level_set(x, i, 0)
                     if current_oct < 0:
                         for i in range (3,current_oct+3): 
                             buffer.led_level_set(x, i, 15)
-                        for i in range (3,7): #ignore top row
+                        for i in range (4,7): #ignore top row
                             buffer.led_level_set(x, i, 0)
                         for i in range (1,current_oct+3): #ignore bottom row
                             buffer.led_level_set(x, i, 0)
