@@ -484,18 +484,7 @@ class Runcible(spanned_monome.VirtualGrid):
             # duration entry
             if self.k_mode == Modes.mDur:
                 if self.current_channel == 1:
-                    duration = 0
-                    entered_val = 7-y
-                    if entered_val == 4:
-                        duration = 5
-                    elif entered_val == 5:
-                        duration = 8
-                    elif entered_val == 6:
-                        duration = 16
-                    else:
-                        duration = entered_val
-                    self.current_pattern.tracks[0].duration[x] = duration 
-                    print("entered: ", entered_val, "note duration: ", duration)
+                    self.current_pattern.tracks[0].duration[x] = 7-y 
                 else:
                     self.current_pattern.tracks[1].duration[x] = 7-y
                 self.draw()
