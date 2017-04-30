@@ -317,10 +317,21 @@ class Runcible(spanned_monome.VirtualGrid):
             for x in range(self.width):
                 if self.current_channel == 1:
                     #fill a column bottom up in the x position
-                    for i in range (6,4+self.current_pattern.tracks[0].octave[x]): #ignore bottom row
-                        buffer.led_level_set(x, i, 15)
-                    for i in range (4+self.current_pattern.tracks[0].duration[x],2): #ignore top two rows
-                        buffer.led_level_set(x, i, 0)
+                    current_oct = self.current_pattern.tracks[0].octave[x])
+                    if current_oct >= 0:
+                        for i in range (3,current_oct+3): 
+                            buffer.led_level_set(x, i, 15)
+                        for i in range (current_oct+3,7): #ignore top row
+                            buffer.led_level_set(x, i, 0)
+                        for i in range (1,3): #ignore bottom row
+                            buffer.led_level_set(x, i, 0)
+                    if current_oct < 0:
+                        for i in range (3,current_oct+3): 
+                            buffer.led_level_set(x, i, 15)
+                        for i in range (3,7): #ignore top row
+                            buffer.led_level_set(x, i, 0)
+                        for i in range (1,current_oct+3): #ignore bottom row
+                            buffer.led_level_set(x, i, 0)
                 elif self.current_channel == 2:
                     #fill a column bottom up in the x position
                     for i in range (6,4+self.current_pattern.tracks[1].octave[x]): #ignore bottom row
