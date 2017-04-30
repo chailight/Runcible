@@ -170,7 +170,7 @@ class Runcible(spanned_monome.VirtualGrid):
                             else:
                                 scaled_duration = entered_duration
                             #print("entered: ", entered_duration, "note duration: ", scaled_duration)
-                            self.insert_note(track, self.current_position%64, current_note, 65, scaled_duration) # hard coding velocity 
+                            self.insert_note(track, self.current_pos%64, current_note, 65, scaled_duration) # hard coding velocity 
                     #if self.step_ch2[y][self.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
                         #asyncio.async(self.trigger(abs(y-7),1))
