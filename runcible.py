@@ -142,7 +142,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def play(self):
         self.current_pos = yield from self.clock.sync()
         self.play_position = (self.current_pos//self.ticks)%16
-        self.fine_play_position = (self.current_pos%96)*16
+        self.fine_play_position = self.current_pos%96
         while True:
             #print(self.clock.bpm,self.play_position, self.current_pos%64)
             if ((self.current_pos//self.ticks)%16) < 16:
@@ -164,17 +164,17 @@ class Runcible(spanned_monome.VirtualGrid):
                             scaled_duration = 0
                             entered_duration = self.current_pattern.tracks[track].duration[self.play_position]
                             if entered_duration == 1:
-                                scaled_duration =  12
+                                scaled_duration =  2
                             if entered_duration == 2:
-                                scaled_duration = 24
+                                scaled_duration =  2 
                             if entered_duration == 3:
-                                scaled_duration = 48
+                                scaled_duration =  2 
                             if entered_duration == 4:
-                                scaled_duration = 96
+                                scaled_duration =  4 
                             elif entered_duration == 5:
-                                scaled_duration = 192
+                                scaled_duration =  8 
                             elif entered_duration == 6:
-                                scaled_duration = 384
+                                scaled_duration =  16 
                             #print("entered: ", entered_duration, "note duration: ", scaled_duration)
                             self.insert_note(track, self.fine_play_position, current_note, 65, scaled_duration) # hard coding velocity 
                     #if self.step_ch2[y][self.play_position] == 1:
@@ -208,7 +208,7 @@ class Runcible(spanned_monome.VirtualGrid):
             yield from self.clock.sync(1) #update at full resolution 
             self.current_pos = yield from self.clock.sync()
             self.play_position = (self.current_pos//self.ticks)%16
-            self.fine_play_position = (self.current_pos%96)*16
+            self.fine_play_position = self.current_pos%96
 
     def insert_note(self,track,position,pitch,velocity,duration):
         self.insert_note_on(track,position,pitch,velocity)
