@@ -110,8 +110,8 @@ class Runcible(spanned_monome.VirtualGrid):
         self.k_mode = Modes.mNote
         self.k_mod_mode = ModModes.modNone
         self.state = State()
-        self.note_on = [[Note()] for i in range(16)]
-        self.note_off = [[Note()] for i in range(16)]  # initialise the Note to have 0 velocity for noteoff?
+        self.note_on = [[Note()] for i in range(64)] #4 positions per quarter note
+        self.note_off = [[Note()] for i in range(64)]
         #call ready() directly because virtual device doesn't get triggered
         self.ready()
 
@@ -474,7 +474,19 @@ class Runcible(spanned_monome.VirtualGrid):
             # duration entry
             if self.k_mode == Modes.mDur:
                 if self.current_channel == 1:
-                    self.current_pattern.tracks[0].duration[x] = 7-y
+                    enterd_val = 0
+                    duration = 0
+                    enterd_val = 7-y
+                    if entered_val == 4:
+                        duration = 5
+                    elif entered_val == 5:
+                        duration = 8
+                    elif enterned_val == 6:
+                        duration = 16
+                    else:
+                        duration = entered_val
+                    self.current_pattern.tracks[0].duration[x] = duration 
+                    print("entered: ", entered_val, "note duration: ", duration)
                 else:
                     self.current_pattern.tracks[1].duration[x] = 7-y
                 self.draw()
