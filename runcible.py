@@ -164,17 +164,17 @@ class Runcible(spanned_monome.VirtualGrid):
                             scaled_duration = 0
                             entered_duration = self.current_pattern.tracks[track].duration[self.play_position]
                             if entered_duration == 1:
-                                scaled_duration =  12 
+                                scaled_duration =  12
                             if entered_duration == 2:
                                 scaled_duration = 24
                             if entered_duration == 3:
-                                scaled_duration = 48 
+                                scaled_duration = 48
                             if entered_duration == 4:
-                                scaled_duration = 96 
+                                scaled_duration = 96
                             elif entered_duration == 5:
-                                scaled_duration = 192 
+                                scaled_duration = 192
                             elif entered_duration == 6:
-                                scaled_duration = 384 
+                                scaled_duration = 384
                             #print("entered: ", entered_duration, "note duration: ", scaled_duration)
                             self.insert_note(track, self.fine_play_position, current_note, 65, scaled_duration) # hard coding velocity 
                     #if self.step_ch2[y][self.play_position] == 1:
@@ -236,14 +236,14 @@ class Runcible(spanned_monome.VirtualGrid):
         print(self.play_position, self.fine_play_position)
         for note in self.note_off[self.fine_play_position]:
         #for note in self.note_off[self.current_pos%64]:
-            #print("position: ", self.current_pos%64, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
+            print("position: ", self.fine_play_position, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
             self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
         del self.note_off[self.fine_play_position][:] #clear the current midi output once it's been sent
         #del self.note_off[self.current_pos%64][:] #clear the current midi output once it's been sent
 
         for note in self.note_on[self.fine_play_position]:
         #for note in self.note_on[self.current_pos%64]:
-            #print("position: ", self.current_pos%64, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc) 
+            print("position: ", self.fine_play_position, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc) 
             self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40, note.velocity],pygame.midi.time()]])
         del self.note_on[self.fine_play_position][:] #clear the current midi output once it's been sent
         #del self.note_on[self.current_pos%64][:] #clear the current midi output once it's been sent
