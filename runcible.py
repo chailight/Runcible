@@ -185,7 +185,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.insert_note_on(track,position,pitch,velocity)
         #calcucate note off posiiton from duration at current position - will eventually change to independent duration position 
         self.insert_note_off(track,(position+self.current_pattern.tracks[track].duration[position])%16,pitch)
-        print("note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
+        #print("note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
 
     def insert_note_on(self,track,position,pitch,velocity):
         new_note = Note(track,pitch,velocity)
