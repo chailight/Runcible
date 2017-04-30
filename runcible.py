@@ -204,9 +204,11 @@ class Runcible(spanned_monome.VirtualGrid):
             asyncio.async(self.trigger())
             #yield from asyncio.sleep(0.1)
             asyncio.async(self.clock_out())
-            yield from self.clock.sync(self.ticks)
+            #yield from self.clock.sync(self.ticks)
+            yield from self.clock.sync(1) #update at full resolution 
             self.current_pos = yield from self.clock.sync()
             self.play_position = (self.current_pos//self.ticks)%16
+            self.fine_play_position = self.current_pos%64
 
     def insert_note(self,track,position,pitch,velocity,duration):
         self.insert_note_on(track,position,pitch,velocity)
