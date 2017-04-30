@@ -314,6 +314,19 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(8,7,0)
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,0)
+            for x in range(self.width):
+                if self.current_channel == 1:
+                    #fill a column bottom up in the x position
+                    for i in range (6,4+self.current_pattern.tracks[0].octave[x]): #ignore bottom row
+                        buffer.led_level_set(x, i, 15)
+                    for i in range (4+self.current_pattern.tracks[0].duration[x],2): #ignore top two rows
+                        buffer.led_level_set(x, i, 0)
+                elif self.current_channel == 2:
+                    #fill a column bottom up in the x position
+                    for i in range (6,4+self.current_pattern.tracks[1].octave[x]): #ignore bottom row
+                        buffer.led_level_set(x, i, 15)
+                    for i in range (4+self.current_pattern.tracks[1].duration[x],2): #ignore top two rows
+                        buffer.led_level_set(x, i, 0)
         elif self.k_mode == Modes.mDur:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,0)
@@ -448,6 +461,13 @@ class Runcible(spanned_monome.VirtualGrid):
                     self.current_pattern.tracks[0].duration[x] = 7-y
                 else:
                     self.current_pattern.tracks[1].duration[x] = 7-y
+                self.draw()
+            if self.k_mode == Modes.mOct: #mid-point is row 4 - two octaves up and two octaves down, use 2nd row for accent?
+                if self.current_channel == 1:
+                    self.current_pattern.tracks[0].octave[x] = 4-y
+                    print("octave = ", self.current_pattern.tracks[0].octave[x])
+                else:
+                    self.current_pattern.tracks[1].octave[x] = 4-y
                 self.draw()
 
         # cut and loop
