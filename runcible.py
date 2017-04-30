@@ -110,8 +110,8 @@ class Runcible(spanned_monome.VirtualGrid):
         self.k_mode = Modes.mNote
         self.k_mod_mode = ModModes.modNone
         self.state = State()
-        self.note_on = [[Note()] for i in range(64)] #4 positions per quarter note
-        self.note_off = [[Note()] for i in range(64)]
+        self.note_on = [[Note()] for i in range(16)] #4 positions per quarter note
+        self.note_off = [[Note()] for i in range(16)]
         #call ready() directly because virtual device doesn't get triggered
         self.ready()
 
@@ -161,16 +161,20 @@ class Runcible(spanned_monome.VirtualGrid):
                             current_note = self.current_pattern.tracks[track].note[self.play_position]+self.current_pattern.tracks[track].octave[self.play_position]*12
                             scaled_duration = 0
                             entered_duration = self.current_pattern.tracks[track].duration[self.play_position]
+                            if entered_duration == 1:
+                                scaled_duration = 0.125
+                            if entered_duration == 2:
+                                scaled_duration = 0.25
+                            if entered_duration == 3:
+                                scaled_duration = 0.5
                             if entered_duration == 4:
-                                scaled_duration = 4
+                                scaled_duration = 1
                             elif entered_duration == 5:
-                                scaled_duration = 8
+                                scaled_duration = 2
                             elif entered_duration == 6:
-                                scaled_duration = 16
-                            else:
-                                scaled_duration = entered_duration
+                                scaled_duration = 4
                             #print("entered: ", entered_duration, "note duration: ", scaled_duration)
-                            self.insert_note(track, self.current_pos%64, current_note, 65, scaled_duration) # hard coding velocity 
+                            self.insert_note(track, self.play_position, current_note, 65, scaled_duration) # hard coding velocity 
                     #if self.step_ch2[y][self.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
                         #asyncio.async(self.trigger(abs(y-7),1))
@@ -204,7 +208,7 @@ class Runcible(spanned_monome.VirtualGrid):
 
     def insert_note(self,track,position,pitch,velocity,duration):
         self.insert_note_on(track,position,pitch,velocity)
-        self.insert_note_off(track,(position+duration)%64,pitch)
+        self.insert_note_off(track,(position+duration)%16,pitch)
         #print("note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
 
     def insert_note_on(self,track,position,pitch,velocity):
@@ -225,37 +229,19 @@ class Runcible(spanned_monome.VirtualGrid):
 #TODO: setup the note data structure and also change the noteon and noteoff structure to be dynamic lists rather than arrays (so we only pick up actual notes, not empties
     @asyncio.coroutine
     def trigger(self):
-        for note in self.note_off[self.current_pos%64-3]:
-            print("position: ", self.current_pos%64, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
+        for note in self.note_off[self.play_position]:
+        #for note in self.note_off[self.current_pos%64]:
+            #print("position: ", self.current_pos%64, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
             self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
-        #del self.note_off[self.play_position][:] #clear the current midi output once it's been sent
-        del self.note_off[self.current_pos%64-3][:] #clear the current midi output once it's been sent
+        del self.note_off[self.play_position][:] #clear the current midi output once it's been sent
+        #del self.note_off[self.current_pos%64][:] #clear the current midi output once it's been sent
 
-        for note in self.note_off[self.current_pos%64-2]:
-            print("position: ", self.current_pos%64, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
-            self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
-        #del self.note_off[self.play_position][:] #clear the current midi output once it's been sent
-        del self.note_off[self.current_pos%64-2][:] #clear the current midi output once it's been sent
-
-        for note in self.note_off[self.current_pos%64-1]:
-            print("position: ", self.current_pos%64, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
-            self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
-        #del self.note_off[self.play_position][:] #clear the current midi output once it's been sent
-        del self.note_off[self.current_pos%64-1][:] #clear the current midi output once it's been sent
-
-        #for note in self.note_off[self.play_position]:
-        for note in self.note_off[self.current_pos%64]:
-            print("position: ", self.current_pos%64, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
-            self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
-        #del self.note_off[self.play_position][:] #clear the current midi output once it's been sent
-        del self.note_off[self.current_pos%64][:] #clear the current midi output once it's been sent
-
-        #for note in self.note_on[self.play_position]:
-        for note in self.note_on[self.current_pos%64]:
-            print("position: ", self.current_pos%64, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc) 
+        for note in self.note_on[self.play_position]:
+        #for note in self.note_on[self.current_pos%64]:
+            #print("position: ", self.current_pos%64, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc) 
             self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40, note.velocity],pygame.midi.time()]])
-        #del self.note_on[self.play_position][:] #clear the current midi output once it's been sent
-        del self.note_on[self.current_pos%64][:] #clear the current midi output once it's been sent
+        del self.note_on[self.play_position][:] #clear the current midi output once it's been sent
+        #del self.note_on[self.current_pos%64][:] #clear the current midi output once it's been sent
 
     #change this to use midi.write() whatever event is in the note_on and note_off queue at this point in time
     #need to create a collated note_on and note_off list that is indexed by current position
