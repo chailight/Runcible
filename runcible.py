@@ -229,19 +229,19 @@ class Runcible(spanned_monome.VirtualGrid):
             print("position: ", self.current_pos%64, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
             self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
         #del self.note_off[self.play_position][:] #clear the current midi output once it's been sent
-        del self.note_off[self.current_pos%64][:] #clear the current midi output once it's been sent
+        del self.note_off[self.current_pos%64-3][:] #clear the current midi output once it's been sent
 
         for note in self.note_off[self.current_pos%64-2]:
             print("position: ", self.current_pos%64, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
             self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
         #del self.note_off[self.play_position][:] #clear the current midi output once it's been sent
-        del self.note_off[self.current_pos%64][:] #clear the current midi output once it's been sent
+        del self.note_off[self.current_pos%64-2][:] #clear the current midi output once it's been sent
 
         for note in self.note_off[self.current_pos%64-1]:
             print("position: ", self.current_pos%64, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
             self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
         #del self.note_off[self.play_position][:] #clear the current midi output once it's been sent
-        del self.note_off[self.current_pos%64][:] #clear the current midi output once it's been sent
+        del self.note_off[self.current_pos%64-1][:] #clear the current midi output once it's been sent
 
         #for note in self.note_off[self.play_position]:
         for note in self.note_off[self.current_pos%64]:
