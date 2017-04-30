@@ -110,8 +110,8 @@ class Runcible(spanned_monome.VirtualGrid):
         self.k_mode = Modes.mNote
         self.k_mod_mode = ModModes.modNone
         self.state = State()
-        self.note_on = [[Note()] for i in range(16*96)] #full resolution 
-        self.note_off = [[Note()] for i in range(16*96)]
+        self.note_on = [[Note()] for i in range(96)] #full resolution 
+        self.note_off = [[Note()] for i in range(96)]
         #call ready() directly because virtual device doesn't get triggered
         self.ready()
 
