@@ -142,7 +142,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.current_pos = yield from self.clock.sync()
         self.play_position = (self.current_pos//self.ticks)%16
         while True:
-            print(self.clock.bpm,self.play_position, self.current_pos)
+            print(self.clock.bpm,self.play_position, self.current_pos%64)
             if ((self.current_pos//self.ticks)%16) < 16:
                 #print("G1:",(self.current_pos//self.ticks)%16)
                 self.draw()
@@ -635,7 +635,7 @@ if __name__ == '__main__':
     clock = clocks.RtMidiClock()
     #g1 = lambda: None
     #g2 = lambda: GridSeq2(clock,6,midi_out,channel_out,clock_out,g1)
-    g1 = lambda: Runcible(clock,6,midi_out,channel_out,clock_out,None)
+    g1 = lambda: Runcible(clock,4,midi_out,channel_out,clock_out,None)
 #    r1 = lambda: Test1()
 #    r2 = lambda: Test2()
     sg1 = lambda: Test3()
