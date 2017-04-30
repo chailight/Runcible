@@ -296,7 +296,7 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,0)
             for x in range(self.width):
-                for y in range(self.height):
+                for y in range(1,self.height):
                     #render_pos = self.spanToGrid(x,y)
                     if self.current_channel == 1:
                         buffer.led_level_set(x, y, self.step_ch1[y][x] * 15 )
@@ -323,15 +323,15 @@ class Runcible(spanned_monome.VirtualGrid):
             for x in range(self.width):
                 if self.current_channel == 1:
                     #fill a column top down in the x position
-                    for i in range (self.current_pattern.tracks[0].duration[self.play_position]):
-                        buffer.led_level_set(x, 7-i, 15)
-                    for i in range (self.current_pattern.tracks[0].duration[self.play_position],7):
-                        buffer.led_level_set(x, 7-i, 0)
+                    for i in range (self.current_pattern.tracks[0].duration[x]):
+                        buffer.led_level_set(x, i, 15)
+                    for i in range (self.current_pattern.tracks[0].duration[x],7):
+                        buffer.led_level_set(x, i, 0)
                 elif self.current_channel == 2:
-                    for i in range (self.current_pattern.tracks[1].duration[self.play_position]):
-                        buffer.led_level_set(x, 7-i, 15)
-                    for i in range (self.current_pattern.tracks[1].duration[self.play_position],7):
-                        buffer.led_level_set(x, 7-i, 0)
+                    for i in range (self.current_pattern.tracks[1].duration[x]):
+                        buffer.led_level_set(x, i, 15)
+                    for i in range (self.current_pattern.tracks[1].duration[x],7):
+                        buffer.led_level_set(x, i, 0)
         elif self.k_mode == Modes.mScale:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,0)
