@@ -319,7 +319,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     #fill a column bottom up in the x position
                     current_oct = self.current_pattern.tracks[0].octave[x]
                     if current_oct >= 0:
-                        for i in range (6,current_oct+3): 
+                        for i in range (3,current_oct+3): 
                             buffer.led_level_set(x, i, 15)
                             print("current oct: ", current_oct, " drawing in row: ", i)
                         for i in range (current_oct+3,1): #ignore top row
@@ -480,7 +480,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 if self.current_channel == 1:
                     if y < 7 and y > 0:
                         self.current_pattern.tracks[0].octave[x] = y-3
-                        print("octave = ", self.current_pattern.tracks[0].octave[x])
+                        print("grid_key = ", y, "octave = ", self.current_pattern.tracks[0].octave[x])
                 else:
                     if y < 6 and y > 0:
                         self.current_pattern.tracks[1].octave[x] = y-3
