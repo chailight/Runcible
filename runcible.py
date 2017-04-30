@@ -3,8 +3,16 @@
 #TODO:
 #fix clear all on disconnect
 #fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops? maybe just close the midi stream?
-#add support for 4 channels
-#add input/display for trigger, note (done already), duration, velocity, octave and probability, as per kria
+#adjust channel numbers and add support for all 4 channels
+#add input/display for trigger, velocity/accent, and probability, as per kria
+#add support for 1/8, 1/16 & 1/32 notes?  (6 duration positions = 1/32, 1/16, 1/8, 1/4, 1/2, 1)
+# - needs support for 4 sub-positions per 1/4 note position - which means trigger() must be called 4 times per quater note, or every 24 ticks (based on 96 ppqn)
+# - given a position n.1, 1/32 duration will end in n.2   (n+1, for an array of 64 positions)
+#                       - 1/16 duration will end in n.3   (n+2) 
+#                       - 1/8  duration will end in n.4   (n+3)
+#                       - 1/4  duration will end in n+1.1 (n+4)
+#                       - 1/2  duration will end in n+2.1 (n+8)
+#                       - 1    duration will end in n+4.1 (n+16)
 #add scale setting for both channels as per kria
 #add mutes per channel - long press on the channel?
 #enable cutting / looping controls on both channels (should be independent)
@@ -133,6 +141,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def play(self):
         self.current_pos = yield from self.clock.sync()
         self.play_position = (self.current_pos//self.ticks)%16
+        print(self.play_position, (self.current_pos//2)%64)
         while True:
             if ((self.current_pos//self.ticks)%16) < 16:
                 #print("G1:",(self.current_pos//self.ticks)%16)
@@ -320,7 +329,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     #fill a column bottom up in the x position
                     current_oct = self.current_pattern.tracks[0].octave[x]
                     if current_oct >= 0:
-                        print("start = ", 1, "end = ", 4-current_oct)
+                        #print("start = ", 1, "end = ", 4-current_oct)
                         for i in range (4-current_oct,5):
                             buffer.led_level_set(x, i, 15)
                             #print("current oct: ", current_oct, " drawing in row: ", i)
