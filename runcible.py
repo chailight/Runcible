@@ -216,12 +216,22 @@ class Runcible(spanned_monome.VirtualGrid):
         #print("note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
 
     def insert_note_on(self,track,position,pitch,velocity):
-        new_note = Note(track,pitch,velocity)
-        self.note_on[position].append(new_note)
+        already_exists = False
+        for n in self.note_on[position]:
+            if n.pitch == pitch:
+                already_exists = True
+        if not already_exists:
+            new_note = Note(track,pitch,velocity)
+            self.note_on[position].append(new_note)
 
     def insert_note_off(self,track,position,pitch):
-        new_note = Note(track,pitch,0)
-        self.note_off[position].append(new_note)
+        already_exists = False
+        for n in self.note_on[position]:
+            if n.pitch == pitch:
+                already_exists = True
+        if not already_exists:
+            new_note = Note(track,pitch,0)
+            self.note_off[position].append(new_note)
 
 # to be removed
     def gridToSpan(self,x,y):
