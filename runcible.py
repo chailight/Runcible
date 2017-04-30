@@ -110,8 +110,10 @@ class Runcible(spanned_monome.VirtualGrid):
     def ready(self):
         print ("using grid on port :%s" % self.id)
         self.current_pos = 0
-        self.step_ch1 = [[0 for col in range(self.width)] for row in range(self.height)] #replace with tracks object
-        self.step_ch2 = [[0 for col in range(self.width)] for row in range(self.height)] #replace with tracks object
+        self.step_ch1 = [[0 for col in range(self.width)] for row in range(self.height)] #used for display of notes
+        self.step_ch2 = [[0 for col in range(self.width)] for row in range(self.height)]
+        self.step_ch3 = [[0 for col in range(self.width)] for row in range(self.height)]
+        self.step_ch4 = [[0 for col in range(self.width)] for row in range(self.height)]
         self.play_position = 0
         self.next_position = 0
         self.cutting = False
@@ -250,100 +252,112 @@ class Runcible(spanned_monome.VirtualGrid):
         buffer = monome.LedBuffer(self.width, self.height)
 
         # display steps
-        for x in range(self.width):
-            # highlight the play position
-            if x == self.play_position:
-                highlight = 4
-            else:
-                highlight = 0
+            # highlight the play position - only useful for varibright
+            #if x == self.play_position:
+            #    highlight = 4
+            #else:
+            #    highlight = 0
 
-            for y in range(self.height):
-                render_pos = self.spanToGrid(x,y)
-                if self.current_channel == 1:
-                    buffer.led_level_set(0,7,15) #set the channel 1 indicator on
-                    buffer.led_level_set(1,7,0)  #set the channel 2 indicator off
-                    buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
-                    buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
-                    #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
-                elif self.current_channel ==2:
-                    buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
-                    buffer.led_level_set(1,7,15)  #set the channel 2 indicator on
-                    buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
-                    buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
-                    #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch2[y][x] * 11 + highlight)
-                elif self.current_channel ==3:
-                    buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
-                    buffer.led_level_set(1,7,0)  #set the channel 2 indicator on
-                    buffer.led_level_set(2,7,15)  #set the channel 3 indicator off
-                    buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
-                    #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch3[y][x] * 11 + highlight)
-                elif self.current_channel ==4:
-                    buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
-                    buffer.led_level_set(1,7,0)  #set the channel 2 indicator on
-                    buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
-                    buffer.led_level_set(3,7,15)  #set the channel 4 indicator off
-                    #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch4[y][x] * 11 + highlight)
-                if self.k_mode == Modes.mTr:
-                    buffer.led_level_set(5,7,15) #set the channel 1 indicator on
-                    buffer.led_level_set(6,7,0)  #set the channel 2 indicator off
-                    buffer.led_level_set(7,7,0)  #set the channel 3 indicator off
-                    buffer.led_level_set(8,7,0)  #set the channel 4 indicator off
-                    #buffer.led_level_set(render_pos[0], render_pos[1], self.Tr[y][x] * 11 + highlight)
-                elif self.k_mode == Modes.mNote:
-                    buffer.led_level_set(5,7,0)
-                    buffer.led_level_set(6,7,15)
-                    buffer.led_level_set(7,7,0)
-                    buffer.led_level_set(8,7,0)
-                    buffer.led_level_set(14,7,0)
-                    buffer.led_level_set(15,7,0)
+        if self.current_channel == 1:
+            buffer.led_level_set(0,7,15) #set the channel 1 indicator on
+            buffer.led_level_set(1,7,0)  #set the channel 2 indicator off
+            buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
+            buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
+            #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
+        elif self.current_channel ==2:
+            buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
+            buffer.led_level_set(1,7,15)  #set the channel 2 indicator on
+            buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
+            buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
+            #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch2[y][x] * 11 + highlight)
+        elif self.current_channel ==3:
+            buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
+            buffer.led_level_set(1,7,0)  #set the channel 2 indicator on
+            buffer.led_level_set(2,7,15)  #set the channel 3 indicator off
+            buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
+            #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch3[y][x] * 11 + highlight)
+        elif self.current_channel ==4:
+            buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
+            buffer.led_level_set(1,7,0)  #set the channel 2 indicator on
+            buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
+            buffer.led_level_set(3,7,15)  #set the channel 4 indicator off
+            #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch4[y][x] * 11 + highlight)
+        if self.k_mode == Modes.mTr:
+            buffer.led_level_set(5,7,15) #set the channel 1 indicator on
+            buffer.led_level_set(6,7,0)  #set the channel 2 indicator off
+            buffer.led_level_set(7,7,0)  #set the channel 3 indicator off
+            buffer.led_level_set(8,7,0)  #set the channel 4 indicator off
+            #buffer.led_level_set(render_pos[0], render_pos[1], self.Tr[y][x] * 11 + highlight)
+        elif self.k_mode == Modes.mNote:
+            buffer.led_level_set(5,7,0)
+            buffer.led_level_set(6,7,15)
+            buffer.led_level_set(7,7,0)
+            buffer.led_level_set(8,7,0)
+            buffer.led_level_set(14,7,0)
+            buffer.led_level_set(15,7,0)
+            for x in range(self.width):
+                for y in range(self.height):
+                    #render_pos = self.spanToGrid(x,y)
                     if self.current_channel == 1:
-                        buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
+                        buffer.led_level_set(x, y, self.step_ch1[y][x] * 15 )
                     elif self.current_channel == 2:
-                        buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch2[y][x] * 11 + highlight)
+                        buffer.led_level_set(x, y, self.step_ch2[y][x] * 15 )
                     #elif self.current_channel == 3:
                     #    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
                     #elif self.current_channel == 4:
                     #    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
-                elif self.k_mode == Modes.mOct:
-                    buffer.led_level_set(5,7,0)
-                    buffer.led_level_set(6,7,0)
-                    buffer.led_level_set(7,7,15)
-                    buffer.led_level_set(8,7,0)
-                    buffer.led_level_set(14,7,0)
-                    buffer.led_level_set(15,7,0)
-                elif self.k_mode == Modes.mDur:
-                    buffer.led_level_set(5,7,0)
-                    buffer.led_level_set(6,7,0)
-                    buffer.led_level_set(7,7,0)
-                    buffer.led_level_set(8,7,15)
-                    buffer.led_level_set(14,7,0)
-                    buffer.led_level_set(15,7,0)
-                elif self.k_mode == Modes.mScale:
-                    buffer.led_level_set(5,7,0)
-                    buffer.led_level_set(6,7,0)
-                    buffer.led_level_set(7,7,0)
-                    buffer.led_level_set(8,7,0)
-                    buffer.led_level_set(14,7,15)
-                    buffer.led_level_set(15,7,0)
-                elif self.k_mode == Modes.mPattern:
-                    buffer.led_level_set(5,7,0)
-                    buffer.led_level_set(6,7,0)
-                    buffer.led_level_set(7,7,0)
-                    buffer.led_level_set(8,7,0)
-                    buffer.led_level_set(14,7,0)
-                    buffer.led_level_set(15,7,15)
-                if self.k_mod_mode == ModModes.modLoop:
-                    buffer.led_level_set(10,7,15)
-                    buffer.led_level_set(11,7,0)
-                    buffer.led_level_set(12,7,0)
-                elif self.k_mod_mode == ModModes.modTime:
-                    buffer.led_level_set(10,7,0)
-                    buffer.led_level_set(11,7,15)
-                    buffer.led_level_set(12,7,0)
-                elif self.k_mod_mode == ModModes.modProb:
-                    buffer.led_level_set(10,7,0)
-                    buffer.led_level_set(11,7,0)
-                    buffer.led_level_set(12,7,15)
+        elif self.k_mode == Modes.mOct:
+            buffer.led_level_set(5,7,0)
+            buffer.led_level_set(6,7,0)
+            buffer.led_level_set(7,7,15)
+            buffer.led_level_set(8,7,0)
+            buffer.led_level_set(14,7,0)
+            buffer.led_level_set(15,7,0)
+        elif self.k_mode == Modes.mDur:
+            buffer.led_level_set(5,7,0)
+            buffer.led_level_set(6,7,0)
+            buffer.led_level_set(7,7,0)
+            buffer.led_level_set(8,7,15)
+            buffer.led_level_set(14,7,0)
+            buffer.led_level_set(15,7,0)
+            for x in range(self.width):
+                if self.current_channel == 1:
+                    #fill a column top down in the x position
+                    for i in range (self.current_pattern.tracks[0].duration[self.play_position]):
+                        buffer.led_level_set(x, 7-i, 15)
+                    for i in range (self.current_pattern.tracks[0].duration[self.play_position],7):
+                        buffer.led_level_set(x, 7-i, 0)
+                elif self.current_channel == 2:
+                    for i in range (self.current_pattern.tracks[1].duration[self.play_position]):
+                        buffer.led_level_set(x, 7-i, 15)
+                    for i in range (self.current_pattern.tracks[1].duration[self.play_position],7):
+                        buffer.led_level_set(x, 7-i, 0)
+        elif self.k_mode == Modes.mScale:
+            buffer.led_level_set(5,7,0)
+            buffer.led_level_set(6,7,0)
+            buffer.led_level_set(7,7,0)
+            buffer.led_level_set(8,7,0)
+            buffer.led_level_set(14,7,15)
+            buffer.led_level_set(15,7,0)
+        elif self.k_mode == Modes.mPattern:
+            buffer.led_level_set(5,7,0)
+            buffer.led_level_set(6,7,0)
+            buffer.led_level_set(7,7,0)
+            buffer.led_level_set(8,7,0)
+            buffer.led_level_set(14,7,0)
+            buffer.led_level_set(15,7,15)
+        if self.k_mod_mode == ModModes.modLoop:
+            buffer.led_level_set(10,7,15)
+            buffer.led_level_set(11,7,0)
+            buffer.led_level_set(12,7,0)
+        elif self.k_mod_mode == ModModes.modTime:
+            buffer.led_level_set(10,7,0)
+            buffer.led_level_set(11,7,15)
+            buffer.led_level_set(12,7,0)
+        elif self.k_mod_mode == ModModes.modProb:
+            buffer.led_level_set(10,7,0)
+            buffer.led_level_set(11,7,0)
+            buffer.led_level_set(12,7,15)
 
         # draw trigger bar and on-states
 #        for x in range(self.width):
@@ -370,19 +384,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def grid_key(self, addr, path, *args):
         x, y, s = self.translate_key(addr,path, *args)
         #self.led_set(x, y, s)
-
-        # toggle steps
-        if s == 1 and y > 0:
-            if self.current_channel == 1:
-                self.step_ch1[7-y][x] ^= 1
-                self.current_pattern.tracks[0].note[x] = y
-                self.current_pattern.tracks[0].tr[x] ^= 1
-            else:
-                self.step_ch2[7-y][x] ^= 1
-                self.current_pattern.tracks[1].note[x] = y
-                self.current_pattern.tracks[1].tr[x] ^= 1
-            self.draw()
-        elif s ==1 and y == 0:
+        if s ==1 and y == 0:
             if x == 0:
                 print("Selected Channel 1")
                 self.current_channel = 1
@@ -422,6 +424,25 @@ class Runcible(spanned_monome.VirtualGrid):
             elif x == 15:
                 self.k_mode = Modes.mPattern
                 print("Selected:", self.k_mode)
+        elif s == 1 and y > 0:
+            # Note entry 
+            if self.k_mode == Modes.mNote:
+                if self.current_channel == 1:
+                    self.step_ch1[7-y][x] ^= 1
+                    self.current_pattern.tracks[0].note[x] = y
+                    self.current_pattern.tracks[0].tr[x] ^= 1
+                else:
+                    self.step_ch2[7-y][x] ^= 1
+                    self.current_pattern.tracks[1].note[x] = y
+                    self.current_pattern.tracks[1].tr[x] ^= 1
+                self.draw()
+            # duration entry
+            if self.k_mode == Modes.mDur:
+                if self.current_channel == 1:
+                    self.current_pattern.tracks[0].duration[x] = 7-y
+                else:
+                    self.current_pattern.tracks[1].duration[x] = 7-y
+                self.draw()
 
         # cut and loop
             self.keys_held = self.keys_held + (s * 2) - 1
