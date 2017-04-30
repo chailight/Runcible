@@ -480,7 +480,7 @@ class Runcible(spanned_monome.VirtualGrid):
                         duration = 5
                     elif entered_val == 5:
                         duration = 8
-                    elif enterned_val == 6:
+                    elif entered_val == 6:
                         duration = 16
                     else:
                         duration = entered_val
