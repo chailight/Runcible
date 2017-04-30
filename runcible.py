@@ -164,17 +164,17 @@ class Runcible(spanned_monome.VirtualGrid):
                             scaled_duration = 0
                             entered_duration = self.current_pattern.tracks[track].duration[self.play_position]
                             if entered_duration == 1:
-                                scaled_duration = 2
-                            if entered_duration == 2:
                                 scaled_duration = 4
-                            if entered_duration == 3:
+                            if entered_duration == 2:
                                 scaled_duration = 8
-                            if entered_duration == 4:
+                            if entered_duration == 3:
                                 scaled_duration = 12
-                            elif entered_duration == 5:
-                                scaled_duration = 18
-                            elif entered_duration == 6:
+                            if entered_duration == 4:
                                 scaled_duration = 24
+                            elif entered_duration == 5:
+                                scaled_duration = 32
+                            elif entered_duration == 6:
+                                scaled_duration = 48
                             #print("entered: ", entered_duration, "note duration: ", scaled_duration)
                             self.insert_note(track, self.fine_play_position, current_note, 65, scaled_duration) # hard coding velocity 
                     #if self.step_ch2[y][self.play_position] == 1:
