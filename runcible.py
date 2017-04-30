@@ -149,7 +149,8 @@ class Runcible(spanned_monome.VirtualGrid):
                             #asyncio.async(self.trigger(abs(y-7),0))
                             #change this to add the note at this position on this track into the trigger schedule
                             #ch1_note = abs(y-7) #eventually look up the scale function for this note
-                            self.insert_note(track, self.play_position, self.current_pattern.tracks[track].note[self.play_position], 65, 4 ) # hard coding velocity and duration 
+                            current_note = self.current_pattern.tracks[track].note[self.play_position]+self.current_pattern.tracks[track].octave[self.play_position]*8
+                            self.insert_note(track, self.play_position, current_note, 65, 4 ) # hard coding velocity and duration 
                     #if self.step_ch2[y][self.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
                         #asyncio.async(self.trigger(abs(y-7),1))
@@ -322,19 +323,11 @@ class Runcible(spanned_monome.VirtualGrid):
                         print("start = ", 1, "end = ", 4-current_oct)
                         for i in range (4-current_oct,5):
                             buffer.led_level_set(x, i, 15)
-                            print("current oct: ", current_oct, " drawing in row: ", i)
-                        #for i in range (current_oct+3,1): #ignore top row
-                        #    buffer.led_level_set(x, i, 0)
-                        #for i in range (1,3): #ignore bottom row
-                        #    buffer.led_level_set(x, i, 0)
+                            #print("current oct: ", current_oct, " drawing in row: ", i)
                     if current_oct < 0:
                         for i in range (4,5-current_oct): 
                             buffer.led_level_set(x, i, 15)
-                            print("current oct: ", current_oct, " drawing in row: ", i)
-                        #for i in range (4,7): #ignore top row
-                        #    buffer.led_level_set(x, i, 0)
-                        #for i in range (1,current_oct+3): #ignore bottom row
-                        #    buffer.led_level_set(x, i, 0)
+                            #print("current oct: ", current_oct, " drawing in row: ", i)
                 elif self.current_channel == 2:
                     #fill a column bottom up in the x position
                     for i in range (6,4+self.current_pattern.tracks[1].octave[x]): #ignore bottom row
