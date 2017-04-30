@@ -123,6 +123,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.step_ch3 = [[0 for col in range(self.width)] for row in range(self.height)]
         self.step_ch4 = [[0 for col in range(self.width)] for row in range(self.height)]
         self.play_position = 0
+        self.fine_play_position = 0
         self.next_position = 0
         self.cutting = False
         self.loop_start = 0
@@ -141,6 +142,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def play(self):
         self.current_pos = yield from self.clock.sync()
         self.play_position = (self.current_pos//self.ticks)%16
+        self.fine_play_position = self.current_pos%64
         while True:
             #print(self.clock.bpm,self.play_position, self.current_pos%64)
             if ((self.current_pos//self.ticks)%16) < 16:
@@ -229,6 +231,7 @@ class Runcible(spanned_monome.VirtualGrid):
 #TODO: setup the note data structure and also change the noteon and noteoff structure to be dynamic lists rather than arrays (so we only pick up actual notes, not empties
     @asyncio.coroutine
     def trigger(self):
+        print(self.play_position, self.fine_play_position)
         for note in self.note_off[self.play_position]:
         #for note in self.note_off[self.current_pos%64]:
             #print("position: ", self.current_pos%64, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
