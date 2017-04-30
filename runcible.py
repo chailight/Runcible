@@ -142,7 +142,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.current_pos = yield from self.clock.sync()
         self.play_position = (self.current_pos//self.ticks)%16
         while True:
-            print(self.clock.bpm,self.play_position, self.current_pos%64)
+            #print(self.clock.bpm,self.play_position, self.current_pos%64)
             if ((self.current_pos//self.ticks)%16) < 16:
                 #print("G1:",(self.current_pos//self.ticks)%16)
                 self.draw()
@@ -181,7 +181,6 @@ class Runcible(spanned_monome.VirtualGrid):
                     #    ch2_note = abs(y-7) #eventually look up the scale function for this note
                     #change this to just play out whatever is in the schedule at this point, including note offs
                     #asyncio.async(self.trigger(ch1_note,ch2_note))
-                    asyncio.async(self.trigger())
                     #ch1_note = None
                     #ch2_note = None
 
@@ -200,6 +199,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 #buffer.led_level_set(0, 0, 0)
                 self.draw()
 
+            asyncio.async(self.trigger())
             #yield from asyncio.sleep(0.1)
             asyncio.async(self.clock_out())
             yield from self.clock.sync(self.ticks)
