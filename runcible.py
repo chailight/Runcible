@@ -296,7 +296,7 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,0)
             for x in range(self.width):
-                for y in range(1,self.height):
+                for y in range(1,self.height-1): #ignore bottom row
                     #render_pos = self.spanToGrid(x,y)
                     if self.current_channel == 1:
                         buffer.led_level_set(x, y, self.step_ch1[y][x] * 15 )
@@ -323,14 +323,14 @@ class Runcible(spanned_monome.VirtualGrid):
             for x in range(self.width):
                 if self.current_channel == 1:
                     #fill a column top down in the x position
-                    for i in range (self.current_pattern.tracks[0].duration[x]):
+                    for i in range (1,self.current_pattern.tracks[0].duration[x]+1): #ignore top row
                         buffer.led_level_set(x, i, 15)
-                    for i in range (self.current_pattern.tracks[0].duration[x],7):
+                    for i in range (self.current_pattern.tracks[0].duration[x]+1,7): #ignore bottom row
                         buffer.led_level_set(x, i, 0)
                 elif self.current_channel == 2:
-                    for i in range (self.current_pattern.tracks[1].duration[x]):
+                    for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
                         buffer.led_level_set(x, i, 15)
-                    for i in range (self.current_pattern.tracks[1].duration[x],7):
+                    for i in range (self.current_pattern.tracks[1].duration[x]+1,7):
                         buffer.led_level_set(x, i, 0)
         elif self.k_mode == Modes.mScale:
             buffer.led_level_set(5,7,0)
@@ -430,10 +430,12 @@ class Runcible(spanned_monome.VirtualGrid):
                 if self.current_channel == 1:
                     self.step_ch1[7-y][x] ^= 1
                     self.current_pattern.tracks[0].note[x] = y
+                    self.current_pattern.tracks[0].duration[x] = 1
                     self.current_pattern.tracks[0].tr[x] ^= 1
                 else:
                     self.step_ch2[7-y][x] ^= 1
                     self.current_pattern.tracks[1].note[x] = y
+                    self.current_pattern.tracks[1].duration[x] = 1
                     self.current_pattern.tracks[1].tr[x] ^= 1
                 self.draw()
             # duration entry
