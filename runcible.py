@@ -183,8 +183,9 @@ class Runcible(spanned_monome.VirtualGrid):
 
     def insert_note(self,track,position,pitch,velocity,duration):
         self.insert_note_on(track,position,pitch,velocity)
-        #calcucate note off posiiton from duration - for now just default to next quarter note
-        self.insert_note_off(track,(position+1)%16,pitch)
+        #calcucate note off posiiton from duration at current position - will eventually change to independent duration position 
+        self.insert_note_off(track,(position+self.current_pattern.track[track].duration[position])%16,pitch)
+        print("note off at: ", position, " + ", self.current_pattern.track[track].duration[position])
 
     def insert_note_on(self,track,position,pitch,velocity):
         new_note = Note(track,pitch,velocity)
@@ -192,7 +193,7 @@ class Runcible(spanned_monome.VirtualGrid):
 
     def insert_note_off(self,track,position,pitch):
         new_note = Note(track,pitch,0)
-        self.note_off[position].append(new_note) 
+        self.note_off[position].append(new_note)
 
 # to be removed
     def gridToSpan(self,x,y):
