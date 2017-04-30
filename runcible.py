@@ -431,8 +431,11 @@ class Runcible(spanned_monome.VirtualGrid):
                 if self.current_channel == 1:
                     self.step_ch1[7-y][x] ^= 1
                     self.current_pattern.tracks[0].note[x] = y
-                    self.current_pattern.tracks[0].duration[x] = 1
+                    if self.current_pattern.tracks[0].duration[x] == 0:
+                        self.current_pattern.tracks[0].duration[x] = 1
                     self.current_pattern.tracks[0].tr[x] ^= 1
+                    if self.current_pattern.tracks[0].tr[x] == 0:
+                        self.current_pattern.tracks[0].duration[x] = 0 # change this when param_sync is off
                 else:
                     self.step_ch2[7-y][x] ^= 1
                     self.current_pattern.tracks[1].note[x] = y
