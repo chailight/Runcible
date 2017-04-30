@@ -327,10 +327,10 @@ class Runcible(spanned_monome.VirtualGrid):
                         #    buffer.led_level_set(x, i, 0)
                         #for i in range (1,3): #ignore bottom row
                         #    buffer.led_level_set(x, i, 0)
-                    #if current_oct < 0:
-                    #    for i in range (4,7-current_oct+3): 
-                    #        buffer.led_level_set(x, i, 15)
-                    #        print("current oct: ", current_oct, " drawing in row: ", i)
+                    if current_oct < 0:
+                        for i in range (4,5-current_oct): 
+                            buffer.led_level_set(x, i, 15)
+                            print("current oct: ", current_oct, " drawing in row: ", i)
                         #for i in range (4,7): #ignore top row
                         #    buffer.led_level_set(x, i, 0)
                         #for i in range (1,current_oct+3): #ignore bottom row
