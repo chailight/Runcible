@@ -504,7 +504,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 if self.current_channel == 1:
                     if y < 7 and y > 0:
                         self.current_pattern.tracks[0].octave[x] = y-3
-                        print("grid_key = ", y, "octave = ", self.current_pattern.tracks[0].octave[x])
+                        #print("grid_key = ", y, "octave = ", self.current_pattern.tracks[0].octave[x])
                 else:
                     if y < 6 and y > 0:
                         self.current_pattern.tracks[1].octave[x] = y-3
