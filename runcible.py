@@ -162,11 +162,11 @@ class Runcible(spanned_monome.VirtualGrid):
                             scaled_duration = 0
                             entered_duration = self.current_pattern.tracks[track].duration[self.play_position]
                             if entered_duration == 4:
-                                scaled_duration = 5
+                                scaled_duration = 4
                             elif entered_duration == 5:
                                 scaled_duration = 8
                             elif entered_duration == 6:
-                                scaled_duration = 15
+                                scaled_duration = 16
                             else:
                                 scaled_duration = entered_duration
                             #print("entered: ", entered_duration, "note duration: ", scaled_duration)
@@ -225,6 +225,24 @@ class Runcible(spanned_monome.VirtualGrid):
 #TODO: setup the note data structure and also change the noteon and noteoff structure to be dynamic lists rather than arrays (so we only pick up actual notes, not empties
     @asyncio.coroutine
     def trigger(self):
+        for note in self.note_off[self.current_pos%64-3]:
+            print("position: ", self.current_pos%64, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
+            self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
+        #del self.note_off[self.play_position][:] #clear the current midi output once it's been sent
+        del self.note_off[self.current_pos%64][:] #clear the current midi output once it's been sent
+
+        for note in self.note_off[self.current_pos%64-2]:
+            print("position: ", self.current_pos%64, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
+            self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
+        #del self.note_off[self.play_position][:] #clear the current midi output once it's been sent
+        del self.note_off[self.current_pos%64][:] #clear the current midi output once it's been sent
+
+        for note in self.note_off[self.current_pos%64-1]:
+            print("position: ", self.current_pos%64, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
+            self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
+        #del self.note_off[self.play_position][:] #clear the current midi output once it's been sent
+        del self.note_off[self.current_pos%64][:] #clear the current midi output once it's been sent
+
         #for note in self.note_off[self.play_position]:
         for note in self.note_off[self.current_pos%64]:
             print("position: ", self.current_pos%64, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
@@ -649,7 +667,7 @@ if __name__ == '__main__':
     clock = clocks.RtMidiClock()
     #g1 = lambda: None
     #g2 = lambda: GridSeq2(clock,6,midi_out,channel_out,clock_out,g1)
-    g1 = lambda: Runcible(clock,1,midi_out,channel_out,clock_out,None)
+    g1 = lambda: Runcible(clock,4,midi_out,channel_out,clock_out,None)
 #    r1 = lambda: Test1()
 #    r2 = lambda: Test2()
     sg1 = lambda: Test3()
