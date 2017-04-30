@@ -466,11 +466,11 @@ class Runcible(spanned_monome.VirtualGrid):
             if self.k_mode == Modes.mOct: #mid-point is row 4 - two octaves up and two octaves down, use 2nd row for accent?
                 if self.current_channel == 1:
                     if y < 7 and y > 0:
-                        self.current_pattern.tracks[0].octave[x] = y-4
+                        self.current_pattern.tracks[0].octave[x] = y-3
                         print("octave = ", self.current_pattern.tracks[0].octave[x])
                 else:
                     if y < 6 and y > 0:
-                        self.current_pattern.tracks[1].octave[x] = y-4
+                        self.current_pattern.tracks[1].octave[x] = y-3
                 self.draw()
 
         # cut and loop
