@@ -162,11 +162,11 @@ class Runcible(spanned_monome.VirtualGrid):
                             scaled_duration = 0
                             entered_duration = self.current_pattern.tracks[track].duration[self.play_position]
                             if entered_duration == 1:
-                                scaled_duration = 0.125
+                                scaled_duration =  1 #0.125
                             if entered_duration == 2:
-                                scaled_duration = 0.25
+                                scaled_duration = 1 #0.25
                             if entered_duration == 3:
-                                scaled_duration = 0.5
+                                scaled_duration = 1 #0.5 
                             if entered_duration == 4:
                                 scaled_duration = 1
                             elif entered_duration == 5:
