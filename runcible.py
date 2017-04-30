@@ -159,7 +159,18 @@ class Runcible(spanned_monome.VirtualGrid):
                             #change this to add the note at this position on this track into the trigger schedule
                             #ch1_note = abs(y-7) #eventually look up the scale function for this note
                             current_note = self.current_pattern.tracks[track].note[self.play_position]+self.current_pattern.tracks[track].octave[self.play_position]*12
-                            self.insert_note(track, self.play_position, current_note, 65, 4 ) # hard coding velocity and duration 
+                            scaled_duration = 0
+                            entered_duration = self.current_pattern.tracks[track].duration[self.play_position]
+                            if entered_duration == 4:
+                                scaled_duration = 5
+                            elif entered_duration == 5:
+                                scaled_duration = 8
+                            elif entered_duration == 6:
+                                scaled_duration = 16
+                            else:
+                                scaled_duration = entered_duration
+                            print("entered: ", entered_duration, "note duration: ", scaled_duration)
+                            self.insert_note(track, self.play_position, current_note, 65, scaled_duration) # hard coding velocity 
                     #if self.step_ch2[y][self.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
                         #asyncio.async(self.trigger(abs(y-7),1))
@@ -193,9 +204,8 @@ class Runcible(spanned_monome.VirtualGrid):
 
     def insert_note(self,track,position,pitch,velocity,duration):
         self.insert_note_on(track,position,pitch,velocity)
-        #calcucate note off posiiton from duration at current position - will eventually change to independent duration position 
-        self.insert_note_off(track,(position+self.current_pattern.tracks[track].duration[position])%16,pitch)
-        #print("note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
+        self.insert_note_off(track,((position*4)+duration)%64,pitch)
+        print("note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
 
     def insert_note_on(self,track,position,pitch,velocity):
         new_note = Note(track,pitch,velocity)
