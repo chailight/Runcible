@@ -317,7 +317,7 @@ class Runcible(spanned_monome.VirtualGrid):
             for x in range(self.width):
                 if self.current_channel == 1:
                     #fill a column bottom up in the x position
-                    current_oct = self.current_pattern.tracks[0].octave[x])
+                    current_oct = self.current_pattern.tracks[0].octave[x]
                     if current_oct >= 0:
                         for i in range (3,current_oct+3): 
                             buffer.led_level_set(x, i, 15)
