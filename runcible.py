@@ -177,7 +177,7 @@ class Runcible(spanned_monome.VirtualGrid):
                                 scaled_duration = 32
                             elif entered_duration == 6:
                                 scaled_duration = 48
-                            velocity = 65 + self.current_pattern.tracks[track].accent[self.play_position]*20
+                            velocity = 65 + self.current_pattern.tracks[track].accent[self.play_position]*30
                             #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
                             self.insert_note(track, self.fine_play_position, current_note, velocity, scaled_duration) # hard coding velocity
                             print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track, "at pos: ", self.fine_play_position) 
@@ -405,10 +405,10 @@ class Runcible(spanned_monome.VirtualGrid):
                     buffer.led_level_set(x, 0, 0)
                 #if self.current_channel == 1:
                     #fill a column top down in the x position
-                    for i in range (1,self.current_pattern.tracks[self.current_track].duration[x]+1): #ignore top row
-                        buffer.led_level_set(x, i, 15)
-                    for i in range (self.current_pattern.tracks[self.current_track].duration[x]+1,7): #ignore bottom row
-                        buffer.led_level_set(x, i, 0)
+                for i in range (1,self.current_pattern.tracks[self.current_track].duration[x]+1): #ignore top row
+                    buffer.led_level_set(x, i, 15)
+                for i in range (self.current_pattern.tracks[self.current_track].duration[x]+1,7): #ignore bottom row
+                    buffer.led_level_set(x, i, 0)
                 #elif self.current_channel == 2:
                     #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
                     #    buffer.led_level_set(x, i, 15)
