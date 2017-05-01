@@ -525,7 +525,7 @@ class Runcible(spanned_monome.VirtualGrid):
             # duration entry
             if self.k_mode == Modes.mDur:
                 #if self.current_channel == 1:
-                if y = 7:
+                if y == 7:
                     #add accent toggles on top row
                     self.current_pattern.tracks[self.current_track].accent[x] ^= 1
                 else:
