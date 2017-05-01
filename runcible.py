@@ -178,8 +178,9 @@ class Runcible(spanned_monome.VirtualGrid):
                             elif entered_duration == 6:
                                 scaled_duration = 48
                             velocity = 65 + self.current_pattern.tracks[track].accent[self.play_position]*20
-                            #print("entered: ", entered_duration, "note duration: ", scaled_duration)
+                            #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
                             self.insert_note(track, self.fine_play_position, current_note, velocity, scaled_duration) # hard coding velocity
+                            print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track, "at pos: ", self.fine_play_position) 
                     #if self.step_ch2[y][self.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
                         #asyncio.async(self.trigger(abs(y-7),1))
@@ -250,7 +251,7 @@ class Runcible(spanned_monome.VirtualGrid):
         #notes = list()
         for note in self.note_off[self.fine_play_position]:
         #for note in self.note_off[self.current_pos%64]:
-            print("position: ", self.fine_play_position, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc)
+            #print("position: ", self.fine_play_position, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc)
             #notes.append((self.channel + note.channel_inc,note.pitch+40,0))
             #self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
             #self.midi_out.send_messages(144,[(self.channel + note.channel_inc, note.pitch+40,0)])
@@ -262,7 +263,7 @@ class Runcible(spanned_monome.VirtualGrid):
         #notes = list()
         for note in self.note_on[self.fine_play_position]:
         #for note in self.note_on[self.current_pos%64]:
-            print("position: ", self.fine_play_position, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc)
+            #print("position: ", self.fine_play_position, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc)
             #notes.append((self.channel + note.channel_inc,note.pitch+40,note.velocity))
             #self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40, note.velocity],pygame.midi.time()]])
             #self.midi_out.send_messages(144,[(self.channel + note.channel_inc, note.pitch+40,note.velocity)])
@@ -371,11 +372,6 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,0)
             for x in range(self.width):
-                #draw the accent toggles
-                if self.current_pattern.tracks[self.current_track].accent[x]:
-                    buffer.led_level_set(x, 0, 15)
-                else:
-                    buffer.led_level_set(x, 0, 0)
                 #if self.current_channel == 1:
                 #fill a column bottom up in the x position
                 current_oct = self.current_pattern.tracks[self.current_track].octave[x]
@@ -402,6 +398,11 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,0)
             for x in range(self.width):
+                #draw the accent toggles
+                if self.current_pattern.tracks[self.current_track].accent[x]:
+                    buffer.led_level_set(x, 0, 15)
+                else:
+                    buffer.led_level_set(x, 0, 0)
                 #if self.current_channel == 1:
                     #fill a column top down in the x position
                     for i in range (1,self.current_pattern.tracks[self.current_track].duration[x]+1): #ignore top row
