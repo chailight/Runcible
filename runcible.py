@@ -177,7 +177,7 @@ class Runcible(spanned_monome.VirtualGrid):
                                 scaled_duration = 32
                             elif entered_duration == 6:
                                 scaled_duration = 48
-                            velocity = 65 + self.current_pattern.tracks[track].accent[self.play_position]*30
+                            velocity = 65 + self.current_pattern.tracks[track].accent[self.play_position]*40
                             #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
                             self.insert_note(track, self.fine_play_position, current_note, velocity, scaled_duration) # hard coding velocity
                             print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track, "at pos: ", self.fine_play_position) 
