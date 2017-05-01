@@ -8,7 +8,7 @@
 #add support for 1/8, 1/16 & 1/32 notes?  (6 duration positions = 1/32, 1/16, 1/8, 1/4, 1/2, 1)
 # - needs support for 4 sub-positions per 1/4 note position - which means trigger() must be called 4 times per quater note, or every 24 ticks (based on 96 ppqn)
 # - given a position n.1, 1/32 duration will end in n.2   (n+1, for an array of 64 positions)
-#                       - 1/16 duration will end in n.3   (n+2) 
+#                       - 1/16 duration will end in n.3   (n+2)
 #                       - 1/8  duration will end in n.4   (n+3)
 #                       - 1/4  duration will end in n+1.1 (n+4)
 #                       - 1/2  duration will end in n+2.1 (n+8)
@@ -25,9 +25,10 @@ import monome
 import spanned_monome
 import clocks
 #import synths
-import pygame
-import pygame.midi
-from pygame.locals import *
+#import pygame
+#import pygame.midi
+import rtmidi2
+#from pygame.locals import *
 from enum import Enum
 
 def cancel_task(task):
@@ -110,7 +111,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.k_mode = Modes.mNote
         self.k_mod_mode = ModModes.modNone
         self.state = State()
-        self.note_on = [[Note()] for i in range(96)] #full resolution 
+        self.note_on = [[Note()] for i in range(96)] #full resolution
         self.note_off = [[Note()] for i in range(96)]
         #call ready() directly because virtual device doesn't get triggered
         self.ready()
@@ -168,7 +169,7 @@ class Runcible(spanned_monome.VirtualGrid):
                             if entered_duration == 2:
                                 scaled_duration = 4
                             if entered_duration == 3:
-                                scaled_duration =  8 
+                                scaled_duration =  8
                             if entered_duration == 4:
                                 scaled_duration = 24
                             elif entered_duration == 5:
@@ -176,7 +177,7 @@ class Runcible(spanned_monome.VirtualGrid):
                             elif entered_duration == 6:
                                 scaled_duration = 48
                             #print("entered: ", entered_duration, "note duration: ", scaled_duration)
-                            self.insert_note(track, self.fine_play_position, current_note, 65, scaled_duration) # hard coding velocity 
+                            self.insert_note(track, self.fine_play_position, current_note, 65, scaled_duration) # hard coding velocity
                     #if self.step_ch2[y][self.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
                         #asyncio.async(self.trigger(abs(y-7),1))
@@ -205,7 +206,7 @@ class Runcible(spanned_monome.VirtualGrid):
             #yield from asyncio.sleep(0.1)
             asyncio.async(self.clock_out())
             #yield from self.clock.sync(self.ticks)
-            yield from self.clock.sync(1) #update at full resolution 
+            yield from self.clock.sync(1) #update at full resolution
             self.current_pos = yield from self.clock.sync()
             self.play_position = (self.current_pos//self.ticks)%16
             self.fine_play_position = self.current_pos%96
@@ -244,17 +245,23 @@ class Runcible(spanned_monome.VirtualGrid):
     @asyncio.coroutine
     def trigger(self):
         print(self.play_position, self.fine_play_position)
+        notes = list()
         for note in self.note_off[self.fine_play_position]:
         #for note in self.note_off[self.current_pos%64]:
-            print("position: ", self.fine_play_position, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc) 
-            self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
+            print("position: ", self.fine_play_position, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc)
+            notes.append((self.channel + note.channel_inc,note.pitch+40,0))
+            #self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
+        self.midi_out.send_messages(notes)
         del self.note_off[self.fine_play_position][:] #clear the current midi output once it's been sent
         #del self.note_off[self.current_pos%64][:] #clear the current midi output once it's been sent
 
+        notes = list()
         for note in self.note_on[self.fine_play_position]:
         #for note in self.note_on[self.current_pos%64]:
-            print("position: ", self.fine_play_position, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc) 
-            self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40, note.velocity],pygame.midi.time()]])
+            print("position: ", self.fine_play_position, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc)
+            notes.append((self.channel + note.channel_inc,note.pitch+40,note.velocity))
+            #self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40, note.velocity],pygame.midi.time()]])
+        self.midi_out.send_messages(notes)
         del self.note_on[self.fine_play_position][:] #clear the current midi output once it's been sent
         #del self.note_on[self.current_pos%64][:] #clear the current midi output once it's been sent
 
@@ -367,7 +374,7 @@ class Runcible(spanned_monome.VirtualGrid):
                             buffer.led_level_set(x, i, 15)
                             #print("current oct: ", current_oct, " drawing in row: ", i)
                     if current_oct < 0:
-                        for i in range (4,5-current_oct): 
+                        for i in range (4,5-current_oct):
                             buffer.led_level_set(x, i, 15)
                             #print("current oct: ", current_oct, " drawing in row: ", i)
                 elif self.current_channel == 2:
@@ -488,7 +495,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 self.k_mode = Modes.mPattern
                 print("Selected:", self.k_mode)
         elif s == 1 and y > 0:
-            # Note entry 
+            # Note entry
             if self.k_mode == Modes.mNote:
                 if self.current_channel == 1:
                     self.step_ch1[7-y][x] ^= 1
@@ -507,7 +514,7 @@ class Runcible(spanned_monome.VirtualGrid):
             # duration entry
             if self.k_mode == Modes.mDur:
                 if self.current_channel == 1:
-                    self.current_pattern.tracks[0].duration[x] = 7-y 
+                    self.current_pattern.tracks[0].duration[x] = 7-y
                 else:
                     self.current_pattern.tracks[1].duration[x] = 7-y
                 self.draw()
@@ -637,25 +644,30 @@ class Test4(spanned_monome.VirtualGrid):
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
 
-    pygame.init()
-    pygame.midi.init()
-    device_count = pygame.midi.get_count()
+    #pygame.init()
+    #pygame.midi.init()
+    #device_count = pygame.midi.get_count()
     #print (pygame.midi.get_default_output_id())
-    midiport = 0
-    clock_out = 3
-    info = list()
-    for i in range(device_count):
-       info = pygame.midi.get_device_info(i)
-       print (str(i) + ": " + str(info[1]) + " " + str(info[2]) + " " + str(info[3]))
-       if 'MIDI 6' in str(info[1]) and info[3] == 1:
-           midiport = i
+    #midiport = 0
+    #clock_out = 3
+    #info = list()
+    #for i in range(device_count):
+    #   info = pygame.midi.get_device_info(i)
+    #   print (str(i) + ": " + str(info[1]) + " " + str(info[2]) + " " + str(info[3]))
+    #   if 'MIDI 6' in str(info[1]) and info[3] == 1:
+    #       midiport = i
        #if 'MIDI 1' in str(info[1]) and info[3] == 0:
        #   clock_out = i
-    print ("using output_id : %s " % midiport)
-    midi_out = pygame.midi.Output(midiport, 0)
+
+    midiport = 0
+    clock_out = 3
+    #midiport = rtmidi2.MidiIn().ports_matching("MIDI 6")
+    #midi_out = pygame.midi.Output(midiport, 0)
+    midi_out = rtmidi2.MidiIn().open_port("*MIDI 6*")
+    print ("using output_id : %s " % midi_out.get_port_name())
     print ("using clock source: %s " % clock_out)
     channel_out = 2
-    page = 1
+    #page = 1
     #midi_out=None
 
     # create clock
