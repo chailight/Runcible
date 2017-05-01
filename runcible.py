@@ -3,21 +3,14 @@
 #TODO:
 #fix clear all on disconnect
 #fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops? maybe just close the midi stream?
-#adjust channel numbers and add support for all 4 channels
-#add input/display for trigger, velocity/accent, and probability, as per kria
-#add support for 1/8, 1/16 & 1/32 notes?  (6 duration positions = 1/32, 1/16, 1/8, 1/4, 1/2, 1)
-# - needs support for 4 sub-positions per 1/4 note position - which means trigger() must be called 4 times per quater note, or every 24 ticks (based on 96 ppqn)
-# - given a position n.1, 1/32 duration will end in n.2   (n+1, for an array of 64 positions)
-#                       - 1/16 duration will end in n.3   (n+2)
-#                       - 1/8  duration will end in n.4   (n+3)
-#                       - 1/4  duration will end in n+1.1 (n+4)
-#                       - 1/2  duration will end in n+2.1 (n+8)
-#                       - 1    duration will end in n+4.1 (n+16)
+#complete support for all 4 channels
+#add input/display for trigger, velocity?, and probability, as per kria
 #add scale setting for both channels as per kria
-#add mutes per channel - long press on the channel?
-#enable cutting / looping controls on both channels (should be independent)
 #add presets: store and recall - as per kria
 #add persistence of presets
+#add mutes per channel - long press on the channel?
+#enable cutting / looping controls on both channels (should be independent)
+#adjust use of duration settings 1/8, 1/16 & 1/32 notes?  (6 duration positions = 1/32, 1/16, 1/8, 1/4, 1/2, 1)
 #make note entry screen monophonic - clear off other notes in that column if new note is entered
 
 import asyncio
@@ -360,10 +353,10 @@ class Runcible(spanned_monome.VirtualGrid):
                         buffer.led_level_set(x, y, self.step_ch1[y][x] * 15 )
                     elif self.current_track == 1:
                         buffer.led_level_set(x, y, self.step_ch2[y][x] * 15 )
-                    #elif self.current_track == 2:
-                    #    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch3[y][x] * 11 + highlight)
-                    #elif self.current_track == 3:
-                    #    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch4[y][x] * 11 + highlight)
+                    elif self.current_track == 2:
+                        buffer.led_level_set(x, y, self.step_ch3[y][x] * 15 )
+                    elif self.current_track == 3:
+                        buffer.led_level_set(x, y, self.step_ch4[y][x] * 15 )
         elif self.k_mode == Modes.mOct:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,0)
@@ -513,7 +506,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     self.step_ch1[7-y][x] ^= 1
                 elif self.current_track == 1:
                     self.step_ch2[7-y][x] ^= 1
-                elif self.current_track == 3:
+                elif self.current_track == 2:
                     self.step_ch3[7-y][x] ^= 1
                 else:
                     self.step_ch4[7-y][x] ^= 1
