@@ -63,6 +63,7 @@ class Track:
         self.octave = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         self.note = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         self.duration = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        self.accent = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         self.params = [[0] * self.num_params for i in range (16)] #initialise a 4x16 array
         self.dur_mul = 1; #duration multiplier
         self.lstart = [[0] * self.num_params]
@@ -131,7 +132,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.loop_end = self.width - 1
         self.keys_held = 0
         self.key_last = 0
-        self.current_channel = 1
+        self.current_track = 0
         self.current_preset = self.state.presets[0]
         self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
         asyncio.async(self.play())
@@ -176,8 +177,9 @@ class Runcible(spanned_monome.VirtualGrid):
                                 scaled_duration = 32
                             elif entered_duration == 6:
                                 scaled_duration = 48
+                            velocity = 65 + self.current_pattern.tracks[track].accent[self.play_position]*20
                             #print("entered: ", entered_duration, "note duration: ", scaled_duration)
-                            self.insert_note(track, self.fine_play_position, current_note, 65, scaled_duration) # hard coding velocity
+                            self.insert_note(track, self.fine_play_position, current_note, velocity, scaled_duration) # hard coding velocity
                     #if self.step_ch2[y][self.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
                         #asyncio.async(self.trigger(abs(y-7),1))
@@ -313,25 +315,25 @@ class Runcible(spanned_monome.VirtualGrid):
             #else:
             #    highlight = 0
 
-        if self.current_channel == 1:
+        if self.current_track == 0:
             buffer.led_level_set(0,7,15) #set the channel 1 indicator on
             buffer.led_level_set(1,7,0)  #set the channel 2 indicator off
             buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
             buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
             #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
-        elif self.current_channel ==2:
+        elif self.current_track ==1:
             buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
             buffer.led_level_set(1,7,15)  #set the channel 2 indicator on
             buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
             buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
             #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch2[y][x] * 11 + highlight)
-        elif self.current_channel ==3:
+        elif self.current_track == 2:
             buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
             buffer.led_level_set(1,7,0)  #set the channel 2 indicator on
             buffer.led_level_set(2,7,15)  #set the channel 3 indicator off
             buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
             #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch3[y][x] * 11 + highlight)
-        elif self.current_channel ==4:
+        elif self.current_track == 3:
             buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
             buffer.led_level_set(1,7,0)  #set the channel 2 indicator on
             buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
@@ -353,14 +355,14 @@ class Runcible(spanned_monome.VirtualGrid):
             for x in range(self.width):
                 for y in range(1,self.height-1): #ignore bottom row
                     #render_pos = self.spanToGrid(x,y)
-                    if self.current_channel == 1:
+                    if self.current_track == 0:
                         buffer.led_level_set(x, y, self.step_ch1[y][x] * 15 )
-                    elif self.current_channel == 2:
+                    elif self.current_track == 1:
                         buffer.led_level_set(x, y, self.step_ch2[y][x] * 15 )
-                    #elif self.current_channel == 3:
-                    #    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
-                    #elif self.current_channel == 4:
-                    #    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
+                    #elif self.current_track == 2:
+                    #    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch3[y][x] * 11 + highlight)
+                    #elif self.current_track == 3:
+                    #    buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch4[y][x] * 11 + highlight)
         elif self.k_mode == Modes.mOct:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,0)
@@ -369,24 +371,29 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,0)
             for x in range(self.width):
-                if self.current_channel == 1:
-                    #fill a column bottom up in the x position
-                    current_oct = self.current_pattern.tracks[0].octave[x]
-                    if current_oct >= 0:
-                        #print("start = ", 1, "end = ", 4-current_oct)
-                        for i in range (4-current_oct,5):
-                            buffer.led_level_set(x, i, 15)
-                            #print("current oct: ", current_oct, " drawing in row: ", i)
-                    if current_oct < 0:
-                        for i in range (4,5-current_oct):
-                            buffer.led_level_set(x, i, 15)
-                            #print("current oct: ", current_oct, " drawing in row: ", i)
-                elif self.current_channel == 2:
-                    #fill a column bottom up in the x position
-                    for i in range (6,4+self.current_pattern.tracks[1].octave[x]): #ignore bottom row
+                #draw the accent toggles
+                if self.current_pattern.tracks[self.current_track].accent[x]:
+                    buffer.led_level_set(x, 0, 15)
+                else:
+                    buffer.led_level_set(x, 0, 0)
+                #if self.current_channel == 1:
+                #fill a column bottom up in the x position
+                current_oct = self.current_pattern.tracks[self.current_track].octave[x]
+                if current_oct >= 0:
+                    #print("start = ", 1, "end = ", 4-current_oct)
+                    for i in range (4-current_oct,5):
                         buffer.led_level_set(x, i, 15)
-                    for i in range (4+self.current_pattern.tracks[1].duration[x],2): #ignore top two rows
-                        buffer.led_level_set(x, i, 0)
+                        #print("current oct: ", current_oct, " drawing in row: ", i)
+                if current_oct < 0:
+                    for i in range (4,5-current_oct):
+                        buffer.led_level_set(x, i, 15)
+                        #print("current oct: ", current_oct, " drawing in row: ", i)
+                #elif self.current_channel == 2:
+                #    #fill a column bottom up in the x position
+                #    for i in range (6,4+self.current_pattern.tracks[1].octave[x]): #ignore bottom row
+                #        buffer.led_level_set(x, i, 15)
+                #    for i in range (4+self.current_pattern.tracks[1].duration[x],2): #ignore top two rows
+                #        buffer.led_level_set(x, i, 0)
         elif self.k_mode == Modes.mDur:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,0)
@@ -395,17 +402,17 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,0)
             for x in range(self.width):
-                if self.current_channel == 1:
+                #if self.current_channel == 1:
                     #fill a column top down in the x position
-                    for i in range (1,self.current_pattern.tracks[0].duration[x]+1): #ignore top row
+                    for i in range (1,self.current_pattern.tracks[self.current_track].duration[x]+1): #ignore top row
                         buffer.led_level_set(x, i, 15)
-                    for i in range (self.current_pattern.tracks[0].duration[x]+1,7): #ignore bottom row
+                    for i in range (self.current_pattern.tracks[self.current_track].duration[x]+1,7): #ignore bottom row
                         buffer.led_level_set(x, i, 0)
-                elif self.current_channel == 2:
-                    for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
-                        buffer.led_level_set(x, i, 15)
-                    for i in range (self.current_pattern.tracks[1].duration[x]+1,7):
-                        buffer.led_level_set(x, i, 0)
+                #elif self.current_channel == 2:
+                    #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
+                    #    buffer.led_level_set(x, i, 15)
+                    #for i in range (self.current_pattern.tracks[1].duration[x]+1,7):
+                    #    buffer.led_level_set(x, i, 0)
         elif self.k_mode == Modes.mScale:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,0)
@@ -460,17 +467,17 @@ class Runcible(spanned_monome.VirtualGrid):
         #self.led_set(x, y, s)
         if s ==1 and y == 0:
             if x == 0:
-                print("Selected Channel 1")
-                self.current_channel = 1
+                print("Selected Track 1")
+                self.current_track = 0
             elif x == 1:
-                print("Selected Channel 2")
-                self.current_channel = 2
+                print("Selected Track 2")
+                self.current_track = 1
             elif x == 2:
-                print("Selected Channel 3")
-                self.current_channel = 3
+                print("Selected Track 3")
+                self.current_track = 2
             elif x == 3:
-                print("Selected Channel 4")
-                self.current_channel = 4
+                print("Selected Track 4")
+                self.current_track = 3
             elif x == 5:
                 self.k_mode = Modes.mTr
                 print("Selected:", self.k_mode)
@@ -501,36 +508,41 @@ class Runcible(spanned_monome.VirtualGrid):
         elif s == 1 and y > 0:
             # Note entry
             if self.k_mode == Modes.mNote:
-                if self.current_channel == 1:
-                    self.step_ch1[7-y][x] ^= 1
-                    self.current_pattern.tracks[0].note[x] = y
-                    if self.current_pattern.tracks[0].duration[x] == 0:
-                        self.current_pattern.tracks[0].duration[x] = 1
-                    self.current_pattern.tracks[0].tr[x] ^= 1
-                    if self.current_pattern.tracks[0].tr[x] == 0:
-                        self.current_pattern.tracks[0].duration[x] = 0 # change this when param_sync is off
-                else:
-                    self.step_ch2[7-y][x] ^= 1
-                    self.current_pattern.tracks[1].note[x] = y
-                    self.current_pattern.tracks[1].duration[x] = 1
-                    self.current_pattern.tracks[1].tr[x] ^= 1
+                #if self.current_track == 0:
+                self.step_ch1[7-y][x] ^= 1
+                self.current_pattern.tracks[self.current_track].note[x] = y
+                if self.current_pattern.tracks[self.current_track].duration[x] == 0:
+                    self.current_pattern.tracks[self.current_track].duration[x] = 1
+                self.current_pattern.tracks[self.current_track].tr[x] ^= 1
+                if self.current_pattern.tracks[self.current_track].tr[x] == 0:
+                    self.current_pattern.tracks[self.current_track].duration[x] = 0 # change this when param_sync is off
+                #else:
+                #    self.step_ch2[7-y][x] ^= 1
+                #    self.current_pattern.tracks[1].note[x] = y
+                #    self.current_pattern.tracks[1].duration[x] = 1
+                #    self.current_pattern.tracks[1].tr[x] ^= 1
                 self.draw()
             # duration entry
             if self.k_mode == Modes.mDur:
-                if self.current_channel == 1:
-                    self.current_pattern.tracks[0].duration[x] = 7-y
+                #if self.current_channel == 1:
+                if y = 7:
+                    #add accent toggles on top row
+                    self.current_pattern.tracks[self.current_track].accent[x] ^= 1
                 else:
-                    self.current_pattern.tracks[1].duration[x] = 7-y
+                    #enter duration
+                    self.current_pattern.tracks[self.current_track].duration[x] = 7-y
+                #else:
+                #    self.current_pattern.tracks[1].duration[x] = 7-y
                 self.draw()
             # octave entry
             if self.k_mode == Modes.mOct: #mid-point is row 4 - two octaves up and two octaves down, use 2nd row for accent?
-                if self.current_channel == 1:
+                #if self.current_channel == 1:
                     if y < 7 and y > 0:
-                        self.current_pattern.tracks[0].octave[x] = y-3
+                        self.current_pattern.tracks[self.current_track].octave[x] = y-3
                         #print("grid_key = ", y, "octave = ", self.current_pattern.tracks[0].octave[x])
-                else:
-                    if y < 6 and y > 0:
-                        self.current_pattern.tracks[1].octave[x] = y-3
+                #else:
+                #    if y < 6 and y > 0:
+                #        self.current_pattern.tracks[1].octave[x] = y-3
                 self.draw()
 
         # cut and loop
