@@ -180,7 +180,7 @@ class Runcible(spanned_monome.VirtualGrid):
                             velocity = 65 + self.current_pattern.tracks[track].accent[self.play_position]*40
                             #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
                             self.insert_note(track, self.fine_play_position, current_note, velocity, scaled_duration) # hard coding velocity
-                            print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track, "at pos: ", self.fine_play_position) 
+                            #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track, "at pos: ", self.fine_play_position) 
                     #if self.step_ch2[y][self.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
                         #asyncio.async(self.trigger(abs(y-7),1))
@@ -509,11 +509,17 @@ class Runcible(spanned_monome.VirtualGrid):
         elif s == 1 and y > 0:
             # Note entry
             if self.k_mode == Modes.mNote:
-                #if self.current_track == 0:
-                self.step_ch1[7-y][x] ^= 1
+                if self.current_track == 0:
+                    self.step_ch1[7-y][x] ^= 1
+                elif self.current_track == 1:
+                    self.step_ch2[7-y][x] ^= 1
+                elif self.current_track == 3:
+                    self.step_ch3[7-y][x] ^= 1
+                else:
+                    self.step_ch4[7-y][x] ^= 1
                 self.current_pattern.tracks[self.current_track].note[x] = y
                 if self.current_pattern.tracks[self.current_track].duration[x] == 0:
-                    self.current_pattern.tracks[self.current_track].duration[x] = 1
+                    self.current_pattern.tracks[self.current_track].duration[x] = 3
                 self.current_pattern.tracks[self.current_track].tr[x] ^= 1
                 if self.current_pattern.tracks[self.current_track].tr[x] == 0:
                     self.current_pattern.tracks[self.current_track].duration[x] = 0 # change this when param_sync is off
