@@ -244,24 +244,28 @@ class Runcible(spanned_monome.VirtualGrid):
 #TODO: setup the note data structure and also change the noteon and noteoff structure to be dynamic lists rather than arrays (so we only pick up actual notes, not empties
     @asyncio.coroutine
     def trigger(self):
-        print(self.play_position, self.fine_play_position)
-        notes = list()
+        #print(self.play_position, self.fine_play_position)
+        #notes = list()
         for note in self.note_off[self.fine_play_position]:
         #for note in self.note_off[self.current_pos%64]:
             print("position: ", self.fine_play_position, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc)
-            notes.append((self.channel + note.channel_inc,note.pitch+40,0))
+            #notes.append((self.channel + note.channel_inc,note.pitch+40,0))
             #self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
-        self.midi_out.send_messages(notes)
+            #self.midi_out.send_messages(144,[(self.channel + note.channel_inc, note.pitch+40,0)])
+            self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch+40,0)
+        #self.midi_out.send_messages(144,notes)
         del self.note_off[self.fine_play_position][:] #clear the current midi output once it's been sent
         #del self.note_off[self.current_pos%64][:] #clear the current midi output once it's been sent
 
-        notes = list()
+        #notes = list()
         for note in self.note_on[self.fine_play_position]:
         #for note in self.note_on[self.current_pos%64]:
             print("position: ", self.fine_play_position, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc)
-            notes.append((self.channel + note.channel_inc,note.pitch+40,note.velocity))
+            #notes.append((self.channel + note.channel_inc,note.pitch+40,note.velocity))
             #self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40, note.velocity],pygame.midi.time()]])
-        self.midi_out.send_messages(notes)
+            #self.midi_out.send_messages(144,[(self.channel + note.channel_inc, note.pitch+40,note.velocity)])
+            self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch+40,note.velocity)
+        #self.midi_out.send_messages(144,notes)
         del self.note_on[self.fine_play_position][:] #clear the current midi output once it's been sent
         #del self.note_on[self.current_pos%64][:] #clear the current midi output once it's been sent
 
@@ -659,12 +663,17 @@ if __name__ == '__main__':
        #if 'MIDI 1' in str(info[1]) and info[3] == 0:
        #   clock_out = i
 
-    midiport = 0
-    clock_out = 3
-    #midiport = rtmidi2.MidiIn().ports_matching("MIDI 6")
     #midi_out = pygame.midi.Output(midiport, 0)
-    midi_out = rtmidi2.MidiIn().open_port("*MIDI 6*")
-    print ("using output_id : %s " % midi_out.get_port_name())
+
+    clock_out = 3
+    print("Available ports:",rtmidi2.get_out_ports())
+    midiport = rtmidi2.MidiOut().ports_matching("iConnectMIDI4+ 20:5")
+    midi_out = rtmidi2.MidiOut()
+    if midiport:
+        midi_out.open_port(midiport[0])
+        print ("using output_id : %s " % midi_out.get_port_name(midiport[0]))
+    else:
+        print ("Port not found")
     print ("using clock source: %s " % clock_out)
     channel_out = 2
     #page = 1
@@ -712,6 +721,6 @@ if __name__ == '__main__':
         for apps in serialosc.app_instances.values():
             for app in apps:
                 app.disconnect()
-        midi_out.close()
+        midi_out.close_port()
         print('kthxbye')
 
