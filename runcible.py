@@ -173,7 +173,7 @@ class Runcible(spanned_monome.VirtualGrid):
                             velocity = 65 + self.current_pattern.tracks[track].accent[self.play_position]*40
                             #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
                             self.insert_note(track, self.fine_play_position, current_note, velocity, scaled_duration) # hard coding velocity
-                            #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track, "at pos: ", self.fine_play_position) 
+                            #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track, "at pos: ", self.fine_play_position)
                     #if self.step_ch2[y][self.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
                         #asyncio.async(self.trigger(abs(y-7),1))
@@ -338,7 +338,9 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(6,7,0)  #set the channel 2 indicator off
             buffer.led_level_set(7,7,0)  #set the channel 3 indicator off
             buffer.led_level_set(8,7,0)  #set the channel 4 indicator off
-            #buffer.led_level_set(render_pos[0], render_pos[1], self.Tr[y][x] * 11 + highlight)
+            for x in range(self.width):
+                for track in range(4):
+                    buffer.led_level_set(x, 0+track, self.current_pattern.tracks[track].tr[x] * 15)
         elif self.k_mode == Modes.mNote:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,15)
@@ -445,13 +447,44 @@ class Runcible(spanned_monome.VirtualGrid):
         # draw play position
         #current_pos = yield from self.clock.sync()
         #print("runcible:",(self.current_pos//self.ticks)%16)
-        render_pos = self.spanToGrid(self.play_position, 0)
-        if ((self.current_pos//self.ticks)%16) < 16:
+        #render_pos = self.spanToGrid(self.play_position, 0)
+        #if ((self.current_pos//self.ticks)%16) < 16:
  #           print("Pos",self.play_position)
-            buffer.led_level_set(render_pos[0], render_pos[1], 15)
-        else:
-            buffer.led_level_set(render_pos[0], render_pos[1], 0) # change this to restore the original state of the led
+        #    buffer.led_level_set(render_pos[0], render_pos[1], 15)
+        #else:
+        #    buffer.led_level_set(render_pos[0], render_pos[1], 0) # change this to restore the original state of the led
 
+        # display the other track positions
+        # I think this could all be simplified
+        # change the bounds of the first if condition to match the
+        # loop start and end points
+        if self.k_mode == Modes.mTr:
+            #track 1
+            if ((self.current_pos//self.ticks)%16) < 16:
+                buffer.led_level_set(self.play_position, 0, 15)
+            else:
+                buffer.led_level_set(self.play_position, 0, 0)
+            #track 2
+            if ((self.current_pos//self.ticks)%16) < 16:
+                buffer.led_level_set(self.play_position, 1, 15)
+            else:
+                buffer.led_level_set(self.play_position, 1, 0)
+            #track 3
+            if ((self.current_pos//self.ticks)%16) < 16:
+                buffer.led_level_set(self.play_position, 2, 15)
+            else:
+                buffer.led_level_set(self.play_position, 2, 0)
+            #track 4
+            if ((self.current_pos//self.ticks)%16) < 16:
+                buffer.led_level_set(self.play_position, 3, 15)
+            else:
+                buffer.led_level_set(self.play_position, 3, 0)
+        else: # all other modes
+            #display play position of current track
+            if ((self.current_pos//self.ticks)%16) < 16:
+                buffer.led_level_set(self.play_position, 0, 15)
+            else:
+                buffer.led_level_set(self.play_position, 0, 0)
 
         # update grid
         buffer.render(self)
