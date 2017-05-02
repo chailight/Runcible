@@ -202,7 +202,7 @@ class Runcible(spanned_monome.VirtualGrid):
             #yield from asyncio.sleep(0.1)
             asyncio.async(self.clock_out())
             #yield from self.clock.sync(self.ticks)
-            yield from self.clock.sync(1) #update at full resolution
+            yield from self.clock.sync(self.ticks) 
             self.current_pos = yield from self.clock.sync()
             self.play_position = (self.current_pos//self.ticks)%16
             self.fine_play_position = self.current_pos%96
