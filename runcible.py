@@ -105,8 +105,10 @@ class Runcible(spanned_monome.VirtualGrid):
         self.k_mode = Modes.mNote
         self.k_mod_mode = ModModes.modNone
         self.state = State()
-        self.note_on = [[Note()] for i in range(96)] #full resolution
-        self.note_off = [[Note()] for i in range(96)]
+        #self.note_on = [[Note()] for i in range(96)] #full resolution
+        self.note_on = [[Note()] for i in range(16)] 
+        #self.note_off = [[Note()] for i in range(96)]
+        self.note_off = [[Note()] for i in range(16)]
         #call ready() directly because virtual device doesn't get triggered
         self.ready()
 
@@ -137,7 +139,8 @@ class Runcible(spanned_monome.VirtualGrid):
     def play(self):
         self.current_pos = yield from self.clock.sync()
         self.play_position = (self.current_pos//self.ticks)%16
-        self.fine_play_position = self.current_pos%96
+        #self.fine_play_position = self.current_pos%96
+        self.fine_play_position = self.play_position
         while True:
             #print(self.clock.bpm,self.play_position, self.current_pos%64)
             if ((self.current_pos//self.ticks)%16) < 16:
@@ -159,17 +162,17 @@ class Runcible(spanned_monome.VirtualGrid):
                             scaled_duration = 0
                             entered_duration = self.current_pattern.tracks[track].duration[self.play_position]
                             if entered_duration == 1:
-                                scaled_duration = 2
+                                scaled_duration = 1
                             if entered_duration == 2:
-                                scaled_duration = 4
+                                scaled_duration = 2
                             if entered_duration == 3:
-                                scaled_duration =  8
+                                scaled_duration =  3
                             if entered_duration == 4:
-                                scaled_duration = 24
+                                scaled_duration = 4
                             elif entered_duration == 5:
-                                scaled_duration = 32
+                                scaled_duration = 5
                             elif entered_duration == 6:
-                                scaled_duration = 48
+                                scaled_duration = 6
                             velocity = 65 + self.current_pattern.tracks[track].accent[self.play_position]*40
                             #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
                             self.insert_note(track, self.fine_play_position, current_note, velocity, scaled_duration) # hard coding velocity
@@ -202,14 +205,16 @@ class Runcible(spanned_monome.VirtualGrid):
             #yield from asyncio.sleep(0.1)
             asyncio.async(self.clock_out())
             #yield from self.clock.sync(self.ticks)
-            yield from self.clock.sync(self.ticks) 
+            yield from self.clock.sync(self.ticks)
             self.current_pos = yield from self.clock.sync()
             self.play_position = (self.current_pos//self.ticks)%16
-            self.fine_play_position = self.current_pos%96
+            #self.fine_play_position = self.current_pos%96
+            self.fine_play_position = self.play_position 
 
     def insert_note(self,track,position,pitch,velocity,duration):
         self.insert_note_on(track,position,pitch,velocity)
-        self.insert_note_off(track,(position+duration)%96,pitch)
+        #self.insert_note_off(track,(position+duration)%96,pitch)
+        self.insert_note_off(track,(position+duration)%16,pitch)
         #print("note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
 
     def insert_note_on(self,track,position,pitch,velocity):
@@ -545,7 +550,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     self.step_ch4[7-y][x] ^= 1
                 self.current_pattern.tracks[self.current_track].note[x] = y
                 if self.current_pattern.tracks[self.current_track].duration[x] == 0:
-                    self.current_pattern.tracks[self.current_track].duration[x] = 3
+                    self.current_pattern.tracks[self.current_track].duration[x] = 1
                 self.current_pattern.tracks[self.current_track].tr[x] ^= 1
                 if self.current_pattern.tracks[self.current_track].tr[x] == 0:
                     self.current_pattern.tracks[self.current_track].duration[x] = 0 # change this when param_sync is off
