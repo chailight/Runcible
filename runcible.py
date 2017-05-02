@@ -3,8 +3,8 @@
 #TODO:
 #fix clear all on disconnect
 #fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops? maybe just close the midi stream?
-#complete support for all 4 channels
-#add input/display for trigger, velocity?, and probability, as per kria
+#fix polyphonic channels - insert note not finding all notes on a channel in a given time slot? i.e. second drum hit in same time masks first (e.g. snare vs. kick)
+#add input/display for velocity?, and probability, as per kria
 #add scale setting for both channels as per kria
 #add presets: store and recall - as per kria
 #add persistence of presets
@@ -12,6 +12,7 @@
 #enable cutting / looping controls on both channels (should be independent)
 #adjust use of duration settings 1/8, 1/16 & 1/32 notes?  (6 duration positions = 1/32, 1/16, 1/8, 1/4, 1/2, 1)
 #make note entry screen monophonic - clear off other notes in that column if new note is entered
+#fix pauses - network? other processes?
 
 import asyncio
 import monome
@@ -499,44 +500,44 @@ class Runcible(spanned_monome.VirtualGrid):
         #self.led_set(x, y, s)
         if s ==1 and y == 0:
             if x == 0:
-                print("Selected Track 1")
+                #print("Selected Track 1")
                 self.current_track = 0
             elif x == 1:
-                print("Selected Track 2")
+                #print("Selected Track 2")
                 self.current_track = 1
             elif x == 2:
-                print("Selected Track 3")
+                #print("Selected Track 3")
                 self.current_track = 2
             elif x == 3:
-                print("Selected Track 4")
+                #print("Selected Track 4")
                 self.current_track = 3
             elif x == 5:
                 self.k_mode = Modes.mTr
-                print("Selected:", self.k_mode)
+                #print("Selected:", self.k_mode)
             elif x == 6:
                 self.k_mode = Modes.mNote
-                print("Selected:", self.k_mode)
+                #print("Selected:", self.k_mode)
             elif x == 7:
                 self.k_mode = Modes.mOct
-                print("Selected:", self.k_mode)
+                #print("Selected:", self.k_mode)
             elif x == 8:
                 self.k_mode = Modes.mDur
-                print("Selected:", self.k_mode)
+                #print("Selected:", self.k_mode)
             elif x == 10:
                 self.k_mod_mode = ModModes.modLoop
-                print("Selected:", self.k_mod_mode)
+                #print("Selected:", self.k_mod_mode)
             elif x == 11:
                 self.k_mod_mode = ModModes.modTime
-                print("Selected:", self.k_mod_mode)
+                #print("Selected:", self.k_mod_mode)
             elif x == 12:
                 self.k_mod_mode = ModModes.modProb
-                print("Selected:", self.k_mod_mode)
+                #print("Selected:", self.k_mod_mode)
             elif x == 14:
                 self.k_mode = Modes.mScale
-                print("Selected:", self.k_mode)
+                #print("Selected:", self.k_mode)
             elif x == 15:
                 self.k_mode = Modes.mPattern
-                print("Selected:", self.k_mode)
+                #print("Selected:", self.k_mode)
         elif s == 1 and y > 0:
             # Note entry
             if self.k_mode == Modes.mNote:
