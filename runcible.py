@@ -538,7 +538,7 @@ class Runcible(spanned_monome.VirtualGrid):
             elif x == 15:
                 self.k_mode = Modes.mPattern
                 #print("Selected:", self.k_mode)
-        elif s == 1 and y > 0:
+        elif s == 1 and y > 0 and y < 7:
             # Note entry
             if self.k_mode == Modes.mNote:
                 if self.current_track == 0:
@@ -587,11 +587,13 @@ class Runcible(spanned_monome.VirtualGrid):
         # cut and loop
             if y == 7:
                 self.keys_held = self.keys_held + (s * 2) - 1
+                print("keys_held: ", self.keys_held)
                 # cut
                 if s == 1 and self.keys_held == 1:
         #            self.cutting = True
         #            self.next_position = x
                     self.key_last = x
+                    print("key_last: ", self.key_last)
                 # set loop points
                 elif s == 1 and self.keys_held == 2:
                     self.loop_start = self.key_last
