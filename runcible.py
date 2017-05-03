@@ -195,7 +195,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     #elif self.play_position == self.width - 1:
                     #    self.play_position = 0
                     elif self.play_position == self.loop_end and self.loop_start != 0:
-                        self.play_position = self.loop_start
+                        #self.play_position = self.loop_start
                         print ("looping to: ", self.next_position)
                     #else:
                     #    self.play_position += 1
