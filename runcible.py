@@ -172,34 +172,34 @@ class Runcible(spanned_monome.VirtualGrid):
             # TRIGGER SOMETHING
             #ch1_note = None
             #ch2_note = None
-            for y in range(self.height):
+            #for y in range(self.height): #re-enable this for polyphonic tracks
                 #print("y:",y, "pos:", self.play_position)
                 #if self.step_ch1[y][self.play_position] == 1:
-                for track in self.current_pattern.tracks:
-                    if track.tr[track.play_position] == 1:
-                        #print("Grid 1:", self.play_position,abs(y-7))
-                        #asyncio.async(self.trigger(abs(y-7),0))
-                        #change this to add the note at this position on this track into the trigger schedule
-                        #ch1_note = abs(y-7) #eventually look up the scale function for this note
-                        current_note = track.note[track.play_position]+track.octave[track.play_position]*12
-                        scaled_duration = 0
-                        entered_duration = track.duration[track.play_position]
-                        if entered_duration == 1:
-                            scaled_duration = 1
-                        if entered_duration == 2:
-                            scaled_duration = 2
-                        if entered_duration == 3:
-                            scaled_duration =  3
-                        if entered_duration == 4:
-                            scaled_duration = 4
-                        elif entered_duration == 5:
-                            scaled_duration = 5
-                        elif entered_duration == 6:
-                            scaled_duration = 6
-                        velocity = 65 + track.accent[track.play_position]*40
-                        #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
-                        self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
-                        print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
+            for track in self.current_pattern.tracks:
+                if track.tr[track.play_position] == 1:
+                    #print("Grid 1:", self.play_position,abs(y-7))
+                    #asyncio.async(self.trigger(abs(y-7),0))
+                    #change this to add the note at this position on this track into the trigger schedule
+                    #ch1_note = abs(y-7) #eventually look up the scale function for this note
+                    current_note = track.note[track.play_position]+track.octave[track.play_position]*12
+                    scaled_duration = 0
+                    entered_duration = track.duration[track.play_position]
+                    if entered_duration == 1:
+                        scaled_duration = 1
+                    if entered_duration == 2:
+                        scaled_duration = 2
+                    if entered_duration == 3:
+                        scaled_duration =  3
+                    if entered_duration == 4:
+                        scaled_duration = 4
+                    elif entered_duration == 5:
+                        scaled_duration = 5
+                    elif entered_duration == 6:
+                        scaled_duration = 6
+                    velocity = 65 + track.accent[track.play_position]*40
+                    #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
+                    self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
+                    print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
 
                 #if self.cutting:
                     #t.play_position = t.next_position
@@ -270,17 +270,17 @@ class Runcible(spanned_monome.VirtualGrid):
         #print(self.play_position, self.fine_play_position)
         #notes = list()
         for t in range(4):
-            for note in self.note_off[self.play_position[t]]:
+            for note in self.note_off[t.play_position]:
                 #print("position: ", self.fine_play_position, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc)
                 #notes.append((self.channel + note.channel_inc,note.pitch+40,0))
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch+40,0)
-            del self.note_off[self.play_position[t]][:] #clear the current midi output once it's been sent
+            del self.note_off[t.play_position][:] #clear the current midi output once it's been sent
 
-            for note in self.note_on[self.play_position[t]]:
+            for note in self.note_on[t.play_position]:
                 #print("position: ", self.fine_play_position, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc)
                 #notes.append((self.channel + note.channel_inc,note.pitch+40,note.velocity))
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch+40,note.velocity)
-            del self.note_on[self.play_position[t]][:] #clear the current midi output once it's been sent
+            del self.note_on[t.play_position][:] #clear the current midi output once it's been sent
 
 
     @asyncio.coroutine
