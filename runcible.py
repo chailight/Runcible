@@ -4,14 +4,17 @@
 #fix clear all on disconnect
 #fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops? maybe just close the midi stream?
 #fix polyphonic channels - insert note not finding all notes on a channel in a given time slot? i.e. second drum hit in same time masks first (e.g. snare vs. kick)
+#fix same notes on different channels masking each other
 #add input/display for velocity?, and probability, as per kria
 #add scale setting for both channels as per kria
 #add presets: store and recall - as per kria
 #add persistence of presets
 #add mutes per channel - long press on the channel?
-#enable cutting / looping controls on both channels (should be independent)
+#make  looping indepndent on all channels - currently one global play_position - need a per track position
+#fix cutting - has to do with keys held
+#make looping independent for each parameter
 #adjust use of duration settings 1/8, 1/16 & 1/32 notes?  (6 duration positions = 1/32, 1/16, 1/8, 1/4, 1/2, 1)
-#make note entry screen monophonic - clear off other notes in that column if new note is entered
+#make note entry screen monophonic? - clear off other notes in that column if new note is entered - this should be configurable maybe on trigger page?
 #fix pauses - network? other processes?
 
 import asyncio
@@ -120,7 +123,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.step_ch2 = [[0 for col in range(self.width)] for row in range(self.height)]
         self.step_ch3 = [[0 for col in range(self.width)] for row in range(self.height)]
         self.step_ch4 = [[0 for col in range(self.width)] for row in range(self.height)]
-        self.play_position = 0
+        self.play_position = [0,0,0,0] # one position for each track
         self.fine_play_position = 0
         self.next_position = 0
         self.cutting = False
@@ -140,13 +143,13 @@ class Runcible(spanned_monome.VirtualGrid):
     def play(self):
         self.current_pos = yield from self.clock.sync()
         loop_length = abs(self.loop_end - self.loop_start)+1
-        self.play_position = (self.current_pos//self.ticks)%loop_length + self.loop_start
+        self.play_position[self.current_track] = (self.current_pos//self.ticks)%loop_length + self.loop_start
         #self.fine_play_position = self.current_pos%96
-        self.fine_play_position = self.play_position
+        #self.fine_play_position = self.play_position
         while True:
             #print(self.clock.bpm,self.play_position, self.current_pos%64)
         #    if ((self.current_pos//self.ticks)%16) < 16:
-            if self.play_position  < 16:
+            if self.play_position[self.current_track]  < 16:
                 #print("G1:",(self.current_pos//self.ticks)%16)
                 self.draw()
                 # TRIGGER SOMETHING
@@ -156,14 +159,14 @@ class Runcible(spanned_monome.VirtualGrid):
                     #print("y:",y, "pos:", self.play_position)
                     #if self.step_ch1[y][self.play_position] == 1:
                     for track in range(4):
-                        if self.current_pattern.tracks[track].tr[self.play_position] == 1:
+                        if self.current_pattern.tracks[track].tr[self.play_position[track]] == 1:
                             #print("Grid 1:", self.play_position,abs(y-7))
                             #asyncio.async(self.trigger(abs(y-7),0))
                             #change this to add the note at this position on this track into the trigger schedule
                             #ch1_note = abs(y-7) #eventually look up the scale function for this note
-                            current_note = self.current_pattern.tracks[track].note[self.play_position]+self.current_pattern.tracks[track].octave[self.play_position]*12
+                            current_note = self.current_pattern.tracks[track].note[self.play_position[track]]+self.current_pattern.tracks[track].octave[self.play_position[track]]*12
                             scaled_duration = 0
-                            entered_duration = self.current_pattern.tracks[track].duration[self.play_position]
+                            entered_duration = self.current_pattern.tracks[track].duration[self.play_position[track]]
                             if entered_duration == 1:
                                 scaled_duration = 1
                             if entered_duration == 2:
@@ -176,9 +179,9 @@ class Runcible(spanned_monome.VirtualGrid):
                                 scaled_duration = 5
                             elif entered_duration == 6:
                                 scaled_duration = 6
-                            velocity = 65 + self.current_pattern.tracks[track].accent[self.play_position]*40
+                            velocity = 65 + self.current_pattern.tracks[track].accent[self.play_position[track]]*40
                             #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
-                            self.insert_note(track, self.play_position, current_note, velocity, scaled_duration) # hard coding velocity
+                            self.insert_note(track, self.play_position[track], current_note, velocity, scaled_duration) # hard coding velocity
                             #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track, "at pos: ", self.fine_play_position)
                     #if self.step_ch2[y][self.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
@@ -190,11 +193,12 @@ class Runcible(spanned_monome.VirtualGrid):
                     #ch2_note = None
 
                     if self.cutting:
-                        self.play_position = self.next_position
+                        self.play_position[self.current_track] = self.next_position
+                        #self.held_keys = 0
                         print ("cutting to: ", self.next_position)
                     #elif self.play_position == self.width - 1:
                     #    self.play_position = 0
-                    elif self.play_position == self.loop_end and self.loop_start != 0:
+                    elif self.play_position[self.current_track] == self.loop_end and self.loop_start != 0:
                         #self.play_position = self.loop_start
                         print ("looping to: ", self.next_position)
                     #else:
@@ -213,10 +217,10 @@ class Runcible(spanned_monome.VirtualGrid):
             yield from self.clock.sync(self.ticks)
             self.current_pos = yield from self.clock.sync()
             loop_length = abs(self.loop_end - self.loop_start)+1
-            self.play_position = (self.current_pos//self.ticks)%loop_length + self.loop_start
+            self.play_position[self.current_track] = (self.current_pos//self.ticks)%loop_length + self.loop_start
             #print("updated play pos: ", self.play_position)
             #self.fine_play_position = self.current_pos%96
-            self.fine_play_position = self.play_position
+            #self.fine_play_position = self.play_position
 
     def insert_note(self,track,position,pitch,velocity,duration):
         self.insert_note_on(track,position,pitch,velocity)
