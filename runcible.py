@@ -200,15 +200,15 @@ class Runcible(spanned_monome.VirtualGrid):
                         self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
                         #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track, "at pos: ", self.fine_play_position)
 
-                if self.cutting:
-                    self.play_position[t] = self.next_position[t]
+                #if self.cutting:
+                    t.play_position = t.next_position
                     #self.held_keys = 0
-                    print ("cutting to: ", self.next_position[t])
+                    #print ("cutting to: ", self.next_position[t])
                 #elif self.play_position == self.width - 1:
                 #    self.play_position = 0
-                elif self.play_position[t] == self.loop_end[t] and self.loop_start[t] != 0:
+                #elif t.play_position == t.loop_end and t.loop_start != 0:
                     #self.play_position = self.loop_start
-                    print ("looping to: ", self.next_position[t])
+                    #print ("looping to: ", self.next_position[t])
                 #else:
                 #    self.play_position += 1
 
