@@ -487,7 +487,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 buffer.led_level_set(self.play_position, 3, 0)
         else: # all other modes
             #display play position of current track
-            if ((self.current_pos//self.ticks)%16) >= self.loop_start and ((self.current_pos//self.ticks)%16) =< self.loop_end:
+            if ((self.current_pos//self.ticks)%16) >= self.loop_start and ((self.current_pos//self.ticks)%16) <= self.loop_end:
                 buffer.led_level_set(self.play_position, 0, 15)
             else:
                 buffer.led_level_set(self.play_position, 0, 0)
