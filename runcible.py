@@ -202,12 +202,13 @@ class Runcible(spanned_monome.VirtualGrid):
                         #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track, "at pos: ", self.fine_play_position)
 
                 #if self.cutting:
-                    t.play_position = t.next_position
+                    #t.play_position = t.next_position
                     #self.held_keys = 0
                     #print ("cutting to: ", self.next_position[t])
                 #elif self.play_position == self.width - 1:
                 #    self.play_position = 0
                 #elif t.play_position == t.loop_end and t.loop_start != 0:
+                #if t.play_position == t.loop_end and t.loop_start != 0:
                     #self.play_position = self.loop_start
                     #print ("looping to: ", self.next_position[t])
                 #else:
