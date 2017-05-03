@@ -598,6 +598,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 elif s == 1 and self.keys_held == 2:
                     self.loop_start = self.key_last
                     self.loop_end = x
+                    self.keys_held = 0
                     print("loop start: ", self.loop_start, "end: ", self.loop_end)
 
     def calc_scale(self, s):
