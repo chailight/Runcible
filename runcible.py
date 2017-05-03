@@ -125,12 +125,13 @@ class Runcible(spanned_monome.VirtualGrid):
         self.step_ch4 = [[0 for col in range(self.width)] for row in range(self.height)]
         self.play_position = [0,0,0,0] # one position for each track
         self.fine_play_position = 0
-        self.next_position = 0
+        self.next_position = [0,0,0,0]
         self.cutting = False
-        self.loop_start = 0
-        self.loop_end = self.width - 1
+        self.loop_start = [0,0,0,0]
+        self.loop_end = [self.width - 1, self.width -1, self.width -1, self.width -1]
+        self.loop_length = [self.width, self.width, self.width, self.width]
         self.keys_held = 0
-        self.key_last = 0
+        self.key_last = [0,0,0,0]
         self.current_track = 0
         self.current_preset = self.state.presets[0]
         self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
@@ -142,8 +143,8 @@ class Runcible(spanned_monome.VirtualGrid):
     @asyncio.coroutine
     def play(self):
         self.current_pos = yield from self.clock.sync()
-        loop_length = abs(self.loop_end - self.loop_start)+1
-        self.play_position[self.current_track] = (self.current_pos//self.ticks)%loop_length + self.loop_start
+        self.loop_length[self.current_track] = abs(self.loop_end[self.current_track] - self.loop_start[self.current_track])+1
+        self.play_position[self.current_track] = (self.current_pos//self.ticks)%loop_length + self.loop_start[self.current_track]
         #self.fine_play_position = self.current_pos%96
         #self.fine_play_position = self.play_position
         while True:
@@ -193,14 +194,14 @@ class Runcible(spanned_monome.VirtualGrid):
                     #ch2_note = None
 
                     if self.cutting:
-                        self.play_position[self.current_track] = self.next_position
+                        self.play_position[self.current_track] = self.next_position[self.current_track]
                         #self.held_keys = 0
-                        print ("cutting to: ", self.next_position)
+                        print ("cutting to: ", self.next_position[self.current_track])
                     #elif self.play_position == self.width - 1:
                     #    self.play_position = 0
-                    elif self.play_position[self.current_track] == self.loop_end and self.loop_start != 0:
+                    elif self.play_position[self.current_track] == self.loop_end[self.current_track] and self.loop_start[self.current_track] != 0:
                         #self.play_position = self.loop_start
-                        print ("looping to: ", self.next_position)
+                        print ("looping to: ", self.next_position[self.current_track])
                     #else:
                     #    self.play_position += 1
 
@@ -216,8 +217,8 @@ class Runcible(spanned_monome.VirtualGrid):
             #yield from self.clock.sync(self.ticks)
             yield from self.clock.sync(self.ticks)
             self.current_pos = yield from self.clock.sync()
-            loop_length = abs(self.loop_end - self.loop_start)+1
-            self.play_position[self.current_track] = (self.current_pos//self.ticks)%loop_length + self.loop_start
+            self.loop_length[self.current_track] = abs(self.loop_end[self.current_track] - self.loop_start[self.current_track])+1
+            self.play_position[self.current_track] = (self.current_pos//self.ticks)%loop_length + self.loop_start[self.current_track]
             #print("updated play pos: ", self.play_position)
             #self.fine_play_position = self.current_pos%96
             #self.fine_play_position = self.play_position
@@ -498,10 +499,10 @@ class Runcible(spanned_monome.VirtualGrid):
         else: # all other modes
             #display play position of current track
             #if ((self.current_pos//self.ticks)%16) >= self.loop_start and ((self.current_pos//self.ticks)%16) <= self.loop_end:
-            if self.play_position >= self.loop_start and self.play_position <= self.loop_end:
-                buffer.led_level_set(self.play_position, 0, 15)
+            if self.play_position[self.current_track] >= self.loop_start[self.current_track] and self.play_position[self.current_track] <= self.loop_end[self.current_track]:
+                buffer.led_level_set(self.play_position[self.current_track], 0, 15)
             else:
-                buffer.led_level_set(self.play_position, 0, 0)
+                buffer.led_level_set(self.play_position[self.current_track], 0, 0)
 
         # update grid
         buffer.render(self)
@@ -602,15 +603,15 @@ class Runcible(spanned_monome.VirtualGrid):
                 # cut
                 if s == 1 and self.keys_held == 1:
                     self.cutting = True
-                    self.next_position = x
-                    self.key_last = x
-                    print("key_last: ", self.key_last)
+                    self.next_position[self.current_track] = x
+                    self.key_last[self.current_track] = x
+                    print("key_last: ", self.key_last[self.current_track])
                 # set loop points
                 elif s == 1 and self.keys_held == 2:
-                    self.loop_start = self.key_last
-                    self.loop_end = x
+                    self.loop_start[self.current_track] = self.key_last[self.current_track]
+                    self.loop_end[self.current_track] = x
                     self.keys_held = 0
-                    print("loop start: ", self.loop_start, "end: ", self.loop_end)
+                    print("loop start: ", self.loop_start[self.current_track], "end: ", self.loop_end[self.current_track])
 
     def calc_scale(self, s):
         self.cur_scale[0] = self.scale_data[s][0]
