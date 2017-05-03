@@ -54,7 +54,7 @@ class Note:
         self.duration = duration
 
 class Track:
-    def __init__(self):
+    def __init__(self,track_id):
         self.num_params = 4
         self.tr = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         self.octave = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
@@ -64,13 +64,24 @@ class Track:
         self.params = [[0] * self.num_params for i in range (16)] #initialise a 4x16 array
         self.dur_mul = 1; #duration multiplier
         self.lstart = [[0] * self.num_params]
-        self.lend = [[0] * self.num_params]
+        self.lend = [[15] * self.num_params]
         self.swap = [[0] * self.num_params]
         self.tmul = [[0] * self.num_params]
+        self.pos = [[0] * self.num_params for i in range(4)] #position for each parameter in each track
+        self.pos_mul = [[0] * self.num_params for i in range(4)] #something to do with the time multiplier
+        self.pos_reset = False
+        self.track_id = track_id
+        self.play_position # will switch to position for each parameter
+        self.loop_start = 0  # will eventually switch to loop start / end per parameter but keep it simple for now
+        self.loop_end = 15
+        self.loop_count = 0
+        self.loop_first = 0
+        self.loop_last = 0
+        self.loop_edit = 0
 
 class Pattern:
     def __init__(self):
-        self.tracks = [Track() for i in range(4)]
+        self.tracks = [Track(i) for i in range(4)]
         self.scale = 0
 
 class Preset:
@@ -124,7 +135,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.step_ch3 = [[0 for col in range(self.width)] for row in range(self.height)]
         self.step_ch4 = [[0 for col in range(self.width)] for row in range(self.height)]
         self.play_position = [0,0,0,0] # one position for each track
-        self.fine_play_position = 0
+        #self.fine_play_position = 0
         self.next_position = [0,0,0,0]
         self.cutting = False
         self.loop_start = [0,0,0,0]
@@ -132,9 +143,9 @@ class Runcible(spanned_monome.VirtualGrid):
         self.loop_length = [self.width, self.width, self.width, self.width]
         self.keys_held = 0
         self.key_last = [0,0,0,0]
-        self.current_track = 0
         self.current_preset = self.state.presets[0]
         self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
+        self.current_track = self.current_pattern.tracks[0]
         asyncio.async(self.play())
 
     #def disconnect(self):
@@ -143,76 +154,69 @@ class Runcible(spanned_monome.VirtualGrid):
     @asyncio.coroutine
     def play(self):
         self.current_pos = yield from self.clock.sync()
-        for t in range(4):
-            self.loop_length[t] = abs(self.loop_end[self.current_track] - self.loop_start[t])+1
-            self.play_position[t] = (self.current_pos//self.ticks)%self.loop_length[t] + self.loop_start[t]
+        for t in self.current_pattern.tracks:
+            #self.loop_length[t] = abs(self.loop_end[self.current_track] - self.loop_start[t])+1
+            t.loop_length = abs(t.loop_end - t.loop_start)+1
+            t.play_position = (self.current_pos//self.ticks)%t.loop_length + t.loop_start
         #self.fine_play_position = self.current_pos%96
         #self.fine_play_position = self.play_position
         while True:
         #    for t in range(4):
-            t = self.current_track
+            #t = self.current_track
             #print(self.clock.bpm,self.play_position, self.current_pos%64)
         #    if ((self.current_pos//self.ticks)%16) < 16:
-            if self.play_position[t]  < 16:
-                #print("G1:",(self.current_pos//self.ticks)%16)
-                self.draw()
-                # TRIGGER SOMETHING
-                #ch1_note = None
-                #ch2_note = None
-                for y in range(self.height):
-                    #print("y:",y, "pos:", self.play_position)
-                    #if self.step_ch1[y][self.play_position] == 1:
-                    for track in range(4):
-                        if self.current_pattern.tracks[track].tr[self.play_position[track]] == 1:
-                            #print("Grid 1:", self.play_position,abs(y-7))
-                            #asyncio.async(self.trigger(abs(y-7),0))
-                            #change this to add the note at this position on this track into the trigger schedule
-                            #ch1_note = abs(y-7) #eventually look up the scale function for this note
-                            current_note = self.current_pattern.tracks[track].note[self.play_position[track]]+self.current_pattern.tracks[track].octave[self.play_position[track]]*12
-                            scaled_duration = 0
-                            entered_duration = self.current_pattern.tracks[track].duration[self.play_position[track]]
-                            if entered_duration == 1:
-                                scaled_duration = 1
-                            if entered_duration == 2:
-                                scaled_duration = 2
-                            if entered_duration == 3:
-                                scaled_duration =  3
-                            if entered_duration == 4:
-                                scaled_duration = 4
-                            elif entered_duration == 5:
-                                scaled_duration = 5
-                            elif entered_duration == 6:
-                                scaled_duration = 6
-                            velocity = 65 + self.current_pattern.tracks[track].accent[self.play_position[track]]*40
-                            #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
-                            self.insert_note(track, self.play_position[track], current_note, velocity, scaled_duration) # hard coding velocity
-                            #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track, "at pos: ", self.fine_play_position)
-                    #if self.step_ch2[y][self.play_position] == 1:
+            #if t.play_position  < 16:
+            #print("G1:",(self.current_pos//self.ticks)%16)
+            self.draw()
+            # TRIGGER SOMETHING
+            #ch1_note = None
+            #ch2_note = None
+            for y in range(self.height):
+                #print("y:",y, "pos:", self.play_position)
+                #if self.step_ch1[y][self.play_position] == 1:
+                for track in self.current_pattern.tracks:
+                    if track.tr[track.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
-                        #asyncio.async(self.trigger(abs(y-7),1))
-                    #    ch2_note = abs(y-7) #eventually look up the scale function for this note
-                    #change this to just play out whatever is in the schedule at this point, including note offs
-                    #asyncio.async(self.trigger(ch1_note,ch2_note))
-                    #ch1_note = None
-                    #ch2_note = None
+                        #asyncio.async(self.trigger(abs(y-7),0))
+                        #change this to add the note at this position on this track into the trigger schedule
+                        #ch1_note = abs(y-7) #eventually look up the scale function for this note
+                        current_note = track.note[track.play_position]+track.octave[track.play_position]*12
+                        scaled_duration = 0
+                        entered_duration = track.duration[track.play_position]
+                        if entered_duration == 1:
+                            scaled_duration = 1
+                        if entered_duration == 2:
+                            scaled_duration = 2
+                        if entered_duration == 3:
+                            scaled_duration =  3
+                        if entered_duration == 4:
+                            scaled_duration = 4
+                        elif entered_duration == 5:
+                            scaled_duration = 5
+                        elif entered_duration == 6:
+                            scaled_duration = 6
+                        velocity = 65 + track.accent[track.play_position]*40
+                        #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
+                        self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
+                        #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track, "at pos: ", self.fine_play_position)
 
-                    if self.cutting:
-                        self.play_position[t] = self.next_position[t]
-                        #self.held_keys = 0
-                        print ("cutting to: ", self.next_position[t])
-                    #elif self.play_position == self.width - 1:
-                    #    self.play_position = 0
-                    elif self.play_position[t] == self.loop_end[t] and self.loop_start[t] != 0:
-                        #self.play_position = self.loop_start
-                        print ("looping to: ", self.next_position[t])
-                    #else:
-                    #    self.play_position += 1
+                if self.cutting:
+                    self.play_position[t] = self.next_position[t]
+                    #self.held_keys = 0
+                    print ("cutting to: ", self.next_position[t])
+                #elif self.play_position == self.width - 1:
+                #    self.play_position = 0
+                elif self.play_position[t] == self.loop_end[t] and self.loop_start[t] != 0:
+                    #self.play_position = self.loop_start
+                    print ("looping to: ", self.next_position[t])
+                #else:
+                #    self.play_position += 1
 
-                    self.cutting = False
-            else:
+                self.cutting = False
+            #else:
                 #buffer = monome.LedBuffer(self.width, self.height)
                 #buffer.led_level_set(0, 0, 0)
-                self.draw()
+            #    self.draw()
 
             asyncio.async(self.trigger())
             #yield from asyncio.sleep(0.1)
@@ -220,9 +224,9 @@ class Runcible(spanned_monome.VirtualGrid):
             #yield from self.clock.sync(self.ticks)
             yield from self.clock.sync(self.ticks)
             self.current_pos = yield from self.clock.sync()
-            for track in range(4):
-                self.loop_length[track] = abs(self.loop_end[track] - self.loop_start[track])+1
-                self.play_position[track] = (self.current_pos//self.ticks)%self.loop_length[track] + self.loop_start[track]
+            for track in self.current_pattern.tracks:
+                track.loop_length = abs(track.loop_end - track.loop_start)+1
+                track.play_position = (self.current_pos//self.ticks)%track.loop_length + track.loop_start
             #print("updated play pos: ", self.play_position)
             #self.fine_play_position = self.current_pos%96
             #self.fine_play_position = self.play_position
@@ -252,11 +256,11 @@ class Runcible(spanned_monome.VirtualGrid):
             self.note_off[position].append(new_note)
 
 # to be removed
-    def gridToSpan(self,x,y):
-        return [x,y]
+    #def gridToSpan(self,x,y):
+    #    return [x,y]
 
-    def spanToGrid(self,x,y):
-        return [x,y]
+    #def spanToGrid(self,x,y):
+    #    return [x,y]
 
 #TODO: setup the note data structure and also change the noteon and noteoff structure to be dynamic lists rather than arrays (so we only pick up actual notes, not empties
     @asyncio.coroutine
@@ -265,51 +269,17 @@ class Runcible(spanned_monome.VirtualGrid):
         #notes = list()
         for t in range(4):
             for note in self.note_off[self.play_position[t]]:
-            #for note in self.note_off[self.current_pos%64]:
                 #print("position: ", self.fine_play_position, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc)
                 #notes.append((self.channel + note.channel_inc,note.pitch+40,0))
-                #self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
-                #self.midi_out.send_messages(144,[(self.channel + note.channel_inc, note.pitch+40,0)])
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch+40,0)
-            #self.midi_out.send_messages(144,notes)
             del self.note_off[self.play_position[t]][:] #clear the current midi output once it's been sent
-            #del self.note_off[self.current_pos%64][:] #clear the current midi output once it's been sent
 
-            #notes = list()
             for note in self.note_on[self.play_position[t]]:
-            #for note in self.note_on[self.current_pos%64]:
                 #print("position: ", self.fine_play_position, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc)
                 #notes.append((self.channel + note.channel_inc,note.pitch+40,note.velocity))
-                #self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40, note.velocity],pygame.midi.time()]])
-                #self.midi_out.send_messages(144,[(self.channel + note.channel_inc, note.pitch+40,note.velocity)])
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch+40,note.velocity)
-            #self.midi_out.send_messages(144,notes)
             del self.note_on[self.play_position[t]][:] #clear the current midi output once it's been sent
-            #del self.note_on[self.current_pos%64][:] #clear the current midi output once it's been sent
 
-    #change this to use midi.write() whatever event is in the note_on and note_off queue at this point in time
-    #need to create a collated note_on and note_off list that is indexed by current position
-    #initially just have one note_off per position, i.e. 1/4 notes or longer
-    #for 1/8, 1/6, 1/32 length notes, we need a 64 slot queue, and then update the current step every 4 ticks
-    #@asyncio.coroutine
-    #def trigger(self, ch1_note, ch2_note):
-    #    ch1_scaled = 0
-    #    ch2_scaled = 0
-    #    if not ch1_note is None:
-            #self.current_note = 40+i #maybe do the scale lookup here
-            #print("G1: note: " + str(self.current_note) + " channel: " + str(self.channel))
-    #        ch1_scaled = 40+ch1_note
-    #        self.midi_out.note_on(ch1_scaled, 60, self.channel+0)
-    #    if not ch2_note is None:
-            #self.current_note = 40+i #maybe do the scale lookup here
-            #print("G1: note: " + str(self.current_note) + " channel: " + str(self.channel))
-    #        ch2_scaled = 40+ch2_note
-    #        self.midi_out.note_on(ch2_scaled, 60, self.channel+1)
-    #    yield from self.clock.sync(self.ticks)
-    #    if not ch1_note is None:
-    #        self.midi_out.note_off(ch1_scaled, 0, self.channel+0)
-    #    if not ch2_note is None:
-    #        self.midi_out.note_off(ch2_scaled, 0, self.channel+1)
 
     @asyncio.coroutine
     def clock_out(self):
@@ -331,25 +301,25 @@ class Runcible(spanned_monome.VirtualGrid):
             #else:
             #    highlight = 0
 
-        if self.current_track == 0:
+        if self.current_track.track_id == 0:
             buffer.led_level_set(0,7,15) #set the channel 1 indicator on
             buffer.led_level_set(1,7,0)  #set the channel 2 indicator off
             buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
             buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
             #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
-        elif self.current_track ==1:
+        elif self.current_track.track_id ==1:
             buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
             buffer.led_level_set(1,7,15)  #set the channel 2 indicator on
             buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
             buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
             #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch2[y][x] * 11 + highlight)
-        elif self.current_track == 2:
+        elif self.current_track.track_id == 2:
             buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
             buffer.led_level_set(1,7,0)  #set the channel 2 indicator on
             buffer.led_level_set(2,7,15)  #set the channel 3 indicator off
             buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
             #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch3[y][x] * 11 + highlight)
-        elif self.current_track == 3:
+        elif self.current_track.track_id == 3:
             buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
             buffer.led_level_set(1,7,0)  #set the channel 2 indicator on
             buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
@@ -360,9 +330,10 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(6,7,0)  #set the channel 2 indicator off
             buffer.led_level_set(7,7,0)  #set the channel 3 indicator off
             buffer.led_level_set(8,7,0)  #set the channel 4 indicator off
+            # display triggers for each track
             for x in range(self.width):
-                for track in range(4):
-                    buffer.led_level_set(x, 0+track, self.current_pattern.tracks[track].tr[x] * 15)
+                for track in self.current_pattern.tracks:
+                    buffer.led_level_set(x, 0+track.track_id, track.tr[x] * 15)
         elif self.k_mode == Modes.mNote:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,15)
@@ -373,13 +344,13 @@ class Runcible(spanned_monome.VirtualGrid):
             for x in range(self.width):
                 for y in range(1,self.height-1): #ignore bottom row
                     #render_pos = self.spanToGrid(x,y)
-                    if self.current_track == 0:
+                    if self.current_track.track_id == 0:
                         buffer.led_level_set(x, y, self.step_ch1[y][x] * 15 )
-                    elif self.current_track == 1:
+                    elif self.current_track.track_id == 1:
                         buffer.led_level_set(x, y, self.step_ch2[y][x] * 15 )
-                    elif self.current_track == 2:
+                    elif self.current_track.track_id == 2:
                         buffer.led_level_set(x, y, self.step_ch3[y][x] * 15 )
-                    elif self.current_track == 3:
+                    elif self.current_track.track_id == 3:
                         buffer.led_level_set(x, y, self.step_ch4[y][x] * 15 )
         elif self.k_mode == Modes.mOct:
             buffer.led_level_set(5,7,0)
@@ -391,7 +362,7 @@ class Runcible(spanned_monome.VirtualGrid):
             for x in range(self.width):
                 #if self.current_channel == 1:
                 #fill a column bottom up in the x position
-                current_oct = self.current_pattern.tracks[self.current_track].octave[x]
+                current_oct = self.current.track.octave[x]
                 if current_oct >= 0:
                     #print("start = ", 1, "end = ", 4-current_oct)
                     for i in range (4-current_oct,5):
@@ -401,12 +372,6 @@ class Runcible(spanned_monome.VirtualGrid):
                     for i in range (4,5-current_oct):
                         buffer.led_level_set(x, i, 15)
                         #print("current oct: ", current_oct, " drawing in row: ", i)
-                #elif self.current_channel == 2:
-                #    #fill a column bottom up in the x position
-                #    for i in range (6,4+self.current_pattern.tracks[1].octave[x]): #ignore bottom row
-                #        buffer.led_level_set(x, i, 15)
-                #    for i in range (4+self.current_pattern.tracks[1].duration[x],2): #ignore top two rows
-                #        buffer.led_level_set(x, i, 0)
         elif self.k_mode == Modes.mDur:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,0)
@@ -415,16 +380,16 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,0)
             for x in range(self.width):
-                #draw the accent toggles
-                if self.current_pattern.tracks[self.current_track].accent[x]:
+                #draw the accent toggles - this will move to a velocity page?
+                if self.current_track.accent[x]:
                     buffer.led_level_set(x, 0, 15)
                 else:
                     buffer.led_level_set(x, 0, 0)
                 #if self.current_channel == 1:
                     #fill a column top down in the x position
-                for i in range (1,self.current_pattern.tracks[self.current_track].duration[x]+1): #ignore top row
+                for i in range (1,self.self.current_track.duration[x]+1): #ignore top row
                     buffer.led_level_set(x, i, 15)
-                for i in range (self.current_pattern.tracks[self.current_track].duration[x]+1,7): #ignore bottom row
+                for i in range (self.self.current_track.duration[x]+1,7): #ignore bottom row
                     buffer.led_level_set(x, i, 0)
                 #elif self.current_channel == 2:
                     #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
@@ -483,31 +448,31 @@ class Runcible(spanned_monome.VirtualGrid):
         if self.k_mode == Modes.mTr:
             #track 1
             if ((self.current_pos//self.ticks)%16) < 16:
-                buffer.led_level_set(self.play_position[self.current_track], 0, 15)
+                buffer.led_level_set(self.current_track.play_position, 0, 15)
             else:
-                buffer.led_level_set(self.play_position[self.current_track], 0, 0)
+                buffer.led_level_set(self.current_track.play_position, 0, 0)
             #track 2
             if ((self.current_pos//self.ticks)%16) < 16:
-                buffer.led_level_set(self.play_position[self.current_track], 1, 15)
+                buffer.led_level_set(self.current_track.play_position, 1, 15)
             else:
-                buffer.led_level_set(self.play_position[self.current_track], 1, 0)
+                buffer.led_level_set(self.current_track.play_position, 1, 0)
             #track 3
             if ((self.current_pos//self.ticks)%16) < 16:
-                buffer.led_level_set(self.play_position[self.current_track], 2, 15)
+                buffer.led_level_set(self.current_track.play_position, 2, 15)
             else:
-                buffer.led_level_set(self.play_position[self.current_track], 2, 0)
+                buffer.led_level_set(self.current_track.play_position, 2, 0)
             #track 4
             if ((self.current_pos//self.ticks)%16) < 16:
-                buffer.led_level_set(self.play_position[self.current_track], 3, 15)
+                buffer.led_level_set(self.current_track.play_position, 3, 15)
             else:
-                buffer.led_level_set(self.play_position[self.current_track], 3, 0)
+                buffer.led_level_set(self.current_track.play_position, 3, 0)
         else: # all other modes
             #display play position of current track
             #if ((self.current_pos//self.ticks)%16) >= self.loop_start and ((self.current_pos//self.ticks)%16) <= self.loop_end:
-            if self.play_position[self.current_track] >= self.loop_start[self.current_track] and self.play_position[self.current_track] <= self.loop_end[self.current_track]:
-                buffer.led_level_set(self.play_position[self.current_track], 0, 15)
+            if self.current_track.play_position >= self.current_track.loop_start and self.current_track.play_position <= self.current_track.loop_end:
+                buffer.led_level_set(self.current_track.play_position, 0, 15)
             else:
-                buffer.led_level_set(self.play_position[self.current_track], 0, 0)
+                buffer.led_level_set(self.current_track.play_position, 0, 0)
 
         # update grid
         buffer.render(self)
@@ -518,16 +483,16 @@ class Runcible(spanned_monome.VirtualGrid):
         if s ==1 and y == 0:
             if x == 0:
                 #print("Selected Track 1")
-                self.current_track = 0
+                self.current_track = self.current_pattern.tracks[0]
             elif x == 1:
                 #print("Selected Track 2")
-                self.current_track = 1
+                self.current_track = self.current_pattern.tracks[1]
             elif x == 2:
                 #print("Selected Track 3")
-                self.current_track = 2
+                self.current_track = self.current_pattern.tracks[2]
             elif x == 3:
                 #print("Selected Track 4")
-                self.current_track = 3
+                self.current_track = self.current_pattern.tracks[3]
             elif x == 5:
                 self.k_mode = Modes.mTr
                 #print("Selected:", self.k_mode)
@@ -559,20 +524,20 @@ class Runcible(spanned_monome.VirtualGrid):
             if y < 7:
                 # Note entry
                 if self.k_mode == Modes.mNote:
-                    if self.current_track == 0:
+                    if self.current_track.track_id == 0:
                         self.step_ch1[7-y][x] ^= 1
-                    elif self.current_track == 1:
+                    elif self.current_track.track_id == 1:
                         self.step_ch2[7-y][x] ^= 1
-                    elif self.current_track == 2:
+                    elif self.current_track.track_id == 2:
                         self.step_ch3[7-y][x] ^= 1
                     else:
                         self.step_ch4[7-y][x] ^= 1
-                    self.current_pattern.tracks[self.current_track].note[x] = y
-                    if self.current_pattern.tracks[self.current_track].duration[x] == 0:
-                        self.current_pattern.tracks[self.current_track].duration[x] = 1
-                    self.current_pattern.tracks[self.current_track].tr[x] ^= 1
-                    if self.current_pattern.tracks[self.current_track].tr[x] == 0:
-                        self.current_pattern.tracks[self.current_track].duration[x] = 0 # change this when param_sync is off
+                    self.current_track.note[x] = y
+                    if self.current_track.duration[x] == 0:
+                        self.current_track.duration[x] = 1
+                    self.current_track.tr[x] ^= 1
+                    #if self.current_track.tr[x] == 0:
+                    #    self.current_track.duration[x] = 0 # change this when param_sync is off
                     #else:
                     #    self.step_ch2[7-y][x] ^= 1
                     #    self.current_pattern.tracks[1].note[x] = y
@@ -584,10 +549,10 @@ class Runcible(spanned_monome.VirtualGrid):
                     #if self.current_channel == 1:
                     if y == 7:
                         #add accent toggles on top row
-                        self.current_pattern.tracks[self.current_track].accent[x] ^= 1
+                        self.current_track.accent[x] ^= 1
                     else:
                         #enter duration
-                        self.current_pattern.tracks[self.current_track].duration[x] = 7-y
+                        self.current_track.duration[x] = 7-y
                     #else:
                     #    self.current_pattern.tracks[1].duration[x] = 7-y
                     self.draw()
@@ -595,7 +560,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 if self.k_mode == Modes.mOct: #mid-point is row 4 - two octaves up and two octaves down, use 2nd row for accent?
                     #if self.current_channel == 1:
                     if y < 7 and y > 0:
-                        self.current_pattern.tracks[self.current_track].octave[x] = y-3
+                        self.current_track.octave[x] = y-3
                         #print("grid_key = ", y, "octave = ", self.current_pattern.tracks[0].octave[x])
                     #else:
                     #    if y < 6 and y > 0:
@@ -608,15 +573,15 @@ class Runcible(spanned_monome.VirtualGrid):
                 # cut
                 if s == 1 and self.keys_held == 1:
                     self.cutting = True
-                    self.next_position[self.current_track] = x
-                    self.key_last[self.current_track] = x
-                    print("key_last: ", self.key_last[self.current_track])
+                    self.current_track.next_position = x
+                    self.current_track.key_last = x
+                    #print("key_last: ", self.key_last[self.current_track])
                 # set loop points
                 elif s == 1 and self.keys_held == 2:
-                    self.loop_start[self.current_track] = self.key_last[self.current_track]
-                    self.loop_end[self.current_track] = x
+                    self.current_track.loop_start = self.current_track.key_last
+                    self.current_track.loop_end = x
                     self.keys_held = 0
-                    print("loop start: ", self.loop_start[self.current_track], "end: ", self.loop_end[self.current_track])
+                    #print("loop start: ", self.loop_start[self.current_track], "end: ", self.loop_end[self.current_track])
 
     def calc_scale(self, s):
         self.cur_scale[0] = self.scale_data[s][0]
