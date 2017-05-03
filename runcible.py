@@ -143,85 +143,87 @@ class Runcible(spanned_monome.VirtualGrid):
     @asyncio.coroutine
     def play(self):
         self.current_pos = yield from self.clock.sync()
-        self.loop_length[self.current_track] = abs(self.loop_end[self.current_track] - self.loop_start[self.current_track])+1
-        self.play_position[self.current_track] = (self.current_pos//self.ticks)%self.loop_length[self.current_track] + self.loop_start[self.current_track]
+        for t in range(4):
+            self.loop_length[t] = abs(self.loop_end[self.current_track] - self.loop_start[t])+1
+            self.play_position[t] = (self.current_pos//self.ticks)%self.loop_length[t] + self.loop_start[t]
         #self.fine_play_position = self.current_pos%96
         #self.fine_play_position = self.play_position
         while True:
-            #print(self.clock.bpm,self.play_position, self.current_pos%64)
-        #    if ((self.current_pos//self.ticks)%16) < 16:
-            if self.play_position[self.current_track]  < 16:
-                #print("G1:",(self.current_pos//self.ticks)%16)
-                self.draw()
-                # TRIGGER SOMETHING
-                #ch1_note = None
-                #ch2_note = None
-                for y in range(self.height):
-                    #print("y:",y, "pos:", self.play_position)
-                    #if self.step_ch1[y][self.play_position] == 1:
-                    for track in range(4):
-                        if self.current_pattern.tracks[track].tr[self.play_position[track]] == 1:
-                            #print("Grid 1:", self.play_position,abs(y-7))
-                            #asyncio.async(self.trigger(abs(y-7),0))
-                            #change this to add the note at this position on this track into the trigger schedule
-                            #ch1_note = abs(y-7) #eventually look up the scale function for this note
-                            current_note = self.current_pattern.tracks[track].note[self.play_position[track]]+self.current_pattern.tracks[track].octave[self.play_position[track]]*12
-                            scaled_duration = 0
-                            entered_duration = self.current_pattern.tracks[track].duration[self.play_position[track]]
-                            if entered_duration == 1:
-                                scaled_duration = 1
-                            if entered_duration == 2:
-                                scaled_duration = 2
-                            if entered_duration == 3:
-                                scaled_duration =  3
-                            if entered_duration == 4:
-                                scaled_duration = 4
-                            elif entered_duration == 5:
-                                scaled_duration = 5
-                            elif entered_duration == 6:
-                                scaled_duration = 6
-                            velocity = 65 + self.current_pattern.tracks[track].accent[self.play_position[track]]*40
-                            #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
-                            self.insert_note(track, self.play_position[track], current_note, velocity, scaled_duration) # hard coding velocity
-                            #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track, "at pos: ", self.fine_play_position)
-                    #if self.step_ch2[y][self.play_position] == 1:
-                        #print("Grid 1:", self.play_position,abs(y-7))
-                        #asyncio.async(self.trigger(abs(y-7),1))
-                    #    ch2_note = abs(y-7) #eventually look up the scale function for this note
-                    #change this to just play out whatever is in the schedule at this point, including note offs
-                    #asyncio.async(self.trigger(ch1_note,ch2_note))
+            for t in range(4):
+                #print(self.clock.bpm,self.play_position, self.current_pos%64)
+            #    if ((self.current_pos//self.ticks)%16) < 16:
+                if self.play_position[t]  < 16:
+                    #print("G1:",(self.current_pos//self.ticks)%16)
+                    self.draw()
+                    # TRIGGER SOMETHING
                     #ch1_note = None
                     #ch2_note = None
+                    for y in range(self.height):
+                        #print("y:",y, "pos:", self.play_position)
+                        #if self.step_ch1[y][self.play_position] == 1:
+                        for track in range(4):
+                            if self.current_pattern.tracks[track].tr[self.play_position[track]] == 1:
+                                #print("Grid 1:", self.play_position,abs(y-7))
+                                #asyncio.async(self.trigger(abs(y-7),0))
+                                #change this to add the note at this position on this track into the trigger schedule
+                                #ch1_note = abs(y-7) #eventually look up the scale function for this note
+                                current_note = self.current_pattern.tracks[track].note[self.play_position[track]]+self.current_pattern.tracks[track].octave[self.play_position[track]]*12
+                                scaled_duration = 0
+                                entered_duration = self.current_pattern.tracks[track].duration[self.play_position[track]]
+                                if entered_duration == 1:
+                                    scaled_duration = 1
+                                if entered_duration == 2:
+                                    scaled_duration = 2
+                                if entered_duration == 3:
+                                    scaled_duration =  3
+                                if entered_duration == 4:
+                                    scaled_duration = 4
+                                elif entered_duration == 5:
+                                    scaled_duration = 5
+                                elif entered_duration == 6:
+                                    scaled_duration = 6
+                                velocity = 65 + self.current_pattern.tracks[track].accent[self.play_position[track]]*40
+                                #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
+                                self.insert_note(track, self.play_position[track], current_note, velocity, scaled_duration) # hard coding velocity
+                                #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track, "at pos: ", self.fine_play_position)
+                        #if self.step_ch2[y][self.play_position] == 1:
+                            #print("Grid 1:", self.play_position,abs(y-7))
+                            #asyncio.async(self.trigger(abs(y-7),1))
+                        #    ch2_note = abs(y-7) #eventually look up the scale function for this note
+                        #change this to just play out whatever is in the schedule at this point, including note offs
+                        #asyncio.async(self.trigger(ch1_note,ch2_note))
+                        #ch1_note = None
+                        #ch2_note = None
 
-                    if self.cutting:
-                        self.play_position[self.current_track] = self.next_position[self.current_track]
-                        #self.held_keys = 0
-                        print ("cutting to: ", self.next_position[self.current_track])
-                    #elif self.play_position == self.width - 1:
-                    #    self.play_position = 0
-                    elif self.play_position[self.current_track] == self.loop_end[self.current_track] and self.loop_start[self.current_track] != 0:
-                        #self.play_position = self.loop_start
-                        print ("looping to: ", self.next_position[self.current_track])
-                    #else:
-                    #    self.play_position += 1
+                        if self.cutting:
+                            self.play_position[t] = self.next_position[t]
+                            #self.held_keys = 0
+                            print ("cutting to: ", self.next_position[t])
+                        #elif self.play_position == self.width - 1:
+                        #    self.play_position = 0
+                        elif self.play_position[t] == self.loop_end[t] and self.loop_start[t] != 0:
+                            #self.play_position = self.loop_start
+                            print ("looping to: ", self.next_position[t])
+                        #else:
+                        #    self.play_position += 1
 
-                    self.cutting = False
-            else:
-                #buffer = monome.LedBuffer(self.width, self.height)
-                #buffer.led_level_set(0, 0, 0)
-                self.draw()
+                        self.cutting = False
+                else:
+                    #buffer = monome.LedBuffer(self.width, self.height)
+                    #buffer.led_level_set(0, 0, 0)
+                    self.draw()
 
-            asyncio.async(self.trigger())
-            #yield from asyncio.sleep(0.1)
-            asyncio.async(self.clock_out())
-            #yield from self.clock.sync(self.ticks)
-            yield from self.clock.sync(self.ticks)
-            self.current_pos = yield from self.clock.sync()
-            self.loop_length[self.current_track] = abs(self.loop_end[self.current_track] - self.loop_start[self.current_track])+1
-            self.play_position[self.current_track] = (self.current_pos//self.ticks)%self.loop_length[self.current_track] + self.loop_start[self.current_track]
-            #print("updated play pos: ", self.play_position)
-            #self.fine_play_position = self.current_pos%96
-            #self.fine_play_position = self.play_position
+                asyncio.async(self.trigger())
+                #yield from asyncio.sleep(0.1)
+                asyncio.async(self.clock_out())
+                #yield from self.clock.sync(self.ticks)
+                yield from self.clock.sync(self.ticks)
+                self.current_pos = yield from self.clock.sync()
+                self.loop_length[t] = abs(self.loop_end[t] - self.loop_start[t])+1
+                self.play_position[t] = (self.current_pos//self.ticks)%self.loop_length[t] + self.loop_start[t]
+                #print("updated play pos: ", self.play_position)
+                #self.fine_play_position = self.current_pos%96
+                #self.fine_play_position = self.play_position
 
     def insert_note(self,track,position,pitch,velocity,duration):
         self.insert_note_on(track,position,pitch,velocity)
@@ -259,28 +261,29 @@ class Runcible(spanned_monome.VirtualGrid):
     def trigger(self):
         #print(self.play_position, self.fine_play_position)
         #notes = list()
-        for note in self.note_off[self.play_position[self.current_track]]:
-        #for note in self.note_off[self.current_pos%64]:
-            #print("position: ", self.fine_play_position, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc)
-            #notes.append((self.channel + note.channel_inc,note.pitch+40,0))
-            #self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
-            #self.midi_out.send_messages(144,[(self.channel + note.channel_inc, note.pitch+40,0)])
-            self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch+40,0)
-        #self.midi_out.send_messages(144,notes)
-        del self.note_off[self.play_position[self.current_track]][:] #clear the current midi output once it's been sent
-        #del self.note_off[self.current_pos%64][:] #clear the current midi output once it's been sent
+        for t in range(4):
+            for note in self.note_off[self.play_position[t]]:
+            #for note in self.note_off[self.current_pos%64]:
+                #print("position: ", self.fine_play_position, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc)
+                #notes.append((self.channel + note.channel_inc,note.pitch+40,0))
+                #self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40,0],pygame.midi.time()]])
+                #self.midi_out.send_messages(144,[(self.channel + note.channel_inc, note.pitch+40,0)])
+                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch+40,0)
+            #self.midi_out.send_messages(144,notes)
+            del self.note_off[self.play_position[t]][:] #clear the current midi output once it's been sent
+            #del self.note_off[self.current_pos%64][:] #clear the current midi output once it's been sent
 
-        #notes = list()
-        for note in self.note_on[self.play_position[self.current_track]]:
-        #for note in self.note_on[self.current_pos%64]:
-            #print("position: ", self.fine_play_position, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc)
-            #notes.append((self.channel + note.channel_inc,note.pitch+40,note.velocity))
-            #self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40, note.velocity],pygame.midi.time()]])
-            #self.midi_out.send_messages(144,[(self.channel + note.channel_inc, note.pitch+40,note.velocity)])
-            self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch+40,note.velocity)
-        #self.midi_out.send_messages(144,notes)
-        del self.note_on[self.play_position[self.current_track]][:] #clear the current midi output once it's been sent
-        #del self.note_on[self.current_pos%64][:] #clear the current midi output once it's been sent
+            #notes = list()
+            for note in self.note_on[self.play_position[t]]:
+            #for note in self.note_on[self.current_pos%64]:
+                #print("position: ", self.fine_play_position, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc)
+                #notes.append((self.channel + note.channel_inc,note.pitch+40,note.velocity))
+                #self.midi_out.write([[[0x90 + self.channel + note.channel_inc, note.pitch+40, note.velocity],pygame.midi.time()]])
+                #self.midi_out.send_messages(144,[(self.channel + note.channel_inc, note.pitch+40,note.velocity)])
+                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch+40,note.velocity)
+            #self.midi_out.send_messages(144,notes)
+            del self.note_on[self.play_position[t]][:] #clear the current midi output once it's been sent
+            #del self.note_on[self.current_pos%64][:] #clear the current midi output once it's been sent
 
     #change this to use midi.write() whatever event is in the note_on and note_off queue at this point in time
     #need to create a collated note_on and note_off list that is indexed by current position
