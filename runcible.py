@@ -144,7 +144,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def play(self):
         self.current_pos = yield from self.clock.sync()
         self.loop_length[self.current_track] = abs(self.loop_end[self.current_track] - self.loop_start[self.current_track])+1
-        self.play_position[self.current_track] = (self.current_pos//self.ticks)%loop_length[self.current_track] + self.loop_start[self.current_track]
+        self.play_position[self.current_track] = (self.current_pos//self.ticks)%self.loop_length[self.current_track] + self.loop_start[self.current_track]
         #self.fine_play_position = self.current_pos%96
         #self.fine_play_position = self.play_position
         while True:
@@ -218,7 +218,7 @@ class Runcible(spanned_monome.VirtualGrid):
             yield from self.clock.sync(self.ticks)
             self.current_pos = yield from self.clock.sync()
             self.loop_length[self.current_track] = abs(self.loop_end[self.current_track] - self.loop_start[self.current_track])+1
-            self.play_position[self.current_track] = (self.current_pos//self.ticks)%loop_length[self.current_track] + self.loop_start[self.current_track]
+            self.play_position[self.current_track] = (self.current_pos//self.ticks)%self.loop_length[self.current_track] + self.loop_start[self.current_track]
             #print("updated play pos: ", self.play_position)
             #self.fine_play_position = self.current_pos%96
             #self.fine_play_position = self.play_position
