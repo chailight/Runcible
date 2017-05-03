@@ -212,6 +212,7 @@ class Runcible(spanned_monome.VirtualGrid):
             #yield from self.clock.sync(self.ticks)
             yield from self.clock.sync(self.ticks)
             self.current_pos = yield from self.clock.sync()
+            loop_length = abs(self.loop_end - self.loop_start)+1
             self.play_position = (self.current_pos//self.ticks)%loop_length
             #print("updated play pos: ", self.play_position)
             #self.fine_play_position = self.current_pos%96
