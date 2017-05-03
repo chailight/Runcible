@@ -538,54 +538,54 @@ class Runcible(spanned_monome.VirtualGrid):
             elif x == 15:
                 self.k_mode = Modes.mPattern
                 #print("Selected:", self.k_mode)
-        elif s == 1 and y > 0 and y < 7:
-            # Note entry
-            if self.k_mode == Modes.mNote:
-                if self.current_track == 0:
-                    self.step_ch1[7-y][x] ^= 1
-                elif self.current_track == 1:
-                    self.step_ch2[7-y][x] ^= 1
-                elif self.current_track == 2:
-                    self.step_ch3[7-y][x] ^= 1
-                else:
-                    self.step_ch4[7-y][x] ^= 1
-                self.current_pattern.tracks[self.current_track].note[x] = y
-                if self.current_pattern.tracks[self.current_track].duration[x] == 0:
-                    self.current_pattern.tracks[self.current_track].duration[x] = 1
-                self.current_pattern.tracks[self.current_track].tr[x] ^= 1
-                if self.current_pattern.tracks[self.current_track].tr[x] == 0:
-                    self.current_pattern.tracks[self.current_track].duration[x] = 0 # change this when param_sync is off
-                #else:
-                #    self.step_ch2[7-y][x] ^= 1
-                #    self.current_pattern.tracks[1].note[x] = y
-                #    self.current_pattern.tracks[1].duration[x] = 1
-                #    self.current_pattern.tracks[1].tr[x] ^= 1
-                self.draw()
-            # duration entry
-            if self.k_mode == Modes.mDur:
-                #if self.current_channel == 1:
-                if y == 7:
-                    #add accent toggles on top row
-                    self.current_pattern.tracks[self.current_track].accent[x] ^= 1
-                else:
-                    #enter duration
-                    self.current_pattern.tracks[self.current_track].duration[x] = 7-y
-                #else:
-                #    self.current_pattern.tracks[1].duration[x] = 7-y
-                self.draw()
-            # octave entry
-            if self.k_mode == Modes.mOct: #mid-point is row 4 - two octaves up and two octaves down, use 2nd row for accent?
-                #if self.current_channel == 1:
-                if y < 7 and y > 0:
-                    self.current_pattern.tracks[self.current_track].octave[x] = y-3
-                    #print("grid_key = ", y, "octave = ", self.current_pattern.tracks[0].octave[x])
-                #else:
-                #    if y < 6 and y > 0:
-                #        self.current_pattern.tracks[1].octave[x] = y-3
-                self.draw()
-
-        # cut and loop
-            if y == 7:
+        elif s == 1 and y > 0:
+            if y < 7:
+                # Note entry
+                if self.k_mode == Modes.mNote:
+                    if self.current_track == 0:
+                        self.step_ch1[7-y][x] ^= 1
+                    elif self.current_track == 1:
+                        self.step_ch2[7-y][x] ^= 1
+                    elif self.current_track == 2:
+                        self.step_ch3[7-y][x] ^= 1
+                    else:
+                        self.step_ch4[7-y][x] ^= 1
+                    self.current_pattern.tracks[self.current_track].note[x] = y
+                    if self.current_pattern.tracks[self.current_track].duration[x] == 0:
+                        self.current_pattern.tracks[self.current_track].duration[x] = 1
+                    self.current_pattern.tracks[self.current_track].tr[x] ^= 1
+                    if self.current_pattern.tracks[self.current_track].tr[x] == 0:
+                        self.current_pattern.tracks[self.current_track].duration[x] = 0 # change this when param_sync is off
+                    #else:
+                    #    self.step_ch2[7-y][x] ^= 1
+                    #    self.current_pattern.tracks[1].note[x] = y
+                    #    self.current_pattern.tracks[1].duration[x] = 1
+                    #    self.current_pattern.tracks[1].tr[x] ^= 1
+                    self.draw()
+                # duration entry
+                if self.k_mode == Modes.mDur:
+                    #if self.current_channel == 1:
+                    if y == 7:
+                        #add accent toggles on top row
+                        self.current_pattern.tracks[self.current_track].accent[x] ^= 1
+                    else:
+                        #enter duration
+                        self.current_pattern.tracks[self.current_track].duration[x] = 7-y
+                    #else:
+                    #    self.current_pattern.tracks[1].duration[x] = 7-y
+                    self.draw()
+                # octave entry
+                if self.k_mode == Modes.mOct: #mid-point is row 4 - two octaves up and two octaves down, use 2nd row for accent?
+                    #if self.current_channel == 1:
+                    if y < 7 and y > 0:
+                        self.current_pattern.tracks[self.current_track].octave[x] = y-3
+                        #print("grid_key = ", y, "octave = ", self.current_pattern.tracks[0].octave[x])
+                    #else:
+                    #    if y < 6 and y > 0:
+                    #        self.current_pattern.tracks[1].octave[x] = y-3
+                    self.draw()
+            # cut and loop
+            elif y == 7:
                 self.keys_held = self.keys_held + (s * 2) - 1
                 print("keys_held: ", self.keys_held)
                 # cut
