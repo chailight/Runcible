@@ -269,7 +269,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def trigger(self):
         #print(self.play_position, self.fine_play_position)
         #notes = list()
-        for t in range(4):
+        for t in current_pattern.tracks:
             for note in self.note_off[t.play_position]:
                 #print("position: ", self.fine_play_position, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc)
                 #notes.append((self.channel + note.channel_inc,note.pitch+40,0))
