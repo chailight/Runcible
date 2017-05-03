@@ -187,16 +187,16 @@ class Runcible(spanned_monome.VirtualGrid):
                     #ch1_note = None
                     #ch2_note = None
 
-#                if self.cutting:
-#                    self.play_position = self.next_position
-#                elif self.play_position == self.width - 1:
-#                    self.play_position = 0
-#                elif self.play_position == self.loop_end:
-#                    self.play_position = self.loop_start
-#                else:
-#                    self.play_position += 1
+                    if self.cutting:
+                        self.play_position = self.next_position
+                    elif self.play_position == self.width - 1:
+                        self.play_position = 0
+                    elif self.play_position == self.loop_end:
+                        self.play_position = self.loop_start
+                    else:
+                        self.play_position += 1
 
-                self.cutting = False
+                    self.cutting = False
             else:
                 #buffer = monome.LedBuffer(self.width, self.height)
                 #buffer.led_level_set(0, 0, 0)
@@ -585,16 +585,17 @@ class Runcible(spanned_monome.VirtualGrid):
                 self.draw()
 
         # cut and loop
-            self.keys_held = self.keys_held + (s * 2) - 1
-            # cut
-            if s == 1 and self.keys_held == 1:
-                self.cutting = True
-                self.next_position = x
-                self.key_last = x
-            # set loop points
-            elif s == 1 and self.keys_held == 2:
-                self.loop_start = self.key_last
-                self.loop_end = x
+            if y == 7:
+                self.keys_held = self.keys_held + (s * 2) - 1
+                # cut
+                if s == 1 and self.keys_held == 1:
+                    self.cutting = True
+                    self.next_position = x
+                    self.key_last = x
+                # set loop points
+                elif s == 1 and self.keys_held == 2:
+                    self.loop_start = self.key_last
+                    self.loop_end = x
 
     def calc_scale(self, s):
         self.cur_scale[0] = self.scale_data[s][0]
