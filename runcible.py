@@ -487,7 +487,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 buffer.led_level_set(self.play_position, 3, 0)
         else: # all other modes
             #display play position of current track
-            if ((self.current_pos//self.ticks)%16) < 16:
+            if ((self.current_pos//self.ticks)%16) > self.loop_start and ((self.current_pos//self.ticks)%16) < self.loop_end+1:
                 buffer.led_level_set(self.play_position, 0, 15)
             else:
                 buffer.led_level_set(self.play_position, 0, 0)
@@ -585,17 +585,17 @@ class Runcible(spanned_monome.VirtualGrid):
                 self.draw()
 
         # cut and loop
-        #    if y == 7:
-        #        self.keys_held = self.keys_held + (s * 2) - 1
-        #        # cut
-        #        if s == 1 and self.keys_held == 1:
+            if y == 7:
+                self.keys_held = self.keys_held + (s * 2) - 1
+                # cut
+                if s == 1 and self.keys_held == 1:
         #            self.cutting = True
         #            self.next_position = x
-        #            self.key_last = x
-        #        # set loop points
-        #        elif s == 1 and self.keys_held == 2:
-        #            self.loop_start = self.key_last
-        #            self.loop_end = x
+                    self.key_last = x
+                # set loop points
+                elif s == 1 and self.keys_held == 2:
+                    self.loop_start = self.key_last
+                    self.loop_end = x
 
     def calc_scale(self, s):
         self.cur_scale[0] = self.scale_data[s][0]
