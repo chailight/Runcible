@@ -72,6 +72,7 @@ class Track:
         self.pos_reset = False
         self.track_id = track_id
         self.play_position = 0 # will switch to position for each parameter
+        self.next_position = 0 # will switch to position for each parameter
         self.loop_start = 0  # will eventually switch to loop start / end per parameter but keep it simple for now
         self.loop_end = 15
         self.loop_count = 0
