@@ -190,12 +190,12 @@ class Runcible(spanned_monome.VirtualGrid):
 
                     if self.cutting:
                         self.play_position = self.next_position
-                    elif self.play_position == self.width - 1:
-                        self.play_position = 0
+                    #elif self.play_position == self.width - 1:
+                    #    self.play_position = 0
                     elif self.play_position == self.loop_end:
                         self.play_position = self.loop_start
-                    else:
-                        self.play_position += 1
+                    #else:
+                    #    self.play_position += 1
 
                     self.cutting = False
             else:
