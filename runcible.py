@@ -259,7 +259,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def trigger(self):
         #print(self.play_position, self.fine_play_position)
         #notes = list()
-        for note in self.note_off[self.play_position]:
+        for note in self.note_off[self.play_position[self.current_track]]:
         #for note in self.note_off[self.current_pos%64]:
             #print("position: ", self.fine_play_position, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc)
             #notes.append((self.channel + note.channel_inc,note.pitch+40,0))
@@ -267,11 +267,11 @@ class Runcible(spanned_monome.VirtualGrid):
             #self.midi_out.send_messages(144,[(self.channel + note.channel_inc, note.pitch+40,0)])
             self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch+40,0)
         #self.midi_out.send_messages(144,notes)
-        del self.note_off[self.play_position][:] #clear the current midi output once it's been sent
+        del self.note_off[self.play_position[self.current_track]][:] #clear the current midi output once it's been sent
         #del self.note_off[self.current_pos%64][:] #clear the current midi output once it's been sent
 
         #notes = list()
-        for note in self.note_on[self.play_position]:
+        for note in self.note_on[self.play_position[self.current_track]]:
         #for note in self.note_on[self.current_pos%64]:
             #print("position: ", self.fine_play_position, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc)
             #notes.append((self.channel + note.channel_inc,note.pitch+40,note.velocity))
@@ -279,7 +279,7 @@ class Runcible(spanned_monome.VirtualGrid):
             #self.midi_out.send_messages(144,[(self.channel + note.channel_inc, note.pitch+40,note.velocity)])
             self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch+40,note.velocity)
         #self.midi_out.send_messages(144,notes)
-        del self.note_on[self.play_position][:] #clear the current midi output once it's been sent
+        del self.note_on[self.play_position[self.current_track]][:] #clear the current midi output once it's been sent
         #del self.note_on[self.current_pos%64][:] #clear the current midi output once it's been sent
 
     #change this to use midi.write() whatever event is in the note_on and note_off queue at this point in time
@@ -478,24 +478,24 @@ class Runcible(spanned_monome.VirtualGrid):
         if self.k_mode == Modes.mTr:
             #track 1
             if ((self.current_pos//self.ticks)%16) < 16:
-                buffer.led_level_set(self.play_position, 0, 15)
+                buffer.led_level_set(self.play_position[self.current_track], 0, 15)
             else:
-                buffer.led_level_set(self.play_position, 0, 0)
+                buffer.led_level_set(self.play_position[self.current_track], 0, 0)
             #track 2
             if ((self.current_pos//self.ticks)%16) < 16:
-                buffer.led_level_set(self.play_position, 1, 15)
+                buffer.led_level_set(self.play_position[self.current_track], 1, 15)
             else:
-                buffer.led_level_set(self.play_position, 1, 0)
+                buffer.led_level_set(self.play_position[self.current_track], 1, 0)
             #track 3
             if ((self.current_pos//self.ticks)%16) < 16:
-                buffer.led_level_set(self.play_position, 2, 15)
+                buffer.led_level_set(self.play_position[self.current_track], 2, 15)
             else:
-                buffer.led_level_set(self.play_position, 2, 0)
+                buffer.led_level_set(self.play_position[self.current_track], 2, 0)
             #track 4
             if ((self.current_pos//self.ticks)%16) < 16:
-                buffer.led_level_set(self.play_position, 3, 15)
+                buffer.led_level_set(self.play_position[self.current_track], 3, 15)
             else:
-                buffer.led_level_set(self.play_position, 3, 0)
+                buffer.led_level_set(self.play_position[self.current_track], 3, 0)
         else: # all other modes
             #display play position of current track
             #if ((self.current_pos//self.ticks)%16) >= self.loop_start and ((self.current_pos//self.ticks)%16) <= self.loop_end:
