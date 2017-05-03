@@ -177,7 +177,7 @@ class Runcible(spanned_monome.VirtualGrid):
                                 scaled_duration = 6
                             velocity = 65 + self.current_pattern.tracks[track].accent[self.play_position]*40
                             #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
-                            self.insert_note(track, self.fine_play_position, current_note, velocity, scaled_duration) # hard coding velocity
+                            self.insert_note(track, self.play_position, current_note, velocity, scaled_duration) # hard coding velocity
                             #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track, "at pos: ", self.fine_play_position)
                     #if self.step_ch2[y][self.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
@@ -190,10 +190,12 @@ class Runcible(spanned_monome.VirtualGrid):
 
                     if self.cutting:
                         self.play_position = self.next_position
+                        print ("cutting to: ", self.next_position)
                     #elif self.play_position == self.width - 1:
                     #    self.play_position = 0
                     elif self.play_position == self.loop_end and self.loop_start <> 0:
                         self.play_position = self.loop_start
+                        print ("looping to: ", self.next_position)
                     #else:
                     #    self.play_position += 1
 
@@ -210,6 +212,7 @@ class Runcible(spanned_monome.VirtualGrid):
             yield from self.clock.sync(self.ticks)
             self.current_pos = yield from self.clock.sync()
             self.play_position = (self.current_pos//self.ticks)%16
+            print("updated play pos: ", self.play_position)
             #self.fine_play_position = self.current_pos%96
             self.fine_play_position = self.play_position 
 
@@ -249,7 +252,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def trigger(self):
         #print(self.play_position, self.fine_play_position)
         #notes = list()
-        for note in self.note_off[self.fine_play_position]:
+        for note in self.note_off[self.play_position]:
         #for note in self.note_off[self.current_pos%64]:
             #print("position: ", self.fine_play_position, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc)
             #notes.append((self.channel + note.channel_inc,note.pitch+40,0))
@@ -257,11 +260,11 @@ class Runcible(spanned_monome.VirtualGrid):
             #self.midi_out.send_messages(144,[(self.channel + note.channel_inc, note.pitch+40,0)])
             self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch+40,0)
         #self.midi_out.send_messages(144,notes)
-        del self.note_off[self.fine_play_position][:] #clear the current midi output once it's been sent
+        del self.note_off[self.play_position][:] #clear the current midi output once it's been sent
         #del self.note_off[self.current_pos%64][:] #clear the current midi output once it's been sent
 
         #notes = list()
-        for note in self.note_on[self.fine_play_position]:
+        for note in self.note_on[self.play_position]:
         #for note in self.note_on[self.current_pos%64]:
             #print("position: ", self.fine_play_position, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc)
             #notes.append((self.channel + note.channel_inc,note.pitch+40,note.velocity))
@@ -269,7 +272,7 @@ class Runcible(spanned_monome.VirtualGrid):
             #self.midi_out.send_messages(144,[(self.channel + note.channel_inc, note.pitch+40,note.velocity)])
             self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch+40,note.velocity)
         #self.midi_out.send_messages(144,notes)
-        del self.note_on[self.fine_play_position][:] #clear the current midi output once it's been sent
+        del self.note_on[self.play_position][:] #clear the current midi output once it's been sent
         #del self.note_on[self.current_pos%64][:] #clear the current midi output once it's been sent
 
     #change this to use midi.write() whatever event is in the note_on and note_off queue at this point in time
