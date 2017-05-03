@@ -188,14 +188,14 @@ class Runcible(spanned_monome.VirtualGrid):
                     #ch1_note = None
                     #ch2_note = None
 
-                    #if self.cutting:
-                    #    self.play_position = self.next_position
-                    #elif self.play_position == self.width - 1:
-                    #    self.play_position = 0
-                    #elif self.play_position == self.loop_end:
-                    #    self.play_position = self.loop_start
-                    #else:
-                    #    self.play_position += 1
+                    if self.cutting:
+                        self.play_position = self.next_position
+                    elif self.play_position == self.width - 1:
+                        self.play_position = 0
+                    elif self.play_position == self.loop_end:
+                        self.play_position = self.loop_start
+                    else:
+                        self.play_position += 1
 
                     self.cutting = False
             else:
@@ -591,8 +591,8 @@ class Runcible(spanned_monome.VirtualGrid):
                 print("keys_held: ", self.keys_held)
                 # cut
                 if s == 1 and self.keys_held == 1:
-        #            self.cutting = True
-        #            self.next_position = x
+                    self.cutting = True
+                    self.next_position = x
                     self.key_last = x
                     print("key_last: ", self.key_last)
                 # set loop points
