@@ -140,7 +140,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def play(self):
         self.current_pos = yield from self.clock.sync()
         loop_length = abs(self.loop_end - self.loop_start)+1
-        self.play_position = (self.current_pos//self.ticks)%loop_length
+        self.play_position = (self.current_pos//self.ticks)%loop_length + self.loop_start
         #self.fine_play_position = self.current_pos%96
         self.fine_play_position = self.play_position
         while True:
@@ -213,7 +213,7 @@ class Runcible(spanned_monome.VirtualGrid):
             yield from self.clock.sync(self.ticks)
             self.current_pos = yield from self.clock.sync()
             loop_length = abs(self.loop_end - self.loop_start)+1
-            self.play_position = (self.current_pos//self.ticks)%loop_length
+            self.play_position = (self.current_pos//self.ticks)%loop_length + self.loop_start
             #print("updated play pos: ", self.play_position)
             #self.fine_play_position = self.current_pos%96
             self.fine_play_position = self.play_position
@@ -493,7 +493,8 @@ class Runcible(spanned_monome.VirtualGrid):
                 buffer.led_level_set(self.play_position, 3, 0)
         else: # all other modes
             #display play position of current track
-            if ((self.current_pos//self.ticks)%16) >= self.loop_start and ((self.current_pos//self.ticks)%16) <= self.loop_end:
+            #if ((self.current_pos//self.ticks)%16) >= self.loop_start and ((self.current_pos//self.ticks)%16) <= self.loop_end:
+            if self.play_position >= self.loop_start and self.play_position <= self.loop_end:
                 buffer.led_level_set(self.play_position, 0, 15)
             else:
                 buffer.led_level_set(self.play_position, 0, 0)
