@@ -144,7 +144,8 @@ class Runcible(spanned_monome.VirtualGrid):
         self.fine_play_position = self.play_position
         while True:
             #print(self.clock.bpm,self.play_position, self.current_pos%64)
-            if ((self.current_pos//self.ticks)%16) < 16:
+        #    if ((self.current_pos//self.ticks)%16) < 16:
+            if self.play_position  < 16:
                 #print("G1:",(self.current_pos//self.ticks)%16)
                 self.draw()
                 # TRIGGER SOMETHING
