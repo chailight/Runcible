@@ -5,13 +5,14 @@
 #fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops? maybe just close the midi stream?
 #fix polyphonic channels - insert note not finding all notes on a channel in a given time slot? i.e. second drum hit in same time masks first (e.g. snare vs. kick)
 #fix same notes on different channels masking each other
+#fix needs a 2D note grid per track, instead of just a 1D list, and then iterate over y at each position to retrieve all notes
 #add input/display for velocity?, and probability, as per kria
 #add scale setting for both channels as per kria
 #add presets: store and recall - as per kria
 #add persistence of presets
 #add mutes per channel - long press on the channel?
-#make  looping indepndent on all channels - currently one global play_position - need a per track position
 #fix cutting - has to do with keys held
+#fix looping around the end of the loop start_loop is higher than end_loop
 #make looping independent for each parameter
 #adjust use of duration settings 1/8, 1/16 & 1/32 notes?  (6 duration positions = 1/32, 1/16, 1/8, 1/4, 1/2, 1)
 #make note entry screen monophonic? - clear off other notes in that column if new note is entered - this should be configurable maybe on trigger page?
