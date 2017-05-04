@@ -392,9 +392,10 @@ class Runcible(spanned_monome.VirtualGrid):
                     buffer.led_level_set(x, 0, 0)
                 #if self.current_channel == 1:
                     #fill a column top down in the x position
-                for i in range (1,self.self.current_track.duration[x]+1): #ignore top row
+                # only pick up the first note duration - can't do polyphonic duration
+                for i in range (1,self.current_track.duration[x][0]+1): #ignore top row
                     buffer.led_level_set(x, i, 15)
-                for i in range (self.self.current_track.duration[x]+1,7): #ignore bottom row
+                for i in range (self.current_track.duration[x][0]+1,7): #ignore bottom row
                     buffer.led_level_set(x, i, 0)
                 #elif self.current_channel == 2:
                     #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
@@ -543,8 +544,12 @@ class Runcible(spanned_monome.VirtualGrid):
                     else:
                         self.current_track.note[x].remove(y)
                         print("remove: ", y, "at ", x)
-                    if self.current_track.duration[x][y] == 0:
-                        self.current_track.duration[x][y] = 1
+                    try:
+                        i = self.current_track.note[x].index(y}
+                        if self.current_track.duration[x][i] == 0:
+                            self.current_track.duration[x][i] = 1
+                    except:
+                        print("note: ", y, "not found")
                     # toggle the trigger if there are no notes
                     if len(self.current_track.note[x]) > 0:
                         self.current_track.tr[x] = 1
@@ -569,7 +574,7 @@ class Runcible(spanned_monome.VirtualGrid):
                         self.current_track.accent[x] ^= 1
                     else:
                         #enter duration
-                        self.current_track.duration[x] = 7-y
+                        self.current_track.duration[x][0] = 7-y
                     #else:
                     #    self.current_pattern.tracks[1].duration[x] = 7-y
                     self.draw()
