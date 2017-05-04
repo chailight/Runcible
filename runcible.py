@@ -3,14 +3,12 @@
 #TODO:
 #fix clear all on disconnect
 #fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops? maybe just close the midi stream?
-#fix polyphonic channels - insert note not finding all notes on a channel in a given time slot? i.e. second drum hit in same time masks first (e.g. snare vs. kick)
-#fix same notes on different channels masking each other
-#fix needs a 2D note grid per track, instead of just a 1D list, and then iterate over y at each position to retrieve all notes
+#consider per row velocity settings for polyphonic tracks
 #add input/display for velocity?, and probability, as per kria
 #add scale setting for both channels as per kria
 #add presets: store and recall - as per kria
 #add persistence of presets
-#add mutes per channel - long press on the channel?
+#add mutes per channel - long press on the channel? - maybe channel mutes on trigger page - maybe also per row mutes somewhere?
 #fix cutting - has to do with keys held
 #fix looping around the end of the loop start_loop is higher than end_loop
 #make looping independent for each parameter
@@ -183,11 +181,11 @@ class Runcible(spanned_monome.VirtualGrid):
                     #asyncio.async(self.trigger(abs(y-7),0))
                     #change this to add the note at this position on this track into the trigger schedule
                     #ch1_note = abs(y-7) #eventually look up the scale function for this note
-                    print("notes: ", track.note[track.play_position])
-                    print("duration: ", track.duration[track.play_position])
-                    print("octave: ", track.octave[track.play_position])
+                    #print("notes: ", track.note[track.play_position])
+                    #print("duration: ", track.duration[track.play_position])
+                    #print("octave: ", track.octave[track.play_position])
                     for i in range(len(track.note[track.play_position])):
-                        print(i,len(track.note[track.play_position]))
+                    #    print(i,len(track.note[track.play_position]))
                         current_note = track.note[track.play_position][i]+track.octave[track.play_position]*12
                         scaled_duration = 0
                         entered_duration = track.duration[track.play_position]
@@ -207,7 +205,7 @@ class Runcible(spanned_monome.VirtualGrid):
                         velocity = 65
                         #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
                         self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
-                        print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
+                        #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
 
                 #if self.cutting:
                     #t.play_position = t.next_position
