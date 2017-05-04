@@ -57,11 +57,12 @@ class Note:
 class Track:
     def __init__(self,track_id):
         self.num_params = 4
+        #self.tr = [[0] for i in range(16)]
         self.tr = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-        self.octave = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-        self.note = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-        self.duration = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-        self.accent = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+        self.octave = [[0] for i in range(16)]
+        self.note = [[0] for i in range(16)]
+        self.duration = [[0] for i in range(16)]
+        self.velocity = [[0] for i in range(16)]
         self.params = [[0] * self.num_params for i in range (16)] #initialise a 4x16 array
         self.dur_mul = 1; #duration multiplier
         self.lstart = [[0] * self.num_params]
@@ -123,7 +124,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.k_mod_mode = ModModes.modNone
         self.state = State()
         #self.note_on = [[Note()] for i in range(96)] #full resolution
-        self.note_on = [[Note()] for i in range(16)] 
+        self.note_on = [[Note()] for i in range(16)]
         #self.note_off = [[Note()] for i in range(96)]
         self.note_off = [[Note()] for i in range(16)]
         #call ready() directly because virtual device doesn't get triggered
@@ -182,25 +183,26 @@ class Runcible(spanned_monome.VirtualGrid):
                     #asyncio.async(self.trigger(abs(y-7),0))
                     #change this to add the note at this position on this track into the trigger schedule
                     #ch1_note = abs(y-7) #eventually look up the scale function for this note
-                    current_note = track.note[track.play_position]+track.octave[track.play_position]*12
-                    scaled_duration = 0
-                    entered_duration = track.duration[track.play_position]
-                    if entered_duration == 1:
-                        scaled_duration = 1
-                    if entered_duration == 2:
-                        scaled_duration = 2
-                    if entered_duration == 3:
-                        scaled_duration =  3
-                    if entered_duration == 4:
-                        scaled_duration = 4
-                    elif entered_duration == 5:
-                        scaled_duration = 5
-                    elif entered_duration == 6:
-                        scaled_duration = 6
-                    velocity = 65 + track.accent[track.play_position]*40
-                    #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
-                    self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
-                    print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
+                    for i in len(track.note[track.play_position]):
+                        current_note = track.note[track.play_position][i]+track.octave[track.play_position][i]*12
+                        scaled_duration = 0
+                        entered_duration = track.duration[track.play_position][i]
+                        if entered_duration == 1:
+                            scaled_duration = 1
+                        if entered_duration == 2:
+                            scaled_duration = 2
+                        if entered_duration == 3:
+                            scaled_duration =  3
+                        if entered_duration == 4:
+                            scaled_duration = 4
+                        elif entered_duration == 5:
+                            scaled_duration = 5
+                        elif entered_duration == 6:
+                            scaled_duration = 6
+                        velocity = track.velocity[track.play_position][i]
+                        #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
+                        self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
+                        print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
 
                 #if self.cutting:
                     #t.play_position = t.next_position
@@ -535,10 +537,19 @@ class Runcible(spanned_monome.VirtualGrid):
                         self.step_ch3[7-y][x] ^= 1
                     else:
                         self.step_ch4[7-y][x] ^= 1
-                    self.current_track.note[x] = y
-                    if self.current_track.duration[x] == 0:
-                        self.current_track.duration[x] = 1
-                    self.current_track.tr[x] ^= 1
+                    if y not in self.current_track.note[x]:
+                        self.current_track.note[x].append(y)
+                    else:
+                        self.current_track.note[x].remove(y)
+                    if self.current_track.duration[x][y] == 0:
+                        self.current_track.duration[x][y] = 1
+                    # toggle the trigger if there are no notes
+                    trigger = 0
+                    if len(self.current_track.note[x]) > 0:
+                        self.current_track.tr[x] = 1
+                    else:
+                        self.current_track.tr[x] = 0
+
                     #if self.current_track.tr[x] == 0:
                     #    self.current_track.duration[x] = 0 # change this when param_sync is off
                     #else:
