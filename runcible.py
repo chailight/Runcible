@@ -184,6 +184,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     #change this to add the note at this position on this track into the trigger schedule
                     #ch1_note = abs(y-7) #eventually look up the scale function for this note
                     for i in range(len(track.note[track.play_position])):
+                        print(i,len(track.note[track.play_position]))
                         current_note = track.note[track.play_position][i]+track.octave[track.play_position][i]*12
                         scaled_duration = 0
                         entered_duration = track.duration[track.play_position][i]
