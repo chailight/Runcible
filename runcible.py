@@ -545,7 +545,7 @@ class Runcible(spanned_monome.VirtualGrid):
                         self.current_track.note[x].remove(y)
                         print("remove: ", y, "at ", x)
                     try:
-                        i = self.current_track.note[x].index(y}
+                        i = self.current_track.note[x].index(y)
                         if self.current_track.duration[x][i] == 0:
                             self.current_track.duration[x][i] = 1
                     except:
