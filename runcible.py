@@ -203,7 +203,8 @@ class Runcible(spanned_monome.VirtualGrid):
                             scaled_duration = 5
                         elif entered_duration == 6:
                             scaled_duration = 6
-                        velocity = track.velocity[track.play_position]
+                        #velocity = track.velocity[track.play_position]
+                        velocity = 65
                         #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
                         self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
                         print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
