@@ -183,7 +183,8 @@ class Runcible(spanned_monome.VirtualGrid):
                     #asyncio.async(self.trigger(abs(y-7),0))
                     #change this to add the note at this position on this track into the trigger schedule
                     #ch1_note = abs(y-7) #eventually look up the scale function for this note
-                    for i in range(len(track.note[track.play_position])):
+                    print("notes: ", track.note[track.play_position])
+                    for i in range(len(track.note[track.play_position])-1):
                         print(i,len(track.note[track.play_position]))
                         current_note = track.note[track.play_position][i]+track.octave[track.play_position][i]*12
                         scaled_duration = 0
