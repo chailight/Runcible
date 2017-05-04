@@ -59,10 +59,10 @@ class Track:
         self.num_params = 4
         #self.tr = [[0] for i in range(16)]
         self.tr = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-        self.octave = [list() for i in range(16)]
+        self.octave = [0 for i in range(16)]
         self.note = [list() for i in range(16)]
-        self.duration = [list() for i in range(16)]
-        self.velocity = [list() for i in range(16)]
+        self.duration = [0 for i in range(16)]
+        self.velocity = [0 for i in range(16)]
         self.params = [[0] * self.num_params for i in range (16)] #initialise a 4x16 array
         self.dur_mul = 1; #duration multiplier
         self.lstart = [[0] * self.num_params]
@@ -184,11 +184,13 @@ class Runcible(spanned_monome.VirtualGrid):
                     #change this to add the note at this position on this track into the trigger schedule
                     #ch1_note = abs(y-7) #eventually look up the scale function for this note
                     print("notes: ", track.note[track.play_position])
-                    for i in range(len(track.note[track.play_position])-1):
+                    print("duration: ", track.duration[track.play_position])
+                    print("octave: ", track.octave[track.play_position])
+                    for i in range(len(track.note[track.play_position])):
                         print(i,len(track.note[track.play_position]))
-                        current_note = track.note[track.play_position][i]+track.octave[track.play_position][i]*12
+                        current_note = track.note[track.play_position][i]+track.octave[track.play_position]*12
                         scaled_duration = 0
-                        entered_duration = track.duration[track.play_position][i]
+                        entered_duration = track.duration[track.play_position]
                         if entered_duration == 1:
                             scaled_duration = 1
                         if entered_duration == 2:
@@ -201,7 +203,7 @@ class Runcible(spanned_monome.VirtualGrid):
                             scaled_duration = 5
                         elif entered_duration == 6:
                             scaled_duration = 6
-                        velocity = track.velocity[track.play_position][i]
+                        velocity = track.velocity[track.play_position]
                         #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
                         self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
                         #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
@@ -394,10 +396,9 @@ class Runcible(spanned_monome.VirtualGrid):
                     buffer.led_level_set(x, 0, 0)
                 #if self.current_channel == 1:
                     #fill a column top down in the x position
-                # only pick up the first note duration - can't do polyphonic duration
-                for i in range (1,self.current_track.duration[x][0]+1): #ignore top row
+                for i in range (1,self.current_track.duration[x]+1): #ignore top row
                     buffer.led_level_set(x, i, 15)
-                for i in range (self.current_track.duration[x][0]+1,7): #ignore bottom row
+                for i in range (self.current_track.duration[x]+1,7): #ignore bottom row
                     buffer.led_level_set(x, i, 0)
                 #elif self.current_channel == 2:
                     #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
@@ -546,12 +547,8 @@ class Runcible(spanned_monome.VirtualGrid):
                     else:
                         self.current_track.note[x].remove(y)
                         print("remove: ", y, "at ", x)
-                    try:
-                        i = self.current_track.note[x].index(y)
-                        if self.current_track.duration[x][i] == 0:
-                            self.current_track.duration[x][i] = 1
-                    except:
-                        print("note: ", y, "not found")
+                        if self.current_track.duration[x] == 0:
+                            self.current_track.duration[x] = 1
                     # toggle the trigger if there are no notes
                     if len(self.current_track.note[x]) > 0:
                         self.current_track.tr[x] = 1
