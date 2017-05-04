@@ -206,7 +206,7 @@ class Runcible(spanned_monome.VirtualGrid):
                         velocity = track.velocity[track.play_position]
                         #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
                         self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
-                        #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
+                        print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
 
                 #if self.cutting:
                     #t.play_position = t.next_position
@@ -371,7 +371,7 @@ class Runcible(spanned_monome.VirtualGrid):
             for x in range(self.width):
                 #if self.current_channel == 1:
                 #fill a column bottom up in the x position
-                current_oct = self.current.track.octave[x]
+                current_oct = self.current_track.octave[x]
                 if current_oct >= 0:
                     #print("start = ", 1, "end = ", 4-current_oct)
                     for i in range (4-current_oct,5):
@@ -547,8 +547,8 @@ class Runcible(spanned_monome.VirtualGrid):
                     else:
                         self.current_track.note[x].remove(y)
                         print("remove: ", y, "at ", x)
-                        if self.current_track.duration[x] == 0:
-                            self.current_track.duration[x] = 1
+                    if self.current_track.duration[x] == 0:
+                        self.current_track.duration[x] = 1
                     # toggle the trigger if there are no notes
                     if len(self.current_track.note[x]) > 0:
                         self.current_track.tr[x] = 1
