@@ -59,10 +59,10 @@ class Track:
         self.num_params = 4
         #self.tr = [[0] for i in range(16)]
         self.tr = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-        self.octave = [[0] for i in range(16)]
-        self.note = [[0] for i in range(16)]
-        self.duration = [[0] for i in range(16)]
-        self.velocity = [[0] for i in range(16)]
+        self.octave = [list() for i in range(16)]
+        self.note = [list() for i in range(16)]
+        self.duration = [list() for i in range(16)]
+        self.velocity = [list() for i in range(16)]
         self.params = [[0] * self.num_params for i in range (16)] #initialise a 4x16 array
         self.dur_mul = 1; #duration multiplier
         self.lstart = [[0] * self.num_params]
