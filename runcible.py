@@ -202,7 +202,7 @@ class Runcible(spanned_monome.VirtualGrid):
                         velocity = track.velocity[track.play_position][i]
                         #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
                         self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
-                        print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
+                        #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
 
                 #if self.cutting:
                     #t.play_position = t.next_position
@@ -539,16 +539,19 @@ class Runcible(spanned_monome.VirtualGrid):
                         self.step_ch4[7-y][x] ^= 1
                     if y not in self.current_track.note[x]:
                         self.current_track.note[x].append(y)
+                        print("append: ", y, "at ", x)
                     else:
                         self.current_track.note[x].remove(y)
+                        print("remove: ", y, "at ", x)
                     if self.current_track.duration[x][y] == 0:
                         self.current_track.duration[x][y] = 1
                     # toggle the trigger if there are no notes
-                    trigger = 0
                     if len(self.current_track.note[x]) > 0:
                         self.current_track.tr[x] = 1
+                        print("note len: ", self.current_track.note[x])
                     else:
                         self.current_track.tr[x] = 0
+                        print("note len: ", self.current_track.note[x])
 
                     #if self.current_track.tr[x] == 0:
                     #    self.current_track.duration[x] = 0 # change this when param_sync is off
