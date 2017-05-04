@@ -61,7 +61,7 @@ class Track:
         self.tr = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         self.octave = [0 for i in range(16)]
         self.note = [list() for i in range(16)]
-        self.duration = [0 for i in range(16)]
+        self.duration = [1 for i in range(16)]
         self.velocity = [0 for i in range(16)]
         self.params = [[0] * self.num_params for i in range (16)] #initialise a 4x16 array
         self.dur_mul = 1; #duration multiplier
@@ -574,7 +574,7 @@ class Runcible(spanned_monome.VirtualGrid):
                         print("accent shifting to velocity soon")
                     else:
                         #enter duration
-                        self.current_track.duration[x][0] = 7-y
+                        self.current_track.duration[x] = 7-y
                     #else:
                     #    self.current_pattern.tracks[1].duration[x] = 7-y
                     self.draw()
