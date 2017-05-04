@@ -390,10 +390,10 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(15,7,0)
             for x in range(self.width):
                 #draw the accent toggles - this will move to a velocity page?
-                if self.current_track.accent[x]:
-                    buffer.led_level_set(x, 0, 15)
-                else:
-                    buffer.led_level_set(x, 0, 0)
+                #if self.current_track.velocity[x]:
+                #    buffer.led_level_set(x, 0, 15)
+                #else:
+                #    buffer.led_level_set(x, 0, 0)
                 #if self.current_channel == 1:
                     #fill a column top down in the x position
                 for i in range (1,self.current_track.duration[x]+1): #ignore top row
@@ -570,7 +570,8 @@ class Runcible(spanned_monome.VirtualGrid):
                     #if self.current_channel == 1:
                     if y == 7:
                         #add accent toggles on top row
-                        self.current_track.accent[x] ^= 1
+                        #self.current_track.accent[x] ^= 1
+                        print("accent shifting to velocity soon")
                     else:
                         #enter duration
                         self.current_track.duration[x][0] = 7-y
