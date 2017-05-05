@@ -61,7 +61,7 @@ class Track:
         self.octave = [0 for i in range(16)]
         self.note = [list() for i in range(16)]
         self.duration = [1 for i in range(16)]
-        self.velocity = [0 for i in range(16)]
+        self.velocity = [3 for i in range(16)]
         self.params = [[0] * self.num_params for i in range (16)] #initialise a 4x16 array
         self.dur_mul = 1; #duration multiplier
         self.lstart = [[0] * self.num_params]
@@ -203,6 +203,7 @@ class Runcible(spanned_monome.VirtualGrid):
                         elif entered_duration == 6:
                             scaled_duration = 6
                         velocity = track.velocity[track.play_position]*20
+                        print("velocity: ", velocity)
                         #velocity = 65
                         #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
                         self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
@@ -617,6 +618,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 if self.k_mode == Modes.mVel:
                     #if self.current_channel == 1:
                     self.current_track.velocity[x] = 7-y
+                    print("entered velocity: ", self.current_track.velocity[x])
                     #else:
                     #    self.current_pattern.tracks[1].duration[x] = 7-y
                     self.draw()
