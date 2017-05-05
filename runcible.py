@@ -617,7 +617,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     self.draw()
                 if self.k_mode == Modes.mVel:
                     #if self.current_channel == 1:
-                    self.current_track.velocity[x] = 7-y
+                    self.current_track.velocity[x] = y
                     print("entered velocity: ", self.current_track.velocity[x])
                     #else:
                     #    self.current_pattern.tracks[1].duration[x] = 7-y
