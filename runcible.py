@@ -202,11 +202,11 @@ class Runcible(spanned_monome.VirtualGrid):
                             scaled_duration = 5
                         elif entered_duration == 6:
                             scaled_duration = 6
-                        #velocity = track.velocity[track.play_position]
-                        velocity = 65
+                        velocity = track.velocity[track.play_position]*20
+                        #velocity = 65
                         #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
                         self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
-                        #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
+                        print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
 
                 #if self.cutting:
                     #t.play_position = t.next_position
@@ -427,9 +427,9 @@ class Runcible(spanned_monome.VirtualGrid):
                 #    buffer.led_level_set(x, 0, 0)
                 #if self.current_channel == 1:
                     #fill a column top down in the x position
-                for i in range (self.current_track.velocity[x]+1,7): #ignore bottom row
+                for i in range (self.current_track.velocity[x],7): #ignore bottom row
                     buffer.led_level_set(x, i, 15)
-                for i in range (0,self.current_track.velocity[x]+1): #ignore top row
+                for i in range (0,self.current_track.velocity[x]): #ignore top row
                     buffer.led_level_set(x, i, 0)
                 #elif self.current_channel == 2:
                     #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
