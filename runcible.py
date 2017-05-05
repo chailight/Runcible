@@ -38,6 +38,7 @@ class Modes(Enum):
     mDur = 4
     mScale = 5
     mPattern = 6
+    mVel = 7
 
 class ModModes(Enum):
     modNone = 1
@@ -338,6 +339,9 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(6,7,0)  #set the channel 2 indicator off
             buffer.led_level_set(7,7,0)  #set the channel 3 indicator off
             buffer.led_level_set(8,7,0)  #set the channel 4 indicator off
+            buffer.led_level_set(9,7,0)
+            buffer.led_level_set(14,7,0)
+            buffer.led_level_set(15,7,0)
             # display triggers for each track
             for x in range(self.width):
                 for track in self.current_pattern.tracks:
@@ -347,6 +351,7 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(6,7,15)
             buffer.led_level_set(7,7,0)
             buffer.led_level_set(8,7,0)
+            buffer.led_level_set(9,7,0)
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,0)
             for x in range(self.width):
@@ -365,6 +370,7 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(6,7,0)
             buffer.led_level_set(7,7,15)
             buffer.led_level_set(8,7,0)
+            buffer.led_level_set(9,7,0)
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,0)
             for x in range(self.width):
@@ -385,6 +391,7 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(6,7,0)
             buffer.led_level_set(7,7,0)
             buffer.led_level_set(8,7,15)
+            buffer.led_level_set(9,7,0)
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,0)
             for x in range(self.width):
@@ -404,11 +411,37 @@ class Runcible(spanned_monome.VirtualGrid):
                     #    buffer.led_level_set(x, i, 15)
                     #for i in range (self.current_pattern.tracks[1].duration[x]+1,7):
                     #    buffer.led_level_set(x, i, 0)
+        elif self.k_mode == Modes.mVel:
+            buffer.led_level_set(5,7,0)
+            buffer.led_level_set(6,7,0)
+            buffer.led_level_set(7,7,0)
+            buffer.led_level_set(8,7,0)
+            buffer.led_level_set(9,7,15)
+            buffer.led_level_set(14,7,0)
+            buffer.led_level_set(15,7,0)
+            for x in range(self.width):
+                #draw the accent toggles - this will move to a velocity page?
+                #if self.current_track.velocity[x]:
+                #    buffer.led_level_set(x, 0, 15)
+                #else:
+                #    buffer.led_level_set(x, 0, 0)
+                #if self.current_channel == 1:
+                    #fill a column top down in the x position
+                for i in range (6,self.current_track.velocity[x]+1): #ignore bottom row
+                    buffer.led_level_set(x, i, 15)
+                for i in range (self.current_track.velocity[x]+1,0): #ignore top row
+                    buffer.led_level_set(x, i, 0)
+                #elif self.current_channel == 2:
+                    #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
+                    #    buffer.led_level_set(x, i, 15)
+                    #for i in range (self.current_pattern.tracks[1].duration[x]+1,7):
+                    #    buffer.led_level_set(x, i, 0)
         elif self.k_mode == Modes.mScale:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,0)
             buffer.led_level_set(7,7,0)
             buffer.led_level_set(8,7,0)
+            buffer.led_level_set(9,7,0)
             buffer.led_level_set(14,7,15)
             buffer.led_level_set(15,7,0)
         elif self.k_mode == Modes.mPattern:
@@ -416,6 +449,7 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(6,7,0)
             buffer.led_level_set(7,7,0)
             buffer.led_level_set(8,7,0)
+            buffer.led_level_set(9,7,0)
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,15)
         if self.k_mod_mode == ModModes.modLoop:
@@ -513,6 +547,9 @@ class Runcible(spanned_monome.VirtualGrid):
             elif x == 8:
                 self.k_mode = Modes.mDur
                 #print("Selected:", self.k_mode)
+            elif x == 9:
+                self.k_mode = Modes.mVel
+                #print("Selected:", self.k_mode)
             elif x == 10:
                 self.k_mod_mode = ModModes.modLoop
                 #print("Selected:", self.k_mod_mode)
@@ -574,6 +611,12 @@ class Runcible(spanned_monome.VirtualGrid):
                     else:
                         #enter duration
                         self.current_track.duration[x] = 7-y
+                    #else:
+                    #    self.current_pattern.tracks[1].duration[x] = 7-y
+                    self.draw()
+                if self.k_mode == Modes.mVel:
+                    #if self.current_channel == 1:
+                    self.current_track.velocity[x] = y
                     #else:
                     #    self.current_pattern.tracks[1].duration[x] = 7-y
                     self.draw()
