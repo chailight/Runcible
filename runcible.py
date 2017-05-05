@@ -427,9 +427,9 @@ class Runcible(spanned_monome.VirtualGrid):
                 #    buffer.led_level_set(x, 0, 0)
                 #if self.current_channel == 1:
                     #fill a column top down in the x position
-                for i in range (6,self.current_track.velocity[x]+1): #ignore bottom row
+                for i in range (self.current_track.velocity[x]+1,6): #ignore bottom row
                     buffer.led_level_set(x, i, 15)
-                for i in range (self.current_track.velocity[x]+1,0): #ignore top row
+                for i in range (0,self.current_track.velocity[x]+1): #ignore top row
                     buffer.led_level_set(x, i, 0)
                 #elif self.current_channel == 2:
                     #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
