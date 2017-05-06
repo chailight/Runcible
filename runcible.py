@@ -165,6 +165,8 @@ class Runcible(spanned_monome.VirtualGrid):
                            [48,1,3,1,2,1,2,2],
                            [48,0,0,0,0,0,0,0],
                            [48,0,0,0,0,0,0,0],
+                           [48,0,0,0,0,0,0,0],
+                           [48,0,0,0,0,0,0,0],
                            [48,0,0,0,0,0,0,0]]
         asyncio.async(self.play())
 
@@ -205,7 +207,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     #print("octave: ", track.octave[track.play_position])
                     for i in range(len(track.note[track.play_position])):
                     #    print(i,len(track.note[track.play_position]))
-                        self.calc_scale(0) # change this later - should be set in grid_key
+                        #self.calc_scale(0) # change this later - should be set in grid_key
                         current_note = self.cur_scale[track.note[track.play_position][i]-1]+track.octave[track.play_position]*12
                         print("input note: ", track.note[track.play_position][i], "scaled_note: ", self.cur_scale[track.note[track.play_position][i]-1], "current note: ", current_note)
                         #print("input note: ", track.note[track.playposition[i], "scaled_note: ", current_note)
@@ -473,11 +475,11 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(15,7,0)
             buffer.led_level_set(15,7,0)
             #clear any previous scale
-            for ix in range (2):
+            for ix in range (3):
                 for iy in range (1,7):
                     buffer.led_level_set(ix,iy, 0)
             # show the selected scale 
-            buffer.led_level_set(self.cur_scale_id//6,self.cur_scale_id%6, 15)
+            buffer.led_level_set(self.cur_scale_id//6,7-self.cur_scale_id%6, 15)
         elif self.k_mode == Modes.mPattern:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,0)
