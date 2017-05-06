@@ -291,7 +291,7 @@ class Runcible(spanned_monome.VirtualGrid):
             self.note_off[position].append(new_note)
 
     def calc_scale(self, s):
-        self.cur_scale[0] = self.scale_data[s][0]
+        self.cur_scale[0] = self.scale_data[s][0] + self.cur_trans
         for i1 in range(1,8):
             self.cur_scale[i1] = self.cur_scale[i1-1] + self.scale_data[s][i1]
 
@@ -667,13 +667,15 @@ class Runcible(spanned_monome.VirtualGrid):
                     self.draw()
                 if self.k_mode == Modes.mScale:
                     #if self.current_channel == 1:
-                    if x < 4:
+                    if x < 3:
                         if y < 7 and y > 0:
                             self.cur_scale_id = y-1+x*6
                             self.calc_scale(self.cur_scale_id)
                             print("selected scale: ", self.cur_scale_id)
                     else:
+                        # transpose the scale up or down by semitones from the mid point (col 7)
                         self.cur_trans = x-7
+                        self.calc_scale(self.cur_scale_id)
                     #else:
                     #    self.current_pattern.tracks[1].duration[x] = 7-y
                     self.draw()
