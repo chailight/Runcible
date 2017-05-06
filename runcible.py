@@ -84,7 +84,6 @@ class Track:
 class Pattern:
     def __init__(self):
         self.tracks = [Track(i) for i in range(4)]
-        self.cur_scale = [0,0,0,0,0,0,0,0]
         #default scales - all starting at middle C
         self.scale_data = [[60,2,2,1,2,2,2,1],
                            [60,2,1,2,2,1,2,2],
@@ -103,10 +102,6 @@ class Pattern:
                            [60,0,0,0,0,0,0,0],
                            [60,0,0,0,0,0,0,0]]
 
-    def calc_scale(self, s):
-        self.cur_scale[0] = self.scale_data[s][0]
-        for i1 in range(1,8):
-            self.cur_scale[i1] = self.cur_scale[i1-1] + self.scale_data[s][i1]
 
 class Preset:
     def __init__(self):
@@ -209,7 +204,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     #print("octave: ", track.octave[track.play_position])
                     for i in range(len(track.note[track.play_position])):
                     #    print(i,len(track.note[track.play_position]))
-                        self.current_pattern.calc_scale(self.scale)
+                        self.calc_scale(0) # change this later
                         current_note = self.current_pattern.cur_scale[track.note[track.play_position][i]]+track.octave[track.play_position]*12
                         print("input note: ", track.note[track.playposition][i], "scaled_note: ", self.current_pattern.cur_scale[track.note[track.play_position][i]])
                         #print("input note: ", track.note[track.playposition[i], "scaled_note: ", current_note)
@@ -289,6 +284,11 @@ class Runcible(spanned_monome.VirtualGrid):
         if not already_exists:
             new_note = Note(track,pitch,0)
             self.note_off[position].append(new_note)
+
+    def calc_scale(self, s):
+        self.cur_scale[0] = self.scale_data[s][0]
+        for i1 in range(1,8):
+            self.cur_scale[i1] = self.cur_scale[i1-1] + self.scale_data[s][i1]
 
 # to be removed
     #def gridToSpan(self,x,y):
