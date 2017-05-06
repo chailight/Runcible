@@ -85,22 +85,6 @@ class Pattern:
     def __init__(self):
         self.tracks = [Track(i) for i in range(4)]
         #default scales - all starting at middle C
-        self.scale_data = [[60,2,2,1,2,2,2,1],
-                           [60,2,1,2,2,1,2,2],
-                           [60,2,2,1,2,2,2,1],
-                           [60,2,1,2,2,2,1,2],
-                           [60,1,2,2,2,1,2,2],
-                           [60,2,2,2,1,2,2,1],
-                           [60,2,2,1,2,2,1,2],
-                           [60,2,1,2,2,1,2,2],
-                           [60,1,2,2,1,2,2,2],
-                           [60,3,2,2,3,2,3,2],
-                           [60,2,2,3,2,3,2,2],
-                           [60,3,2,1,1,3,2,3],
-                           [60,1,3,1,2,1,2,2],
-                           [60,0,0,0,0,0,0,0],
-                           [60,0,0,0,0,0,0,0],
-                           [60,0,0,0,0,0,0,0]]
 
 
 class Preset:
@@ -165,6 +149,22 @@ class Runcible(spanned_monome.VirtualGrid):
         self.current_preset = self.state.presets[0]
         self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
         self.current_track = self.current_pattern.tracks[0]
+        self.scale_data = [[60,2,2,1,2,2,2,1],
+                           [60,2,1,2,2,1,2,2],
+                           [60,2,2,1,2,2,2,1],
+                           [60,2,1,2,2,2,1,2],
+                           [60,1,2,2,2,1,2,2],
+                           [60,2,2,2,1,2,2,1],
+                           [60,2,2,1,2,2,1,2],
+                           [60,2,1,2,2,1,2,2],
+                           [60,1,2,2,1,2,2,2],
+                           [60,3,2,2,3,2,3,2],
+                           [60,2,2,3,2,3,2,2],
+                           [60,3,2,1,1,3,2,3],
+                           [60,1,3,1,2,1,2,2],
+                           [60,0,0,0,0,0,0,0],
+                           [60,0,0,0,0,0,0,0],
+                           [60,0,0,0,0,0,0,0]]
         asyncio.async(self.play())
 
     #def disconnect(self):
