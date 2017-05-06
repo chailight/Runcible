@@ -149,22 +149,22 @@ class Runcible(spanned_monome.VirtualGrid):
         self.current_preset = self.state.presets[0]
         self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
         self.current_track = self.current_pattern.tracks[0]
-        self.scale_data = [[36,2,2,1,2,2,2,1],
-                           [36,2,1,2,2,1,2,2],
-                           [36,2,2,1,2,2,2,1],
-                           [36,2,1,2,2,2,1,2],
-                           [36,1,2,2,2,1,2,2],
-                           [36,2,2,2,1,2,2,1],
-                           [36,2,2,1,2,2,1,2],
-                           [36,2,1,2,2,1,2,2],
-                           [36,1,2,2,1,2,2,2],
-                           [36,3,2,2,3,2,3,2],
-                           [36,2,2,3,2,3,2,2],
-                           [36,3,2,1,1,3,2,3],
-                           [36,1,3,1,2,1,2,2],
-                           [36,0,0,0,0,0,0,0],
-                           [36,0,0,0,0,0,0,0],
-                           [60,0,0,0,0,0,0,0]]
+        self.scale_data = [[48,2,2,1,2,2,2,1],
+                           [48,2,1,2,2,1,2,2],
+                           [48,2,2,1,2,2,2,1],
+                           [48,2,1,2,2,2,1,2],
+                           [48,1,2,2,2,1,2,2],
+                           [48,2,2,2,1,2,2,1],
+                           [48,2,2,1,2,2,1,2],
+                           [48,2,1,2,2,1,2,2],
+                           [48,1,2,2,1,2,2,2],
+                           [48,3,2,2,3,2,3,2],
+                           [48,2,2,3,2,3,2,2],
+                           [48,3,2,1,1,3,2,3],
+                           [48,1,3,1,2,1,2,2],
+                           [48,0,0,0,0,0,0,0],
+                           [48,0,0,0,0,0,0,0],
+                           [48,0,0,0,0,0,0,0]]
         asyncio.async(self.play())
 
     #def disconnect(self):
@@ -306,13 +306,13 @@ class Runcible(spanned_monome.VirtualGrid):
             for note in self.note_off[t.play_position]:
                 #print("position: ", self.fine_play_position, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc)
                 #notes.append((self.channel + note.channel_inc,note.pitch+40,0))
-                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch+40,0)
+                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
             del self.note_off[t.play_position][:] #clear the current midi output once it's been sent
 
             for note in self.note_on[t.play_position]:
                 #print("position: ", self.fine_play_position, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc)
                 #notes.append((self.channel + note.channel_inc,note.pitch+40,note.velocity))
-                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch+40,note.velocity)
+                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,note.velocity)
             del self.note_on[t.play_position][:] #clear the current midi output once it's been sent
 
 
