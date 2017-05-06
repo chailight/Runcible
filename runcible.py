@@ -120,6 +120,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.channel = channel_out
         self.clock_ch = clock_out
         self.cur_scale = [0,0,0,0,0,0,0,0]
+        self.cur_scale_id = 0
         self.k_mode = Modes.mNote
         self.k_mod_mode = ModModes.modNone
         self.state = State()
@@ -470,6 +471,13 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(9,7,0)
             buffer.led_level_set(14,7,15)
             buffer.led_level_set(15,7,0)
+            buffer.led_level_set(15,7,0)
+            #clear any previous scale
+            for ix in range (2):
+                for iy in range (1,7):
+                    buffer.led_level_set(ix,iy, 0)
+            # show the selected scale 
+            buffer.led_level_set(self.cur_scale//6,self.cur_scale_id%6, 15)
         elif self.k_mode == Modes.mPattern:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,0)
@@ -644,6 +652,15 @@ class Runcible(spanned_monome.VirtualGrid):
                     #if self.current_channel == 1:
                     self.current_track.velocity[x] = y
                     print("entered velocity: ", self.current_track.velocity[x])
+                    #else:
+                    #    self.current_pattern.tracks[1].duration[x] = 7-y
+                    self.draw()
+                if self.k_mode == Modes.mScale:
+                    #if self.current_channel == 1:
+                    if y < 7 and y > 0:
+                        self.cur_scale_id = y-1+x*6
+                        self.calc_scale(self.cur_scale_id)
+                        print("selected scale: ", self.cur_scale_id)
                     #else:
                     #    self.current_pattern.tracks[1].duration[x] = 7-y
                     self.draw()
