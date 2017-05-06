@@ -204,8 +204,8 @@ class Runcible(spanned_monome.VirtualGrid):
                     #print("octave: ", track.octave[track.play_position])
                     for i in range(len(track.note[track.play_position])):
                     #    print(i,len(track.note[track.play_position]))
-                        self.calc_scale(0) # change this later
-                        current_note = self.current_pattern.cur_scale[track.note[track.play_position][i]]+track.octave[track.play_position]*12
+                        self.calc_scale(0) # change this later - should be set in grid_key
+                        current_note = self.cur_scale[track.note[track.play_position][i]]+track.octave[track.play_position]*12
                         print("input note: ", track.note[track.playposition][i], "scaled_note: ", self.current_pattern.cur_scale[track.note[track.play_position][i]])
                         #print("input note: ", track.note[track.playposition[i], "scaled_note: ", current_note)
                         scaled_duration = 0
