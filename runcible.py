@@ -168,6 +168,7 @@ class Runcible(spanned_monome.VirtualGrid):
                            [48,0,0,0,0,0,0,0],
                            [48,0,0,0,0,0,0,0],
                            [48,0,0,0,0,0,0,0]]
+        self.calc_scale(self.cur_scale_id)
         asyncio.async(self.play())
 
     #def disconnect(self):
@@ -479,10 +480,10 @@ class Runcible(spanned_monome.VirtualGrid):
                 for iy in range (1,7):
                     buffer.led_level_set(ix,iy, 0)
             # show the selected scale 
-            buffer.led_level_set(self.cur_scale_id//6,7-self.cur_scale_id%6+1, 15)
+            buffer.led_level_set(self.cur_scale_id//6,7-self.cur_scale_id%6-1, 15)
             #display the actual scale
             for sd in range (8):
-                buffer.led_level_set(4+self.cur_scale[sd],7-sd+1, 15)
+                buffer.led_level_set(4+self.cur_scale[sd],7-sd-1, 15)
         elif self.k_mode == Modes.mPattern:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,0)
