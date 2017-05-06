@@ -483,8 +483,8 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(self.cur_scale_id//6,7-self.cur_scale_id%6-1, 15)
             #display the actual scale
             for sd in range (8):
-                buffer.led_level_set(4+self.cur_scale[sd],7-sd-1, 15)
-                print("sd: ", sd, "scale val: ", self.cur_scale[sd], "pos: ", 4+self.cur_scale[sd],7-sd-1)
+                buffer.led_level_set(4+self.scale_data[self.cur_scale_id][sd],7-sd-1, 15)
+                print("sd: ", sd, "scale val: ", self.scale_data[self.cur_scale_id][sd], "pos: ", 4+self.scale_data[self.cur_scale_id][sd],7-sd-1)
         elif self.k_mode == Modes.mPattern:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,0)
