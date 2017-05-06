@@ -477,7 +477,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 for iy in range (1,7):
                     buffer.led_level_set(ix,iy, 0)
             # show the selected scale 
-            buffer.led_level_set(self.cur_scale//6,self.cur_scale_id%6, 15)
+            buffer.led_level_set(self.cur_scale_id//6,self.cur_scale_id%6, 15)
         elif self.k_mode == Modes.mPattern:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,0)
