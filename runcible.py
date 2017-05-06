@@ -84,7 +84,29 @@ class Track:
 class Pattern:
     def __init__(self):
         self.tracks = [Track(i) for i in range(4)]
-        self.scale = 0
+        self.cur_scale = [0,0,0,0,0,0,0,0]
+        #default scales - all starting at middle C
+        self.scale_data = [[60,2,2,1,2,2,2,1],
+                           [60,2,1,2,2,1,2,2],
+                           [60,2,2,1,2,2,2,1],
+                           [60,2,1,2,2,2,1,2],
+                           [60,1,2,2,2,1,2,2],
+                           [60,2,2,2,1,2,2,1],
+                           [60,2,2,1,2,2,1,2],
+                           [60,2,1,2,2,1,2,2],
+                           [60,1,2,2,1,2,2,2],
+                           [60,3,2,2,3,2,3,2],
+                           [60,2,2,3,2,3,2,2],
+                           [60,3,2,1,1,3,2,3],
+                           [60,1,3,1,2,1,2,2],
+                           [60,0,0,0,0,0,0,0],
+                           [60,0,0,0,0,0,0,0],
+                           [60,0,0,0,0,0,0,0]]
+
+    def calc_scale(self, s):
+        self.cur_scale[0] = self.scale_data[s][0]
+        for i1 in range(1,8):
+            self.cur_scale[i1] = self.cur_scale[i1-1] + self.scale_data[s][i1]
 
 class Preset:
     def __init__(self):
@@ -187,7 +209,10 @@ class Runcible(spanned_monome.VirtualGrid):
                     #print("octave: ", track.octave[track.play_position])
                     for i in range(len(track.note[track.play_position])):
                     #    print(i,len(track.note[track.play_position]))
-                        current_note = track.note[track.play_position][i]+track.octave[track.play_position]*12
+                        self.current_pattern.calc_scale(self.scale)
+                        current_note = self.current_pattern.cur_scale[track.note[track.play_position][i]]+track.octave[track.play_position]*12
+                        print("input note: ", track.note[track.playposition][i], "scaled_note: ", self.current_pattern.cur_scale[track.note[track.play_position][i]])
+                        #print("input note: ", track.note[track.playposition[i], "scaled_note: ", current_note)
                         scaled_duration = 0
                         entered_duration = track.duration[track.play_position]
                         if entered_duration == 1:
@@ -203,11 +228,11 @@ class Runcible(spanned_monome.VirtualGrid):
                         elif entered_duration == 6:
                             scaled_duration = 6
                         velocity = track.velocity[track.play_position]*20
-                        print("velocity: ", velocity)
+                        #print("velocity: ", velocity)
                         #velocity = 65
                         #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
                         self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
-                        print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
+                        #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
 
                 #if self.cutting:
                     #t.play_position = t.next_position
@@ -649,10 +674,6 @@ class Runcible(spanned_monome.VirtualGrid):
                     self.keys_held = 0
                     #print("loop start: ", self.loop_start[self.current_track], "end: ", self.loop_end[self.current_track])
 
-    def calc_scale(self, s):
-        self.cur_scale[0] = self.scale_data[s][0]
-        for i1 in range(1,8):
-            self.cur_scale[i1] = self.cur_scale[i1-1] + self.scale_data[s][i1]
 
 
 class Test1(monome.Monome):
