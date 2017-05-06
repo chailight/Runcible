@@ -4,8 +4,9 @@
 #fix clear all on disconnect
 #fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops? maybe just close the midi stream?
 #consider per row velocity settings for polyphonic tracks
-#add input/display for velocity?, and probability, as per kria
-#add scale setting for both channels as per kria
+#add input/display for probability, as per kria
+#add scale editing 
+#add scale ignore toggle each track  - useful for drums
 #add presets: store and recall - as per kria
 #add persistence of presets
 #add mutes per channel - long press on the channel? - maybe channel mutes on trigger page - maybe also per row mutes somewhere?
