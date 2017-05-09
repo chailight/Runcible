@@ -709,12 +709,12 @@ class Runcible(spanned_monome.VirtualGrid):
                     if y == 6: 
                         self.current_preset.current_pattern = x 
                         self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
-                        print("selected pattern: ", self.current_preset.current_pattern))
+                        print("selected pattern: ", self.current_preset.current_pattern)
                     if x < 3:
                         if y < 6 and y > 0:
                             self.state.current_preset_id = y-1+x*5
                             self.current_preset = self.state.presets[self.state.current_preset_id]
-                            print("selected preset: ", self.state.current_preset_id))
+                            print("selected preset: ", self.state.current_preset_id)
                     self.draw()
             # cut and loop
             elif y == 7:
