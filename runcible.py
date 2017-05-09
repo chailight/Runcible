@@ -81,6 +81,7 @@ class Track:
         self.loop_first = 0
         self.loop_last = 0
         self.loop_edit = 0
+        self.scale_toggle = 1 
 
 class Pattern:
     def __init__(self):
@@ -103,13 +104,13 @@ class Preset:
 class State:
     def __init__(self):
         self.clock_period = 0
-        self.current_preset = 0
+        self.current_preset_id = 0
         self.note_sync = True
         self.loop_sync = 0
         self.cue_div = 0
         self.cue_steps = 0
         self.meta = 0
-        self.presets = [Preset() for i in range(8)]
+        self.presets = [Preset() for i in range(15)]
 
 #runcible sequencer, based on ansible kria
 class Runcible(spanned_monome.VirtualGrid):
@@ -211,8 +212,13 @@ class Runcible(spanned_monome.VirtualGrid):
                     for i in range(len(track.note[track.play_position])):
                     #    print(i,len(track.note[track.play_position]))
                         #self.calc_scale(0) # change this later - should be set in grid_key
-                        current_note = self.cur_scale[track.note[track.play_position][i]-1]+track.octave[track.play_position]*12
-                        print("input note: ", track.note[track.play_position][i], "scaled_note: ", self.cur_scale[track.note[track.play_position][i]-1], "current note: ", current_note)
+                        if track.scale_toggle:
+                            current_note = self.cur_scale[track.note[track.play_position][i]-1]+track.octave[track.play_position]*12
+                            print("input note: ", track.note[track.play_position][i], "scaled_note: ", self.cur_scale[track.note[track.play_position][i]-1], "current note: ", current_note)
+                        else:
+                            #set the note to an increment from some convenient base
+                            current_note = track.note[track.play_position][i]+48+track.octave[track.play_position]*12
+
                         #print("input note: ", track.note[track.playposition[i], "scaled_note: ", current_note)
                         scaled_duration = 0
                         entered_duration = track.duration[track.play_position]
@@ -378,6 +384,10 @@ class Runcible(spanned_monome.VirtualGrid):
             for x in range(self.width):
                 for track in self.current_pattern.tracks:
                     buffer.led_level_set(x, 0+track.track_id, track.tr[x] * 15)
+            # display scale toggle
+            for x in range(4):
+                for track in self.current_pattern.tracks:
+                    buffer.led_level_set(x, 2, track.scale_toggle * 15)
         elif self.k_mode == Modes.mNote:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,15)
@@ -612,6 +622,10 @@ class Runcible(spanned_monome.VirtualGrid):
                 #print("Selected:", self.k_mode)
         elif s == 1 and y > 0:
             if y < 7:
+                if self.k_mode == Modes.mNote:
+                    #set scale mode toggles
+                    if y == 2 and x < 4:
+                        self.current_pattern.tracks[x].scale_toggle ^= 1
                 # Note entry
                 if self.k_mode == Modes.mNote:
                     if self.current_track.track_id == 0:
@@ -645,6 +659,16 @@ class Runcible(spanned_monome.VirtualGrid):
                     #    self.current_pattern.tracks[1].note[x] = y
                     #    self.current_pattern.tracks[1].duration[x] = 1
                     #    self.current_pattern.tracks[1].tr[x] ^= 1
+                    self.draw()
+                # octave entry
+                if self.k_mode == Modes.mOct: 
+                    #if self.current_channel == 1:
+                    if y < 7 and y > 0:
+                        self.current_track.octave[x] = y-3
+                        #print("grid_key = ", y, "octave = ", self.current_pattern.tracks[0].octave[x])
+                    #else:
+                    #    if y < 6 and y > 0:
+                    #        self.current_pattern.tracks[1].octave[x] = y-3
                     self.draw()
                 # duration entry
                 if self.k_mode == Modes.mDur:
@@ -680,15 +704,17 @@ class Runcible(spanned_monome.VirtualGrid):
                     #else:
                     #    self.current_pattern.tracks[1].duration[x] = 7-y
                     self.draw()
-                # octave entry
-                if self.k_mode == Modes.mOct: #mid-point is row 4 - two octaves up and two octaves down, use 2nd row for accent?
-                    #if self.current_channel == 1:
-                    if y < 7 and y > 0:
-                        self.current_track.octave[x] = y-3
-                        #print("grid_key = ", y, "octave = ", self.current_pattern.tracks[0].octave[x])
-                    #else:
-                    #    if y < 6 and y > 0:
-                    #        self.current_pattern.tracks[1].octave[x] = y-3
+                # preset entry
+                if self.k_mode == Modes.mPattern:
+                    if y == 6: 
+                        self.current_preset.current_pattern = x 
+                        self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
+                        print("selected pattern: ", self.current_preset.current_pattern))
+                    if x < 3:
+                        if y < 6 and y > 0:
+                            self.state.current_preset_id = y-1+x*5
+                            self.current_preset = self.state.presets[self.state.current_preset_id]
+                            print("selected preset: ", self.state.current_preset_id))
                     self.draw()
             # cut and loop
             elif y == 7:
