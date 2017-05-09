@@ -633,13 +633,13 @@ class Runcible(spanned_monome.VirtualGrid):
                 # Note entry
                 if self.k_mode == Modes.mNote:
                     if self.current_track.track_id == 0:
-                        self.step_ch1[7-y][x] ^= 1
+                        self.current_pattern.step_ch1[7-y][x] ^= 1
                     elif self.current_track.track_id == 1:
-                        self.step_ch2[7-y][x] ^= 1
+                        self.current_pattern.step_ch2[7-y][x] ^= 1
                     elif self.current_track.track_id == 2:
-                        self.step_ch3[7-y][x] ^= 1
+                        self.current_pattern.step_ch3[7-y][x] ^= 1
                     else:
-                        self.step_ch4[7-y][x] ^= 1
+                        self.current_pattern.step_ch4[7-y][x] ^= 1
                     if y not in self.current_track.note[x]:
                         self.current_track.note[x].append(y)
                         print("append: ", y, "at ", x)
