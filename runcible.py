@@ -387,7 +387,7 @@ class Runcible(spanned_monome.VirtualGrid):
             # display scale toggle
             for x in range(4):
                 for track in self.current_pattern.tracks:
-                    buffer.led_level_set(x, 2, track.scale_toggle * 15)
+                    buffer.led_level_set(x, 5, track.scale_toggle * 15)
         elif self.k_mode == Modes.mNote:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,15)
@@ -624,7 +624,7 @@ class Runcible(spanned_monome.VirtualGrid):
             if y < 7:
                 if self.k_mode == Modes.mNote:
                     #set scale mode toggles
-                    if y == 2 and x < 4:
+                    if y == 5 and x < 4:
                         self.current_pattern.tracks[x].scale_toggle ^= 1
                 # Note entry
                 if self.k_mode == Modes.mNote:
@@ -707,8 +707,9 @@ class Runcible(spanned_monome.VirtualGrid):
                 # preset entry
                 if self.k_mode == Modes.mPattern:
                     if y == 6: 
-                        self.current_preset.current_pattern = x 
+                        self.current_preset.current_pattern = x
                         self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
+                        self.current_track = self.current_pattern[0]
                         print("selected pattern: ", self.current_preset.current_pattern)
                     if x < 3:
                         if y < 6 and y > 0:
