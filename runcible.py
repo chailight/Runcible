@@ -84,7 +84,7 @@ class Track:
         self.scale_toggle = 1 
 
 class Pattern:
-    def __init__(self):
+    def __init__(self,pattern_id):
         self.tracks = [Track(i) for i in range(4)]
         self.step_ch1 = [[0 for col in range(16)] for row in range(8)] #used for display of notes
         self.step_ch2 = [[0 for col in range(16)] for row in range(8)]
@@ -95,7 +95,7 @@ class Pattern:
 
 class Preset:
     def __init__(self):
-        self.patterns = [Pattern() for i in range(16)]
+        self.patterns = [Pattern(i) for i in range(16)]
         self.current_pattern = 0
         self.meta_pat = [[0] * 64]
         self.meta_steps = [[0] * 64]
@@ -157,6 +157,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.current_preset = self.state.presets[0]
         self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
         self.current_track = self.current_pattern.tracks[0]
+        self.current_track_id = self.current_pattern.tracks[0].track_id
         self.scale_data = [[48,2,2,1,2,2,2,1],
                            [48,2,1,2,2,1,2,2],
                            [48,2,2,1,2,2,2,1],
@@ -511,6 +512,9 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(9,7,0)
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,15)
+            for i in range(16):
+                buffer.led_level_set(i,1,0)
+            buffer.led_level_set(self.current_pattern.pattern_id,1,15)
         if self.k_mod_mode == ModModes.modLoop:
             buffer.led_level_set(10,7,15)
             buffer.led_level_set(11,7,0)
@@ -585,15 +589,19 @@ class Runcible(spanned_monome.VirtualGrid):
             if x == 0:
                 #print("Selected Track 1")
                 self.current_track = self.current_pattern.tracks[0]
+                self.current_track_id = self.current_pattern.tracks[0].track_id
             elif x == 1:
                 #print("Selected Track 2")
                 self.current_track = self.current_pattern.tracks[1]
+                self.current_track_id = self.current_pattern.tracks[1].track_id
             elif x == 2:
                 #print("Selected Track 3")
                 self.current_track = self.current_pattern.tracks[2]
+                self.current_track_id = self.current_pattern.tracks[2].track_id
             elif x == 3:
                 #print("Selected Track 4")
                 self.current_track = self.current_pattern.tracks[3]
+                self.current_track_id = self.current_pattern.tracks[3].track_id
             elif x == 5:
                 self.k_mode = Modes.mTr
                 #print("Selected:", self.k_mode)
@@ -713,7 +721,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     if y == 6: 
                         self.current_preset.current_pattern = x
                         self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
-                        self.current_track = self.current_pattern.tracks[0]
+                        self.current_track = self.current_pattern.tracks[self.current_track_id]
                         print("selected pattern: ", self.current_preset.current_pattern)
                     if x < 3:
                         if y < 6 and y > 0:
