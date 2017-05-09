@@ -85,6 +85,7 @@ class Track:
 
 class Pattern:
     def __init__(self,pattern_id):
+        self.pattern_id = pattern_id
         self.tracks = [Track(i) for i in range(4)]
         self.step_ch1 = [[0 for col in range(16)] for row in range(8)] #used for display of notes
         self.step_ch2 = [[0 for col in range(16)] for row in range(8)]
