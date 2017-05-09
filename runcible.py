@@ -86,6 +86,10 @@ class Track:
 class Pattern:
     def __init__(self):
         self.tracks = [Track(i) for i in range(4)]
+        self.step_ch1 = [[0 for col in range(self.width)] for row in range(self.height)] #used for display of notes
+        self.step_ch2 = [[0 for col in range(self.width)] for row in range(self.height)]
+        self.step_ch3 = [[0 for col in range(self.width)] for row in range(self.height)]
+        self.step_ch4 = [[0 for col in range(self.width)] for row in range(self.height)]
         #default scales - all starting at middle C
 
 
@@ -137,10 +141,10 @@ class Runcible(spanned_monome.VirtualGrid):
     def ready(self):
         print ("using grid on port :%s" % self.id)
         self.current_pos = 0
-        self.step_ch1 = [[0 for col in range(self.width)] for row in range(self.height)] #used for display of notes
-        self.step_ch2 = [[0 for col in range(self.width)] for row in range(self.height)]
-        self.step_ch3 = [[0 for col in range(self.width)] for row in range(self.height)]
-        self.step_ch4 = [[0 for col in range(self.width)] for row in range(self.height)]
+        self.current_pattern.step_ch1 = [[0 for col in range(self.width)] for row in range(self.height)] #used for display of notes
+        self.current_pattern.step_ch2 = [[0 for col in range(self.width)] for row in range(self.height)]
+        self.current_pattern.step_ch3 = [[0 for col in range(self.width)] for row in range(self.height)]
+        self.current_pattern.step_ch4 = [[0 for col in range(self.width)] for row in range(self.height)]
         self.play_position = [0,0,0,0] # one position for each track
         #self.fine_play_position = 0
         self.next_position = [0,0,0,0]
@@ -214,7 +218,7 @@ class Runcible(spanned_monome.VirtualGrid):
                         #self.calc_scale(0) # change this later - should be set in grid_key
                         if track.scale_toggle:
                             current_note = self.cur_scale[track.note[track.play_position][i]-1]+track.octave[track.play_position]*12
-                            print("input note: ", track.note[track.play_position][i], "scaled_note: ", self.cur_scale[track.note[track.play_position][i]-1], "current note: ", current_note)
+                            #print("input note: ", track.note[track.play_position][i], "scaled_note: ", self.cur_scale[track.note[track.play_position][i]-1], "current note: ", current_note)
                         else:
                             #set the note to an increment from some convenient base
                             current_note = track.note[track.play_position][i]+48+track.octave[track.play_position]*12
@@ -400,13 +404,13 @@ class Runcible(spanned_monome.VirtualGrid):
                 for y in range(1,self.height-1): #ignore bottom row
                     #render_pos = self.spanToGrid(x,y)
                     if self.current_track.track_id == 0:
-                        buffer.led_level_set(x, y, self.step_ch1[y][x] * 15 )
+                        buffer.led_level_set(x, y, self.current_pattern.step_ch1[y][x] * 15 )
                     elif self.current_track.track_id == 1:
-                        buffer.led_level_set(x, y, self.step_ch2[y][x] * 15 )
+                        buffer.led_level_set(x, y, self.current_pattern.step_ch2[y][x] * 15 )
                     elif self.current_track.track_id == 2:
-                        buffer.led_level_set(x, y, self.step_ch3[y][x] * 15 )
+                        buffer.led_level_set(x, y, self.current_pattern.step_ch3[y][x] * 15 )
                     elif self.current_track.track_id == 3:
-                        buffer.led_level_set(x, y, self.step_ch4[y][x] * 15 )
+                        buffer.led_level_set(x, y, self.current_pattern.step_ch4[y][x] * 15 )
         elif self.k_mode == Modes.mOct:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,0)
