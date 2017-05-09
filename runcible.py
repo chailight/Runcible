@@ -709,7 +709,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     if y == 6: 
                         self.current_preset.current_pattern = x
                         self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
-                        self.current_track = self.current_pattern[0]
+                        self.current_track = self.current_pattern.tracks[0]
                         print("selected pattern: ", self.current_preset.current_pattern)
                     if x < 3:
                         if y < 6 and y > 0:
