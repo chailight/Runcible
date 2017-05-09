@@ -141,10 +141,10 @@ class Runcible(spanned_monome.VirtualGrid):
     def ready(self):
         print ("using grid on port :%s" % self.id)
         self.current_pos = 0
-        self.current_pattern.step_ch1 = [[0 for col in range(self.width)] for row in range(self.height)] #used for display of notes
-        self.current_pattern.step_ch2 = [[0 for col in range(self.width)] for row in range(self.height)]
-        self.current_pattern.step_ch3 = [[0 for col in range(self.width)] for row in range(self.height)]
-        self.current_pattern.step_ch4 = [[0 for col in range(self.width)] for row in range(self.height)]
+      #  self.current_pattern.step_ch1 = [[0 for col in range(self.width)] for row in range(self.height)] #used for display of notes
+      #  self.current_pattern.step_ch2 = [[0 for col in range(self.width)] for row in range(self.height)]
+      #  self.current_pattern.step_ch3 = [[0 for col in range(self.width)] for row in range(self.height)]
+      #  self.current_pattern.step_ch4 = [[0 for col in range(self.width)] for row in range(self.height)]
         self.play_position = [0,0,0,0] # one position for each track
         #self.fine_play_position = 0
         self.next_position = [0,0,0,0]
