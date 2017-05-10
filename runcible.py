@@ -568,7 +568,11 @@ class Runcible(spanned_monome.VirtualGrid):
                 #track 1
                 if track.play_position >= track.loop_start and track.play_position <= track.loop_end:
                 #if ((self.current_pos//self.ticks)%16) < 16:
-                    buffer.led_level_set(track.play_position, 0+track.track_id, 15)
+                    if buffer.levels[0+track.track_id][track.play_position] == 0:
+                        buffer.led_level_set(track.play_position, 0+track.track_id, 15)
+                    else: #toggle an already lit led as we pass over it
+                        buffer.led_level_set(track.play_position, 0+track.track_id, 0)
+                        buffer.led_level_set(track.play_position, 0+track.track_id, 15)
                 else:
                     buffer.led_level_set(self.current_track.play_position, 0, 0)
 
@@ -657,7 +661,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 #set scale mode toggles
                 if self.k_mode == Modes.mTr:
                     print("Trigger page key:", x, y)
-                    if y == 5 and x < 4:
+                    if y == 2 and x < 4:
                         self.current_pattern.tracks[x].scale_toggle ^= 1
                 # Note entry
                 if self.k_mode == Modes.mNote:
