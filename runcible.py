@@ -3,20 +3,26 @@
 #TODO:
 #fix clear all on disconnect
 #fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops? maybe just close the midi stream?
-#consider per row velocity settings for polyphonic tracks
-#add input/display for probability, as per kria
-#add scale editing 
-#add scale ignore toggle each track  - useful for drums
-#add preset copy
-#add persistence of presets
+#fix play position display on trigger screen so it's easier to follow - basically turn off an led that is on and remember to turn it back on again at the next step
 #add mutes per channel - long press on the channel? - maybe channel mutes on trigger page - maybe also per row mutes somewhere?
-#fix cutting - has to do with keys held
-#fix looping around the end of the loop start_loop is higher than end_loop
-#make looping independent for each parameter
+#add note mutes for drum channel?
+#add input/display for probability, as per kria
+#enable a per channel transpose setting? 
 #add timing modification
+#make looping independent for each parameter
+#add scale editing 
+#add preset copy
+#adjust preset selection to allow for meta sequencing
+#fix display of current preset
+#add persistence of presets
+#fix cutting - has to do with keys held
+#enable looping around the end of the loop start_loop is higher than end_loop
+#add pattern cue timer
 #add meta mode (pattern sequencing)
+#consider per row velocity settings for polyphonic tracks
 #adjust use of duration settings 1/8, 1/16 & 1/32 notes?  (6 duration positions = 1/32, 1/16, 1/8, 1/4, 1/2, 1)
 #make note entry screen monophonic? - clear off other notes in that column if new note is entered - this should be configurable maybe on trigger page?
+#add settings screen with other adjustments like midi channel for each track?
 #fix pauses - network? other processes?
 
 import asyncio
@@ -564,15 +570,19 @@ class Runcible(spanned_monome.VirtualGrid):
         # change the bounds of the first if condition to match the
         # loop start and end points
         if self.k_mode == Modes.mTr:
+            previous_step = [0,0,0,0]
             for track in self.current_pattern.tracks:
                 #track 1
                 if track.play_position >= track.loop_start and track.play_position <= track.loop_end:
                 #if ((self.current_pos//self.ticks)%16) < 16:
                     if buffer.levels[0+track.track_id][track.play_position] == 0:
+                        buffer.led_level_set(track.play_position -1, 0+track.track_id, previous_step[track.track_id])
                         buffer.led_level_set(track.play_position, 0+track.track_id, 15)
+                        previous_step[track.track_id] = 0
                     else: #toggle an already lit led as we pass over it
+                        previous_step[track.track_id] = 15
                         buffer.led_level_set(track.play_position, 0+track.track_id, 0)
-                        buffer.led_level_set(track.play_position, 0+track.track_id, 15)
+                        #buffer.led_level_set(track.play_position, 0+track.track_id, 15)
                 else:
                     buffer.led_level_set(self.current_track.play_position, 0+track.track_id, 0)
 
@@ -660,10 +670,10 @@ class Runcible(spanned_monome.VirtualGrid):
             if y < 7:
                 #set scale mode toggles
                 if self.k_mode == Modes.mTr:
-                    print("Trigger page key:", x, y)
+                    #print("Trigger page key:", x, y)
                     if y == 2 and x < 4:
                         self.current_pattern.tracks[x].scale_toggle ^= 1
-                        print ("toggling scale for track: ", x)
+                        #print ("toggling scale for track: ", x)
                 # Note entry
                 if self.k_mode == Modes.mNote:
                     if self.current_track.track_id == 0:
@@ -676,19 +686,19 @@ class Runcible(spanned_monome.VirtualGrid):
                         self.current_pattern.step_ch4[7-y][x] ^= 1
                     if y not in self.current_track.note[x]:
                         self.current_track.note[x].append(y)
-                        print("append: ", y, "at ", x)
+                        #print("append: ", y, "at ", x)
                     else:
                         self.current_track.note[x].remove(y)
-                        print("remove: ", y, "at ", x)
+                        #print("remove: ", y, "at ", x)
                     if self.current_track.duration[x] == 0:
                         self.current_track.duration[x] = 1
                     # toggle the trigger if there are no notes
                     if len(self.current_track.note[x]) > 0:
                         self.current_track.tr[x] = 1
-                        print("note len: ", self.current_track.note[x])
+                        #print("note len: ", self.current_track.note[x])
                     else:
                         self.current_track.tr[x] = 0
-                        print("note len: ", self.current_track.note[x])
+                        #print("note len: ", self.current_track.note[x])
 
                     #if self.current_track.tr[x] == 0:
                     #    self.current_track.duration[x] = 0 # change this when param_sync is off
@@ -724,7 +734,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 if self.k_mode == Modes.mVel:
                     #if self.current_channel == 1:
                     self.current_track.velocity[x] = y
-                    print("entered velocity: ", self.current_track.velocity[x])
+                    #print("entered velocity: ", self.current_track.velocity[x])
                     #else:
                     #    self.current_pattern.tracks[1].duration[x] = 7-y
                     self.draw()
@@ -734,7 +744,7 @@ class Runcible(spanned_monome.VirtualGrid):
                         if y < 7 and y > 0:
                             self.cur_scale_id = y-1+x*6
                             self.calc_scale(self.cur_scale_id)
-                            print("selected scale: ", self.cur_scale_id)
+                            #print("selected scale: ", self.cur_scale_id)
                     else:
                         # transpose the scale up or down by semitones from the mid point (col 7)
                         self.cur_trans = x-7
@@ -748,17 +758,17 @@ class Runcible(spanned_monome.VirtualGrid):
                         if y < 6 and y > 0:
                             self.state.current_preset_id = y-1+x*5
                             self.current_preset = self.state.presets[self.state.current_preset_id]
-                            print("selected preset: ", self.state.current_preset_id)
+                            #print("selected preset: ", self.state.current_preset_id)
                     self.draw()
             # cut and loop
             elif self.k_mode == Modes.mPattern and y == 7:
                 self.current_preset.current_pattern = x
                 self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
                 self.current_track = self.current_pattern.tracks[self.current_track_id]
-                print("selected pattern: ", self.current_preset.current_pattern)
+               # print("selected pattern: ", self.current_preset.current_pattern)
             elif y == 7:
                 self.keys_held = self.keys_held + (s * 2) - 1
-                print("keys_held: ", self.keys_held)
+                #print("keys_held: ", self.keys_held)
                 # cut
                 if s == 1 and self.keys_held == 1:
                     self.cutting = True
