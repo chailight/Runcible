@@ -392,11 +392,10 @@ class Runcible(spanned_monome.VirtualGrid):
             for x in range(self.width):
                 for track in self.current_pattern.tracks:
                     buffer.led_level_set(x, 0+track.track_id, track.tr[x] * 15)
-            # display scale toggle
-            for x in range(4):
-                for track in self.current_pattern.tracks:
-                    buffer.led_level_set(x, 5, track.scale_toggle * 15)
-                    print("track: ", track.track_id, "scale toggle: ", track.scale_toggle)
+                    # display scale toggle
+                    if x < 4:
+                        buffer.led_level_set(x, 5, track.scale_toggle * 15)
+                        print("track: ", track.track_id, "scale toggle: ", track.scale_toggle)
         elif self.k_mode == Modes.mNote:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,15)
