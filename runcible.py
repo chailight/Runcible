@@ -396,6 +396,7 @@ class Runcible(spanned_monome.VirtualGrid):
             for x in range(4):
                 for track in self.current_pattern.tracks:
                     buffer.led_level_set(x, 5, track.scale_toggle * 15)
+                    print("track: ", track.track_id, "scale toggle: ", track.scale_toggle)
         elif self.k_mode == Modes.mNote:
             buffer.led_level_set(5,7,0)
             buffer.led_level_set(6,7,15)
@@ -663,6 +664,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     print("Trigger page key:", x, y)
                     if y == 2 and x < 4:
                         self.current_pattern.tracks[x].scale_toggle ^= 1
+                        print ("toggling scale for track: ", x)
                 # Note entry
                 if self.k_mode == Modes.mNote:
                     if self.current_track.track_id == 0:
