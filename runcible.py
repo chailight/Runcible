@@ -756,6 +756,8 @@ class Runcible(spanned_monome.VirtualGrid):
                         self.current_track.loop_start = self.current_track.key_last
                         self.current_track.loop_end = x
                         self.keys_held = 0
+                    else:
+                        self.keys_held = 0
                     #print("loop start: ", self.loop_start[self.current_track], "end: ", self.loop_end[self.current_track])
 
 
