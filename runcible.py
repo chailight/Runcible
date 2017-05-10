@@ -225,7 +225,7 @@ class Runcible(spanned_monome.VirtualGrid):
                             #print("input note: ", track.note[track.play_position][i], "scaled_note: ", self.cur_scale[track.note[track.play_position][i]-1], "current note: ", current_note)
                         else:
                             #set the note to an increment from some convenient base
-                            current_note = track.note[track.play_position][i]+48+track.octave[track.play_position]*12
+                            current_note = track.note[track.play_position][i]+35+track.octave[track.play_position]*12
 
                         #print("input note: ", track.note[track.playposition[i], "scaled_note: ", current_note)
                         scaled_duration = 0
