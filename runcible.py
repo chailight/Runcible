@@ -406,7 +406,7 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(15,7,0)
             for x in range(self.width):
                 #show the triggers for that track on the top row
-                buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
+                #buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
                 for y in range(1,self.height-1): #ignore bottom row
                     #render_pos = self.spanToGrid(x,y)
                     if self.current_track.track_id == 0:
@@ -476,6 +476,8 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,0)
             for x in range(self.width):
+                #show the triggers for that track on the top row
+                buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
                 #show the triggers for that track on the top row
                 buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
                 #draw the accent toggles - this will move to a velocity page?
@@ -562,26 +564,33 @@ class Runcible(spanned_monome.VirtualGrid):
         # change the bounds of the first if condition to match the
         # loop start and end points
         if self.k_mode == Modes.mTr:
-            #track 1
-            if ((self.current_pos//self.ticks)%16) < 16:
-                buffer.led_level_set(self.current_track.play_position, 0, 15)
-            else:
-                buffer.led_level_set(self.current_track.play_position, 0, 0)
-            #track 2
-            if ((self.current_pos//self.ticks)%16) < 16:
-                buffer.led_level_set(self.current_track.play_position, 1, 15)
-            else:
-                buffer.led_level_set(self.current_track.play_position, 1, 0)
-            #track 3
-            if ((self.current_pos//self.ticks)%16) < 16:
-                buffer.led_level_set(self.current_track.play_position, 2, 15)
-            else:
-                buffer.led_level_set(self.current_track.play_position, 2, 0)
+            for track in self.current_pattern.tracks:
+                #track 1
+                if track.play_position >= track.loop_start and track.play_position <= track.loop_end:
+                #if ((self.current_pos//self.ticks)%16) < 16:
+                    buffer.led_level_set(track.play_position, 0+track.track_id, 15)
+                else:
+                    buffer.led_level_set(self.current_track.play_position, 0, 0)
+
+            #if ((self.current_pos//self.ticks)%16) < 16:
+            #    buffer.led_level_set(track.play_position, 0+track.track_id, 15)
+            #else:
+            #    buffer.led_level_set(self.current_track.play_position, 0, 0)
+            ##track 2
+            #if ((self.current_pos//self.ticks)%16) < 16:
+            #    buffer.led_level_set(self.current_track.play_position, 1, 15)
+            #else:
+            #    buffer.led_level_set(self.current_track.play_position, 1, 0)
+            ##track 3
+            #if ((self.current_pos//self.ticks)%16) < 16:
+            #    buffer.led_level_set(self.current_track.play_position, 2, 15)
+            #else:
+            #    buffer.led_level_set(self.current_track.play_position, 2, 0)
             #track 4
-            if ((self.current_pos//self.ticks)%16) < 16:
-                buffer.led_level_set(self.current_track.play_position, 3, 15)
-            else:
-                buffer.led_level_set(self.current_track.play_position, 3, 0)
+            #if ((self.current_pos//self.ticks)%16) < 16:
+            #    buffer.led_level_set(self.current_track.play_position, 3, 15)
+            #else:
+            #    buffer.led_level_set(self.current_track.play_position, 3, 0)
         elif self.k_mode is not Modes.mPattern: # all other modes except pattern
             #display play position of current track
             #if ((self.current_pos//self.ticks)%16) >= self.loop_start and ((self.current_pos//self.ticks)%16) <= self.loop_end:
@@ -647,6 +656,7 @@ class Runcible(spanned_monome.VirtualGrid):
             if y < 7:
                 #set scale mode toggles
                 if self.k_mode == Modes.mTr:
+                    print("Trigger page key:", x, y)
                     if y == 5 and x < 4:
                         self.current_pattern.tracks[x].scale_toggle ^= 1
                 # Note entry
