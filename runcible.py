@@ -7,12 +7,14 @@
 #add input/display for probability, as per kria
 #add scale editing 
 #add scale ignore toggle each track  - useful for drums
-#add presets: store and recall - as per kria
+#add preset copy
 #add persistence of presets
 #add mutes per channel - long press on the channel? - maybe channel mutes on trigger page - maybe also per row mutes somewhere?
 #fix cutting - has to do with keys held
 #fix looping around the end of the loop start_loop is higher than end_loop
 #make looping independent for each parameter
+#add timing modification
+#add meta mode (pattern sequencing)
 #adjust use of duration settings 1/8, 1/16 & 1/32 notes?  (6 duration positions = 1/32, 1/16, 1/8, 1/4, 1/2, 1)
 #make note entry screen monophonic? - clear off other notes in that column if new note is entered - this should be configurable maybe on trigger page?
 #fix pauses - network? other processes?
@@ -81,7 +83,7 @@ class Track:
         self.loop_first = 0
         self.loop_last = 0
         self.loop_edit = 0
-        self.scale_toggle = 1 
+        self.scale_toggle = 1
 
 class Pattern:
     def __init__(self,pattern_id):
@@ -403,6 +405,8 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,0)
             for x in range(self.width):
+                #show the triggers for that track on the top row
+                buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
                 for y in range(1,self.height-1): #ignore bottom row
                     #render_pos = self.spanToGrid(x,y)
                     if self.current_track.track_id == 0:
@@ -422,6 +426,8 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,0)
             for x in range(self.width):
+                #show the triggers for that track on the top row
+                buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
                 #if self.current_channel == 1:
                 #fill a column bottom up in the x position
                 current_oct = self.current_track.octave[x]
@@ -443,6 +449,8 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,0)
             for x in range(self.width):
+                #show the triggers for that track on the top row
+                buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
                 #draw the accent toggles - this will move to a velocity page?
                 #if self.current_track.velocity[x]:
                 #    buffer.led_level_set(x, 0, 15)
@@ -468,6 +476,8 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,0)
             for x in range(self.width):
+                #show the triggers for that track on the top row
+                buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
                 #draw the accent toggles - this will move to a velocity page?
                 #if self.current_track.velocity[x]:
                 #    buffer.led_level_set(x, 0, 15)
@@ -514,8 +524,8 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,15)
             for i in range(16):
-                buffer.led_level_set(i,1,0)
-            buffer.led_level_set(self.current_pattern.pattern_id,1,15)
+                buffer.led_level_set(i,0,0)
+            buffer.led_level_set(self.current_pattern.pattern_id,0,15)
         if self.k_mod_mode == ModModes.modLoop:
             buffer.led_level_set(10,7,15)
             buffer.led_level_set(11,7,0)
@@ -572,7 +582,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 buffer.led_level_set(self.current_track.play_position, 3, 15)
             else:
                 buffer.led_level_set(self.current_track.play_position, 3, 0)
-        else: # all other modes
+        elif self.k_mode is not Modes.mPattern: # all other modes except pattern
             #display play position of current track
             #if ((self.current_pos//self.ticks)%16) >= self.loop_start and ((self.current_pos//self.ticks)%16) <= self.loop_end:
             if self.current_track.play_position >= self.current_track.loop_start and self.current_track.play_position <= self.current_track.loop_end:
@@ -635,8 +645,8 @@ class Runcible(spanned_monome.VirtualGrid):
                 #print("Selected:", self.k_mode)
         elif s == 1 and y > 0:
             if y < 7:
-                if self.k_mode == Modes.mNote:
-                    #set scale mode toggles
+                #set scale mode toggles
+                if self.k_mode == Modes.mTr:
                     if y == 5 and x < 4:
                         self.current_pattern.tracks[x].scale_toggle ^= 1
                 # Note entry
@@ -719,7 +729,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     self.draw()
                 # preset entry
                 if self.k_mode == Modes.mPattern:
-                    if y == 6: 
+                    if y == 7: 
                         self.current_preset.current_pattern = x
                         self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
                         self.current_track = self.current_pattern.tracks[self.current_track_id]
@@ -742,9 +752,10 @@ class Runcible(spanned_monome.VirtualGrid):
                     #print("key_last: ", self.key_last[self.current_track])
                 # set loop points
                 elif s == 1 and self.keys_held == 2:
-                    self.current_track.loop_start = self.current_track.key_last
-                    self.current_track.loop_end = x
-                    self.keys_held = 0
+                    if self.current_track.key_last < x: # don't wrap around, for now
+                        self.current_track.loop_start = self.current_track.key_last
+                        self.current_track.loop_end = x
+                        self.keys_held = 0
                     #print("loop start: ", self.loop_start[self.current_track], "end: ", self.loop_end[self.current_track])
 
 
