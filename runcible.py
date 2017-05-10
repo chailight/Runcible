@@ -729,11 +729,6 @@ class Runcible(spanned_monome.VirtualGrid):
                     self.draw()
                 # preset entry
                 if self.k_mode == Modes.mPattern:
-                    if y == 7: 
-                        self.current_preset.current_pattern = x
-                        self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
-                        self.current_track = self.current_pattern.tracks[self.current_track_id]
-                        print("selected pattern: ", self.current_preset.current_pattern)
                     if x < 3:
                         if y < 6 and y > 0:
                             self.state.current_preset_id = y-1+x*5
@@ -741,7 +736,12 @@ class Runcible(spanned_monome.VirtualGrid):
                             print("selected preset: ", self.state.current_preset_id)
                     self.draw()
             # cut and loop
-            elif y == 7:
+            elif self.k_mode == Modes.mPattern and y == 7:
+                self.current_preset.current_pattern = x
+                self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
+                self.current_track = self.current_pattern.tracks[self.current_track_id]
+                print("selected pattern: ", self.current_preset.current_pattern)
+            elif y = 7:
                 self.keys_held = self.keys_held + (s * 2) - 1
                 print("keys_held: ", self.keys_held)
                 # cut
