@@ -741,7 +741,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
                 self.current_track = self.current_pattern.tracks[self.current_track_id]
                 print("selected pattern: ", self.current_preset.current_pattern)
-            elif y = 7:
+            elif y == 7:
                 self.keys_held = self.keys_held + (s * 2) - 1
                 print("keys_held: ", self.keys_held)
                 # cut
