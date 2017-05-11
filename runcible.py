@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
-#create a shutdown key sequence
+#create a shutdown key sequence - needs a long key press detector
 #fix clear all on disconnect
 #fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops? maybe just close the midi stream?
 #fix play position display on trigger screen so it's easier to follow - basically turn off an led that is on and remember to turn it back on again at the next step
@@ -195,7 +195,12 @@ class Runcible(spanned_monome.VirtualGrid):
         self.calc_scale(self.cur_scale_id)
         asyncio.async(self.play())
 
+    def dummy_disconnect(self):
+        print("Disconnecting... thanks for playing!")
+
     def disconnect(self):
+        print("Disconnecting... thanks for playing!")
+        self.midi_out.close_port()
         self.save_state()
         super().disconnect()
 
@@ -638,6 +643,12 @@ class Runcible(spanned_monome.VirtualGrid):
                 #print("Selected Track 1")
                 self.current_track = self.current_pattern.tracks[0]
                 self.current_track_id = self.current_pattern.tracks[0].track_id
+                # track a ctrl key hold here
+                self.ctrl_keys_held = self.ctrl_keys_held + (s * 2) - 1
+                print("ctr_keys_held: ", self.ctrl_keys_held)
+                if self.ctrl_keys_held == 1:
+                    self.ctrl_key_last.append(x)
+                    print("ctr_keys_last: ", self.ctrl_keys_last)
             elif x == 1:
                 #print("Selected Track 2")
                 self.current_track = self.current_pattern.tracks[1]
@@ -646,6 +657,13 @@ class Runcible(spanned_monome.VirtualGrid):
                 #print("Selected Track 3")
                 self.current_track = self.current_pattern.tracks[2]
                 self.current_track_id = self.current_pattern.tracks[2].track_id
+
+                # track a ctrl key hold here
+                self.ctrl_keys_held = self.ctrl_keys_held + (s * 2) - 1
+                print("ctr_keys_held: ", self.ctrl_keys_held)
+                if self.ctrl_keys_held == 2:
+                    self.ctrl_key_last.append(x)
+                    print("ctr_keys_last: ", self.ctrl_keys_last)
             elif x == 3:
                 #print("Selected Track 4")
                 self.current_track = self.current_pattern.tracks[3]
@@ -680,6 +698,14 @@ class Runcible(spanned_monome.VirtualGrid):
             elif x == 15:
                 self.k_mode = Modes.mPattern
                 #print("Selected:", self.k_mode)
+
+                # track a ctrl key hold here
+                self.ctrl_keys_held = self.ctrl_keys_held + (s * 2) - 1
+                print("ctr_keys_held: ", self.ctrl_keys_held)
+                if self.ctrl_keys_held == 3:
+                    self.ctrl_key_last.append(x)
+                    print("ctr_keys_last: ", self.ctrl_keys_last)
+                    self.dummy_disconnect()
         elif s == 1 and y > 0:
             if y < 7:
                 #set scale mode toggles
