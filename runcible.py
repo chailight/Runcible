@@ -792,11 +792,11 @@ class Runcible(spanned_monome.VirtualGrid):
                         self.keys_held = 0
                     #print("loop start: ", self.loop_start[self.current_track], "end: ", self.loop_end[self.current_track])
 
-    def restore_state():
+    def restore_state(self):
         #load the pickled AST for this feature
         self.state = pickle.load(open(pickle_file_path, "rb"))
 
-    def save_state():
+    def save_state(self):
         with open(self.pickle_file_path, 'w') as pickle_handle:
             pickle.dump(self.state, pickle_handle)
 
