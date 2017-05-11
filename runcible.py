@@ -490,10 +490,6 @@ class Runcible(spanned_monome.VirtualGrid):
             buffer.led_level_set(14,7,0)
             buffer.led_level_set(15,7,0)
             for x in range(self.width):
-                #show the triggers for that track on the top row
-                buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
-                #show the triggers for that track on the top row
-                buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
                 #draw the accent toggles - this will move to a velocity page?
                 #if self.current_track.velocity[x]:
                 #    buffer.led_level_set(x, 0, 15)
@@ -505,6 +501,8 @@ class Runcible(spanned_monome.VirtualGrid):
                     buffer.led_level_set(x, i, 15)
                 for i in range (0,7-self.current_track.velocity[x]): #ignore top row
                     buffer.led_level_set(x, i, 0)
+                #show the triggers for that track on the top row
+                buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
                 #elif self.current_channel == 2:
                     #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
                     #    buffer.led_level_set(x, i, 15)
