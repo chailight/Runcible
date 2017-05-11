@@ -797,7 +797,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.state = pickle.load(open(pickle_file_path, "rb"))
 
     def save_state(self):
-        with open(self.pickle_file_path, 'w') as pickle_handle:
+        with open(self.pickle_file_path, 'wb') as pickle_handle:
             pickle.dump(self.state, pickle_handle)
 
 
