@@ -25,6 +25,9 @@
 #add settings screen with other adjustments like midi channel for each track?
 #fix pauses - network? other processes?
 
+import pickle
+import os
+import sys
 import asyncio
 import monome
 import spanned_monome
@@ -145,6 +148,7 @@ class Runcible(spanned_monome.VirtualGrid):
         #self.note_off = [[Note()] for i in range(96)]
         self.note_off = [[Note()] for i in range(16)]
         #call ready() directly because virtual device doesn't get triggered
+        self.pickle_file_path = "/home/pi/monome/runcible.pickle" 
         self.ready()
 
     def ready(self):
@@ -163,6 +167,8 @@ class Runcible(spanned_monome.VirtualGrid):
         self.loop_length = [self.width, self.width, self.width, self.width]
         self.keys_held = 0
         self.key_last = [0,0,0,0]
+        if os.path.isfile(self.pickle_file_path):
+            self.restore_state()
         self.current_preset = self.state.presets[0]
         self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
         self.current_track = self.current_pattern.tracks[0]
@@ -784,6 +790,14 @@ class Runcible(spanned_monome.VirtualGrid):
                     else:
                         self.keys_held = 0
                     #print("loop start: ", self.loop_start[self.current_track], "end: ", self.loop_end[self.current_track])
+
+    def restore_state():
+        #load the pickled AST for this feature
+        self.state = pickle.load(open(pickle_file_path, "rb"))
+
+    def save_state():
+        with open(self.pickle_file_path, 'w') as pickle_handle:
+            pickle.dump(self.state, pickle_handle)
 
 
 
