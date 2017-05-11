@@ -148,7 +148,7 @@ class Runcible(spanned_monome.VirtualGrid):
         #self.note_off = [[Note()] for i in range(96)]
         self.note_off = [[Note()] for i in range(16)]
         #call ready() directly because virtual device doesn't get triggered
-        self.pickle_file_path = "/home/pi/monome/runcible.pickle" 
+        self.pickle_file_path = "/home/pi/monome/runcible/runcible.pickle" 
         self.ready()
 
     def ready(self):
@@ -794,7 +794,7 @@ class Runcible(spanned_monome.VirtualGrid):
 
     def restore_state(self):
         #load the pickled AST for this feature
-        self.state = pickle.load(open(pickle_file_path, "rb"))
+        self.state = pickle.load(open(self.pickle_file_path, "rb"))
 
     def save_state(self):
         with open(self.pickle_file_path, 'wb') as pickle_handle:
