@@ -1,12 +1,14 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
+#create a shutdown key sequence
 #fix clear all on disconnect
 #fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops? maybe just close the midi stream?
 #fix play position display on trigger screen so it's easier to follow - basically turn off an led that is on and remember to turn it back on again at the next step
 #add mutes per channel - long press on the channel? - maybe channel mutes on trigger page - maybe also per row mutes somewhere?
 #add note mutes for drum channel?
-#add input/display for probability, as per kria
+#add input/display for probability, as per kria - implement a next_note function which returns true or false based on probability setting for that track at that position
+#at this stage, for polyphonic tracks, probabilities are per position - like velocity - not per note 
 #enable a per channel transpose setting? 
 #add timing modification
 #make looping independent for each parameter
@@ -14,7 +16,6 @@
 #add preset copy
 #adjust preset selection to allow for meta sequencing
 #fix display of current preset
-#add persistence of presets
 #fix cutting - has to do with keys held
 #enable looping around the end of the loop start_loop is higher than end_loop
 #add pattern cue timer
@@ -615,8 +616,16 @@ class Runcible(spanned_monome.VirtualGrid):
         elif self.k_mode is not Modes.mPattern: # all other modes except pattern
             #display play position of current track
             #if ((self.current_pos//self.ticks)%16) >= self.loop_start and ((self.current_pos//self.ticks)%16) <= self.loop_end:
+            previous_step = [0,0,0,0]
             if self.current_track.play_position >= self.current_track.loop_start and self.current_track.play_position <= self.current_track.loop_end:
-                buffer.led_level_set(self.current_track.play_position, 0, 15)
+                if buffer.levels[0+self.current_track.track_id][self.current_track.play_position] == 0:
+                    buffer.led_level_set(self.current_track.play_position -1, 0+self.current_track.track_id, previous_step[self.current_track.track_id])
+                    buffer.led_level_set(self.current_track.play_position, 0+self.current_track.track_id, 15)
+                    previous_step[self.current_track.track_id] = 0
+                else: #toggle an already lit led as we pass over it
+                    previous_step[self.current_track.track_id] = 15
+                    buffer.led_level_set(self.current_track.play_position, 0+self.current_track.track_id, 0)
+                #buffer.led_level_set(self.current_track.play_position, 0, 15)
             else:
                 buffer.led_level_set(self.current_track.play_position, 0, 0)
 
