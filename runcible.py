@@ -150,6 +150,8 @@ class Runcible(spanned_monome.VirtualGrid):
         self.note_off = [[Note()] for i in range(16)]
         #call ready() directly because virtual device doesn't get triggered
         self.pickle_file_path = "/home/pi/monome/runcible/runcible.pickle" 
+        self.ctrl_keys_held = 0
+        self.ctrl_keys_last = list()
         self.ready()
 
     def ready(self):
