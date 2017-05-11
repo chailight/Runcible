@@ -705,7 +705,11 @@ class Runcible(spanned_monome.VirtualGrid):
                 if self.ctrl_keys_held == 3:
                     self.ctrl_key_last.append(x)
                     print("ctr_keys_last: ", self.ctrl_keys_last)
-                    self.dummy_disconnect()
+                    self.ctrl_keys_held = 0
+                    if self.ctrl_keys_last == (0,2,15):
+                        self.dummy_disconnect()
+                    else:
+                        del self.ctrl_keys_last[:]
         elif s == 1 and y > 0:
             if y < 7:
                 #set scale mode toggles
