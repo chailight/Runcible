@@ -29,6 +29,7 @@
 import pickle
 import os
 import sys
+import subprocess
 import asyncio
 import monome
 import spanned_monome
@@ -205,6 +206,11 @@ class Runcible(spanned_monome.VirtualGrid):
         self.midi_out.close_port()
         self.save_state()
         super().disconnect()
+        #sys.exit(0)
+        command = "/usr/bin/sudo /sbin/shutdown -r now"
+        process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+        output = process.communicate()[0]
+        print(output)
 
     @asyncio.coroutine
     def play(self):
@@ -709,7 +715,8 @@ class Runcible(spanned_monome.VirtualGrid):
                     print("ctr_keys_last: ", self.ctrl_keys_last)
                     self.ctrl_keys_held = 0
                     if self.ctrl_keys_last == [0,2,15]:
-                        self.dummy_disconnect()
+                        del self.ctrl_keys_last[:]
+                        self.disconnect()
                     else:
                         del self.ctrl_keys_last[:]
         elif s == 0 and y == 0:
