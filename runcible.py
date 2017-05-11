@@ -194,8 +194,9 @@ class Runcible(spanned_monome.VirtualGrid):
         self.calc_scale(self.cur_scale_id)
         asyncio.async(self.play())
 
-    #def disconnect(self):
-    #    self.led_all(0)
+    def disconnect(self):
+        self.save_state()
+        super().disconnect()
 
     @asyncio.coroutine
     def play(self):
