@@ -697,7 +697,6 @@ class Runcible(spanned_monome.VirtualGrid):
             elif x == 14:
                 self.k_mode = Modes.mScale
                 #print("Selected:", self.k_mode)
-                 self.ctrl_keys_held = 0
             elif x == 15:
                 self.k_mode = Modes.mPattern
                 #print("Selected:", self.k_mode)
@@ -713,7 +712,7 @@ class Runcible(spanned_monome.VirtualGrid):
                         self.dummy_disconnect()
                     else:
                         del self.ctrl_keys_last[:]
-        elif s = 0 and y == 0:
+        elif s == 0 and y == 0:
             self.ctrl_keys_held = 0
         elif s == 1 and y > 0:
             if y < 7:
