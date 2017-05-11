@@ -649,7 +649,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 self.ctrl_keys_held = self.ctrl_keys_held + (s * 2) - 1
                 print("ctr_keys_held: ", self.ctrl_keys_held)
                 if self.ctrl_keys_held == 1:
-                    self.ctrl_key_last.append(x)
+                    self.ctrl_keys_last.append(x)
                     print("ctr_keys_last: ", self.ctrl_keys_last)
             elif x == 1:
                 #print("Selected Track 2")
@@ -664,7 +664,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 self.ctrl_keys_held = self.ctrl_keys_held + (s * 2) - 1
                 print("ctr_keys_held: ", self.ctrl_keys_held)
                 if self.ctrl_keys_held == 2:
-                    self.ctrl_key_last.append(x)
+                    self.ctrl_keys_last.append(x)
                     print("ctr_keys_last: ", self.ctrl_keys_last)
             elif x == 3:
                 #print("Selected Track 4")
@@ -705,7 +705,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 self.ctrl_keys_held = self.ctrl_keys_held + (s * 2) - 1
                 print("ctr_keys_held: ", self.ctrl_keys_held)
                 if self.ctrl_keys_held == 3:
-                    self.ctrl_key_last.append(x)
+                    self.ctrl_keys_last.append(x)
                     print("ctr_keys_last: ", self.ctrl_keys_last)
                     self.ctrl_keys_held = 0
                     if self.ctrl_keys_last == (0,2,15):
