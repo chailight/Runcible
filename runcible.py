@@ -206,11 +206,11 @@ class Runcible(spanned_monome.VirtualGrid):
         self.midi_out.close_port()
         self.save_state()
         super().disconnect()
-        #sys.exit(0)
-        command = "/usr/bin/sudo /sbin/shutdown -r now"
-        process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
-        output = process.communicate()[0]
-        print(output)
+        sys.exit(0)
+        #command = "/usr/bin/sudo /sbin/shutdown -h now"
+        #process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+        #output = process.communicate()[0]
+        #print(output)
 
     @asyncio.coroutine
     def play(self):
@@ -721,6 +721,7 @@ class Runcible(spanned_monome.VirtualGrid):
                         del self.ctrl_keys_last[:]
         elif s == 0 and y == 0:
             self.ctrl_keys_held = 0
+            del self.ctrl_keys_last[:]
         elif s == 1 and y > 0:
             if y < 7:
                 #set scale mode toggles
