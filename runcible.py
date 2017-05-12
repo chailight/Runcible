@@ -68,6 +68,7 @@ class Note:
 
 class Track:
     def __init__(self,track_id):
+        self.mute = 0
         self.num_params = 4
         #self.tr = [[0] for i in range(16)]
         self.tr = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
@@ -94,7 +95,6 @@ class Track:
         self.loop_last = 0
         self.loop_edit = 0
         self.scale_toggle = 1
-        self.track_mute = 0
         self.note_mute = [0,0,0,0,0,0,0,0]
 
 class Pattern:
@@ -237,7 +237,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 #print("y:",y, "pos:", self.play_position)
                 #if self.step_ch1[y][self.play_position] == 1:
             for track in self.current_pattern.tracks:
-                if not track.track_mute:
+                if not track.mute:
                     if track.tr[track.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
                         #asyncio.async(self.trigger(abs(y-7),0))
@@ -426,7 +426,7 @@ class Runcible(spanned_monome.VirtualGrid):
                         # scale toggles 
                         buffer.led_level_set(track.track_id, 5, track.scale_toggle * 15)
                         # track mute toggles 
-                        buffer.led_level_set(track.track_id, 6, track.track_mute * 15)
+                        buffer.led_level_set(track.track_id, 6, track.mute * 15)
                         #print("track: ", track.track_id, "x: ", x, "scale toggle: ", track.scale_toggle)
         elif self.k_mode == Modes.mNote:
             buffer.led_level_set(5,7,0)
@@ -736,7 +736,7 @@ class Runcible(spanned_monome.VirtualGrid):
                         self.current_pattern.tracks[x].scale_toggle ^= 1
                         #print ("toggling scale for track: ", x)
                     if y == 1 and x < 4:
-                        self.current_pattern.tracks[x].track_mute ^= 1
+                        self.current_pattern.tracks[x].mute ^= 1
                         #print ("toggling scale for track: ", x)
                 # Note entry
                 if self.k_mode == Modes.mNote:
