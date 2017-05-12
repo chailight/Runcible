@@ -67,7 +67,6 @@ class Note:
         self.duration = duration
 
 class Track:
-    mute = 0
     def __init__(self,track_id):
         self.num_params = 4
         self.tr = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
