@@ -290,7 +290,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     #else:
                     #    self.play_position += 1
 
-                    self.cutting = False
+                self.cutting = False
 
             asyncio.async(self.trigger())
             #yield from asyncio.sleep(0.1)
