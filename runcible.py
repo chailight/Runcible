@@ -237,7 +237,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 #print("y:",y, "pos:", self.play_position)
                 #if self.step_ch1[y][self.play_position] == 1:
             for track in self.current_pattern.tracks:
-                if not track.mute:
+                if not track.track_mute:
                     if track.tr[track.play_position] == 1:
                         #print("Grid 1:", self.play_position,abs(y-7))
                         #asyncio.async(self.trigger(abs(y-7),0))
