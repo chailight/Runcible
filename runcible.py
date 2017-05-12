@@ -247,7 +247,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     for i in range(len(track.note[track.play_position])):
                     #    print(i,len(track.note[track.play_position]))
                         #self.calc_scale(0) # change this later - should be set in grid_key
-                        if not track.track_mute:
+                        if track.track_mute == 0:
                             if track.scale_toggle:
                                 current_note = self.cur_scale[track.note[track.play_position][i]-1]+track.octave[track.play_position]*12
                                 #print("input note: ", track.note[track.play_position][i], "scaled_note: ", self.cur_scale[track.note[track.play_position][i]-1], "current note: ", current_note)
