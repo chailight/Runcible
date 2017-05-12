@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
+#fix indent error?
 #fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops? maybe just close the midi stream?
 #fix play position display on trigger screen so it's easier to follow - basically turn off an led that is on and remember to turn it back on again at the next step
 #add mutes per channel - long press on the channel? - maybe channel mutes on trigger page - maybe also per row mutes somewhere?
