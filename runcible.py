@@ -236,18 +236,18 @@ class Runcible(spanned_monome.VirtualGrid):
                 #print("y:",y, "pos:", self.play_position)
                 #if self.step_ch1[y][self.play_position] == 1:
             for track in self.current_pattern.tracks:
-                if track.tr[track.play_position] == 1:
-                    #print("Grid 1:", self.play_position,abs(y-7))
-                    #asyncio.async(self.trigger(abs(y-7),0))
-                    #change this to add the note at this position on this track into the trigger schedule
-                    #ch1_note = abs(y-7) #eventually look up the scale function for this note
-                    #print("notes: ", track.note[track.play_position])
-                    #print("duration: ", track.duration[track.play_position])
-                    #print("octave: ", track.octave[track.play_position])
-                    for i in range(len(track.note[track.play_position])):
-                    #    print(i,len(track.note[track.play_position]))
-                        #self.calc_scale(0) # change this later - should be set in grid_key
-                        if track.track_mute == 0:
+                if not track.track_mute:
+                    if track.tr[track.play_position] == 1:
+                        #print("Grid 1:", self.play_position,abs(y-7))
+                        #asyncio.async(self.trigger(abs(y-7),0))
+                        #change this to add the note at this position on this track into the trigger schedule
+                        #ch1_note = abs(y-7) #eventually look up the scale function for this note
+                        #print("notes: ", track.note[track.play_position])
+                        #print("duration: ", track.duration[track.play_position])
+                        #print("octave: ", track.octave[track.play_position])
+                        for i in range(len(track.note[track.play_position])):
+                        #    print(i,len(track.note[track.play_position]))
+                            #self.calc_scale(0) # change this later - should be set in grid_key
                             if track.scale_toggle:
                                 current_note = self.cur_scale[track.note[track.play_position][i]-1]+track.octave[track.play_position]*12
                                 #print("input note: ", track.note[track.play_position][i], "scaled_note: ", self.cur_scale[track.note[track.play_position][i]-1], "current note: ", current_note)
@@ -277,24 +277,24 @@ class Runcible(spanned_monome.VirtualGrid):
                             self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
                             #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
 
-                #if self.cutting:
-                    #t.play_position = t.next_position
-                    #self.held_keys = 0
-                    #print ("cutting to: ", self.next_position[t])
-                #elif self.play_position == self.width - 1:
-                #    self.play_position = 0
-                #elif t.play_position == t.loop_end and t.loop_start != 0:
-                #if t.play_position == t.loop_end and t.loop_start != 0:
-                    #self.play_position = self.loop_start
-                    #print ("looping to: ", self.next_position[t])
-                #else:
-                #    self.play_position += 1
+                    #if self.cutting:
+                        #t.play_position = t.next_position
+                        #self.held_keys = 0
+                        #print ("cutting to: ", self.next_position[t])
+                    #elif self.play_position == self.width - 1:
+                    #    self.play_position = 0
+                    #elif t.play_position == t.loop_end and t.loop_start != 0:
+                    #if t.play_position == t.loop_end and t.loop_start != 0:
+                        #self.play_position = self.loop_start
+                        #print ("looping to: ", self.next_position[t])
+                    #else:
+                    #    self.play_position += 1
 
-                self.cutting = False
-            #else:
-                #buffer = monome.LedBuffer(self.width, self.height)
-                #buffer.led_level_set(0, 0, 0)
-            #    self.draw()
+                    self.cutting = False
+                #else:
+                    #buffer = monome.LedBuffer(self.width, self.height)
+                    #buffer.led_level_set(0, 0, 0)
+                #    self.draw()
 
             asyncio.async(self.trigger())
             #yield from asyncio.sleep(0.1)
