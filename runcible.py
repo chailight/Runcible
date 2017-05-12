@@ -68,7 +68,6 @@ class Note:
 
 class Track:
     def __init__(self,track_id):
-        self.mute = 0
         self.num_params = 4
         #self.tr = [[0] for i in range(16)]
         self.tr = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
@@ -80,11 +79,11 @@ class Track:
         self.dur_mul = 1; #duration multiplier
         self.lstart = [[0] * self.num_params]
         self.lend = [[15] * self.num_params]
-        self.swap = [[0] * self.num_params]
-        self.tmul = [[0] * self.num_params]
+        #self.swap = [[0] * self.num_params]
+        #self.tmul = [[0] * self.num_params]
         self.pos = [[0] * self.num_params for i in range(4)] #position for each parameter in each track
-        self.pos_mul = [[0] * self.num_params for i in range(4)] #something to do with the time multiplier
-        self.pos_reset = False
+        #self.pos_mul = [[0] * self.num_params for i in range(4)] #something to do with the time multiplier
+        #self.pos_reset = False
         self.track_id = track_id
         self.play_position = 0 # will switch to position for each parameter
         self.next_position = 0 # will switch to position for each parameter
@@ -95,6 +94,7 @@ class Track:
         self.loop_last = 0
         self.loop_edit = 0
         self.scale_toggle = 1
+        self.mute = 0
         self.note_mute = [0,0,0,0,0,0,0,0]
 
 class Pattern:
