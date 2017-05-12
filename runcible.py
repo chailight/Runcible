@@ -1,18 +1,19 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
-#fix indent error?
+#create a shutdown key sequence - needs a long key press detector
+#fix clear all on disconnect
 #fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops? maybe just close the midi stream?
 #fix play position display on trigger screen so it's easier to follow - basically turn off an led that is on and remember to turn it back on again at the next step
 #add mutes per channel - long press on the channel? - maybe channel mutes on trigger page - maybe also per row mutes somewhere?
 #add note mutes for drum channel?
-#add preset copy - use the keys_held technique
-#add timing modification
-#make looping independent for each parameter
 #add input/display for probability, as per kria - implement a next_note function which returns true or false based on probability setting for that track at that position
 #at this stage, for polyphonic tracks, probabilities are per position - like velocity - not per note 
 #enable a per channel transpose setting? 
+#add timing modification
+#make looping independent for each parameter
 #add scale editing 
+#add preset copy
 #adjust preset selection to allow for meta sequencing
 #fix display of current preset
 #fix cutting - has to do with keys held
@@ -69,6 +70,7 @@ class Note:
 class Track:
     def __init__(self,track_id):
         self.num_params = 4
+        #self.tr = [[0] for i in range(16)]
         self.tr = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         self.octave = [0 for i in range(16)]
         self.note = [list() for i in range(16)]
@@ -93,8 +95,7 @@ class Track:
         self.loop_last = 0
         self.loop_edit = 0
         self.scale_toggle = 1
-        self.mute = 0
-        self.note_mute = [0,0,0,0,0,0,0,0]
+        self.track_mute = 0
 
 class Pattern:
     def __init__(self,pattern_id):
@@ -290,7 +291,11 @@ class Runcible(spanned_monome.VirtualGrid):
                     #else:
                     #    self.play_position += 1
 
-                self.cutting = False
+                    self.cutting = False
+            #else:
+                #buffer = monome.LedBuffer(self.width, self.height)
+                #buffer.led_level_set(0, 0, 0)
+            #    self.draw()
 
             asyncio.async(self.trigger())
             #yield from asyncio.sleep(0.1)
@@ -416,12 +421,9 @@ class Runcible(spanned_monome.VirtualGrid):
             for x in range(self.width):
                 for track in self.current_pattern.tracks:
                     buffer.led_level_set(x, 0+track.track_id, track.tr[x] * 15)
-                    # display scale toggle and track mute
+                    # display scale toggle
                     if x < 4:
-                        # scale toggles 
                         buffer.led_level_set(track.track_id, 5, track.scale_toggle * 15)
-                        # track mute toggles 
-                        buffer.led_level_set(track.track_id, 6, (1-track.mute) * 15)
                         #print("track: ", track.track_id, "x: ", x, "scale toggle: ", track.scale_toggle)
         elif self.k_mode == Modes.mNote:
             buffer.led_level_set(5,7,0)
@@ -653,10 +655,10 @@ class Runcible(spanned_monome.VirtualGrid):
                 self.current_track_id = self.current_pattern.tracks[0].track_id
                 # track a ctrl key hold here
                 self.ctrl_keys_held = self.ctrl_keys_held + (s * 2) - 1
-                #print("ctr_keys_held: ", self.ctrl_keys_held)
+                print("ctr_keys_held: ", self.ctrl_keys_held)
                 if self.ctrl_keys_held == 1:
                     self.ctrl_keys_last.append(x)
-                    #print("ctr_keys_last: ", self.ctrl_keys_last)
+                    print("ctr_keys_last: ", self.ctrl_keys_last)
             elif x == 1:
                 #print("Selected Track 2")
                 self.current_track = self.current_pattern.tracks[1]
@@ -668,10 +670,10 @@ class Runcible(spanned_monome.VirtualGrid):
 
                 # track a ctrl key hold here
                 self.ctrl_keys_held = self.ctrl_keys_held + (s * 2) - 1
-                #print("ctr_keys_held: ", self.ctrl_keys_held)
+                print("ctr_keys_held: ", self.ctrl_keys_held)
                 if self.ctrl_keys_held == 2:
                     self.ctrl_keys_last.append(x)
-                    #print("ctr_keys_last: ", self.ctrl_keys_last)
+                    print("ctr_keys_last: ", self.ctrl_keys_last)
             elif x == 3:
                 #print("Selected Track 4")
                 self.current_track = self.current_pattern.tracks[3]
@@ -709,10 +711,10 @@ class Runcible(spanned_monome.VirtualGrid):
 
                 # track a ctrl key hold here
                 self.ctrl_keys_held = self.ctrl_keys_held + (s * 2) - 1
-                #print("ctr_keys_held: ", self.ctrl_keys_held)
+                print("ctr_keys_held: ", self.ctrl_keys_held)
                 if self.ctrl_keys_held == 3:
                     self.ctrl_keys_last.append(x)
-                    #print("ctr_keys_last: ", self.ctrl_keys_last)
+                    print("ctr_keys_last: ", self.ctrl_keys_last)
                     self.ctrl_keys_held = 0
                     if self.ctrl_keys_last == [0,2,15]:
                         del self.ctrl_keys_last[:]
@@ -729,9 +731,6 @@ class Runcible(spanned_monome.VirtualGrid):
                     #print("Trigger page key:", x, y)
                     if y == 2 and x < 4:
                         self.current_pattern.tracks[x].scale_toggle ^= 1
-                        #print ("toggling scale for track: ", x)
-                    if y == 1 and x < 4:
-                        self.current_pattern.tracks[x].mute ^= 1
                         #print ("toggling scale for track: ", x)
                 # Note entry
                 if self.k_mode == Modes.mNote:
