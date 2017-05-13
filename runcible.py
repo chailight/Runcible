@@ -214,6 +214,8 @@ class Runcible(spanned_monome.VirtualGrid):
             t.loop_length = abs(t.loop_end - t.loop_start)+1
             t.play_position = (self.current_pos//self.ticks)%t.loop_length + t.loop_start
         while True:
+            self.frame_dirty = True #because if nothing else has happend, at least the position marker has moved
+            print("calling draw at position: ", self.current_pos)
             self.draw()
             # TRIGGER SOMETHING
             for track in self.current_pattern.tracks:
@@ -307,6 +309,7 @@ class Runcible(spanned_monome.VirtualGrid):
 
     def draw(self):
         if self.frame_dirty:
+            print("drawing grid")
             buffer = monome.LedBuffer(self.width, self.height)
 
             if self.current_track.track_id == 0:
