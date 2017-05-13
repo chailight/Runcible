@@ -1,11 +1,8 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
-#create a shutdown key sequence - needs a long key press detector
 #fix clear all on disconnect
 #fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops? maybe just close the midi stream?
-#fix play position display on trigger screen so it's easier to follow - basically turn off an led that is on and remember to turn it back on again at the next step
-#add mutes per channel - long press on the channel? - maybe channel mutes on trigger page - maybe also per row mutes somewhere?
 #add note mutes for drum channel?
 #add input/display for probability, as per kria - implement a next_note function which returns true or false based on probability setting for that track at that position
 #at this stage, for polyphonic tracks, probabilities are per position - like velocity - not per note 
@@ -650,6 +647,8 @@ class Runcible(spanned_monome.VirtualGrid):
                         self.disconnect()
                     else:
                         del self.ctrl_keys_last[:]
+        elif s == 0 and y == 0 and (x == 10 or x == 11 or x == 12):
+                self.k_mod_mode = ModModes.modNone
         elif s == 0 and y == 0:
             self.ctrl_keys_held = 0
             del self.ctrl_keys_last[:]
