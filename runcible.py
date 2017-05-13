@@ -205,16 +205,16 @@ class Runcible(spanned_monome.VirtualGrid):
         #print(output)
 
     def next_step(self, track, parameter):
-       print("track.pos_mul: ", parameter, track.pos_mul[1])
+       print("track.pos_mul: ", parameter, track.pos_mul[parameter])
        track.pos_mul[parameter] = int(track.pos_mul[parameter]) + 1
 
-       if track.pos_mul[paramter] >= self.current_pattern.tracks[track.track_id].tmul[parameter]:
+       if track.pos_mul[parameter] >= self.current_pattern.tracks[track.track_id].tmul[parameter]:
             if track.pos[parameter] == self.current_pattern.tracks[track.track_id].lend[parameter]:
                 track.pos[parameter] = self.current_pattern.tracks[track.track_id].lstart[parameter]
             else:
                 track.pos[parameter] = int(track.pos[parameter]) + 1
-                if track.pos[paramter] > 15:
-                    track.pos[paramter] = 0
+                if track.pos[parameter] > 15:
+                    track.pos[parameter] = 0
             track.pos_mul[parameter] = 0
             # add probabilities
             return True
