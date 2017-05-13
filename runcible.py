@@ -233,7 +233,7 @@ class Runcible(spanned_monome.VirtualGrid):
             self.draw()
             # TRIGGER SOMETHING
             for track in self.current_pattern.tracks:
-                if self.next_step(track, track.play_position, Modes.mTr):
+                if self.next_step(track, Modes.mTr):
                     if track.tr[track.play_position] == 1:
                         for i in range(len(track.note[track.play_position])):
                         #    print(i,len(track.note[track.play_position]))
