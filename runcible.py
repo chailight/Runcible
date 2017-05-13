@@ -533,7 +533,7 @@ class Runcible(spanned_monome.VirtualGrid):
                             buffer.led_level_set(track.play_position, 0+track.track_id, 0)
                             #buffer.led_level_set(track.play_position, 0+track.track_id, 15)
                     else:
-                        buffer.led_level_set(self.current_track.play_position, 0+track.track_id, 0)
+                        buffer.led_level_set(self.current_track.play_position, 0, 0)
 
                 #if ((self.current_pos//self.ticks)%16) < 16:
                 #    buffer.led_level_set(track.play_position, 0+track.track_id, 15)
