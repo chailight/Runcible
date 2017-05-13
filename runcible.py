@@ -215,7 +215,7 @@ class Runcible(spanned_monome.VirtualGrid):
             t.play_position = (self.current_pos//self.ticks)%t.loop_length + t.loop_start
         while True:
             self.frame_dirty = True #because if nothing else has happend, at least the position marker has moved
-            print("calling draw at position: ", self.current_pos)
+            #print("calling draw at position: ", self.current_pos)
             self.draw()
             # TRIGGER SOMETHING
             for track in self.current_pattern.tracks:
@@ -309,7 +309,7 @@ class Runcible(spanned_monome.VirtualGrid):
 
     def draw(self):
         if self.frame_dirty:
-            print("drawing grid")
+            #print("drawing grid")
             buffer = monome.LedBuffer(self.width, self.height)
 
             if self.current_track.track_id == 0:
@@ -352,7 +352,7 @@ class Runcible(spanned_monome.VirtualGrid):
                         if x < 4:
                             buffer.led_level_set(track.track_id, 5, track.scale_toggle * 15)
                             #print("track: ", track.track_id, "x: ", x, "scale toggle: ", track.scale_toggle)
-                            buffer.led_level_set(track.track_id, 6, track.track_mute * 15)
+                            buffer.led_level_set(track.track_id, 6, (1-track.track_mute) * 15) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
             elif self.k_mode == Modes.mNote:
                 buffer.led_level_set(5,7,0)
                 buffer.led_level_set(6,7,15)
