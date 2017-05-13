@@ -205,7 +205,7 @@ class Runcible(spanned_monome.VirtualGrid):
         #print(output)
 
     def next_step(self, track, parameter):
-       print("track.pos_mul: ", parameter, track.pos_mul[parameter])
+       #print("track.pos_mul: ", parameter, track.pos_mul[parameter])
        track.pos_mul[parameter] = int(track.pos_mul[parameter]) + 1
 
        if track.pos_mul[parameter] >= self.current_pattern.tracks[track.track_id].tmul[parameter]:
@@ -672,6 +672,11 @@ class Runcible(spanned_monome.VirtualGrid):
             self.ctrl_keys_held = 0
             del self.ctrl_keys_last[:]
         elif s == 1 and y > 0:
+            if y == 7:
+                if self.k_mode == Modes.mTr:
+                    if self.k_mod_mode == ModModes.modTime:
+                        self.current_track.tmul[Modes.mTr.value] = x
+                        print("tmul: ", self.current_track.tmul[Modes.mTr.value])
             if y < 7:
                 #set scale mode toggles
                 if self.k_mode == Modes.mTr:
