@@ -286,7 +286,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def calc_scale(self, s):
         self.cur_scale[0] = self.current_preset.scale_data[s][0] + self.cur_trans
         for i1 in range(1,8):
-            self.cur_scale[i1] = self.cur_scale[i1-1] + self.current_present.scale_data[s][i1]
+            self.cur_scale[i1] = self.cur_scale[i1-1] + self.current_preset.scale_data[s][i1]
 
 
     @asyncio.coroutine
