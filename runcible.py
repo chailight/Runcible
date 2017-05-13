@@ -211,7 +211,7 @@ class Runcible(spanned_monome.VirtualGrid):
             if track.pos[parameter] == self.current_pattern.tracks[track.track_id].lend[parameter]:
                 track.pos[parameter] = self.current_pattern.tracks[track.track_id].lstart[parameter]
             else:
-                track.pos[parameter] = track.pos[parameter] + 1
+                track.pos[parameter] = int(track.pos[parameter]) + 1
                 if track.pos[paramter] > 15:
                     track.pos[paramter] = 0
             track.pos_mul[parameter] = 0
