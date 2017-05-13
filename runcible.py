@@ -34,11 +34,7 @@ import asyncio
 import monome
 import spanned_monome
 import clocks
-#import synths
-#import pygame
-#import pygame.midi
 import rtmidi2
-#from pygame.locals import *
 from enum import Enum
 
 def cancel_task(task):
@@ -70,7 +66,6 @@ class Note:
 class Track:
     def __init__(self,track_id):
         self.num_params = 4
-        #self.tr = [[0] for i in range(16)]
         self.tr = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         self.octave = [0 for i in range(16)]
         self.note = [list() for i in range(16)]
@@ -105,7 +100,6 @@ class Pattern:
         self.step_ch2 = [[0 for col in range(16)] for row in range(8)]
         self.step_ch3 = [[0 for col in range(16)] for row in range(8)]
         self.step_ch4 = [[0 for col in range(16)] for row in range(8)]
-        #default scales - all starting at middle C
 
 
 class Preset:
@@ -119,6 +113,25 @@ class Preset:
         self.meta_len = 0
         self.meta_lswap = 0
         self.glyph = [[0] * 8]
+        # this needs to be in the Preset into state so custom scales are stored
+        self.scale_data = [[48,2,2,1,2,2,2,1],
+                           [48,2,1,2,2,1,2,2],
+                           [48,2,2,1,2,2,2,1],
+                           [48,2,1,2,2,2,1,2],
+                           [48,1,2,2,2,1,2,2],
+                           [48,2,2,2,1,2,2,1],
+                           [48,2,2,1,2,2,1,2],
+                           [48,2,1,2,2,1,2,2],
+                           [48,1,2,2,1,2,2,2],
+                           [48,3,2,2,3,2,3,2],
+                           [48,2,2,3,2,3,2,2],
+                           [48,3,2,1,1,3,2,3],
+                           [48,1,3,1,2,1,2,2],
+                           [48,0,0,0,0,0,0,0],
+                           [48,0,0,0,0,0,0,0],
+                           [48,0,0,0,0,0,0,0],
+                           [48,0,0,0,0,0,0,0],
+                           [48,0,0,0,0,0,0,0]]
 
 class State:
     def __init__(self):
@@ -159,17 +172,14 @@ class Runcible(spanned_monome.VirtualGrid):
     def ready(self):
         print ("using grid on port :%s" % self.id)
         self.current_pos = 0
-      #  self.current_pattern.step_ch1 = [[0 for col in range(self.width)] for row in range(self.height)] #used for display of notes
-      #  self.current_pattern.step_ch2 = [[0 for col in range(self.width)] for row in range(self.height)]
-      #  self.current_pattern.step_ch3 = [[0 for col in range(self.width)] for row in range(self.height)]
-      #  self.current_pattern.step_ch4 = [[0 for col in range(self.width)] for row in range(self.height)]
-        self.play_position = [0,0,0,0] # one position for each track
+        #self.play_position = [0,0,0,0] # one position for each track
         #self.fine_play_position = 0
-        self.next_position = [0,0,0,0]
+        #self.next_position = [0,0,0,0]
         self.cutting = False
-        self.loop_start = [0,0,0,0]
-        self.loop_end = [self.width - 1, self.width -1, self.width -1, self.width -1]
-        self.loop_length = [self.width, self.width, self.width, self.width]
+        #remove loop from main logic
+        #self.loop_start = [0,0,0,0]
+        #self.loop_end = [self.width - 1, self.width -1, self.width -1, self.width -1]
+        #self.loop_length = [self.width, self.width, self.width, self.width]
         self.keys_held = 0
         self.key_last = [0,0,0,0]
         if os.path.isfile(self.pickle_file_path):
@@ -178,25 +188,8 @@ class Runcible(spanned_monome.VirtualGrid):
         self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
         self.current_track = self.current_pattern.tracks[0]
         self.current_track_id = self.current_pattern.tracks[0].track_id
-        self.scale_data = [[48,2,2,1,2,2,2,1],
-                           [48,2,1,2,2,1,2,2],
-                           [48,2,2,1,2,2,2,1],
-                           [48,2,1,2,2,2,1,2],
-                           [48,1,2,2,2,1,2,2],
-                           [48,2,2,2,1,2,2,1],
-                           [48,2,2,1,2,2,1,2],
-                           [48,2,1,2,2,1,2,2],
-                           [48,1,2,2,1,2,2,2],
-                           [48,3,2,2,3,2,3,2],
-                           [48,2,2,3,2,3,2,2],
-                           [48,3,2,1,1,3,2,3],
-                           [48,1,3,1,2,1,2,2],
-                           [48,0,0,0,0,0,0,0],
-                           [48,0,0,0,0,0,0,0],
-                           [48,0,0,0,0,0,0,0],
-                           [48,0,0,0,0,0,0,0],
-                           [48,0,0,0,0,0,0,0]]
         self.calc_scale(self.cur_scale_id)
+        self.frame_dirty = False 
         asyncio.async(self.play())
 
     def dummy_disconnect(self):
@@ -220,34 +213,13 @@ class Runcible(spanned_monome.VirtualGrid):
             #self.loop_length[t] = abs(self.loop_end[self.current_track] - self.loop_start[t])+1
             t.loop_length = abs(t.loop_end - t.loop_start)+1
             t.play_position = (self.current_pos//self.ticks)%t.loop_length + t.loop_start
-        #self.fine_play_position = self.current_pos%96
-        #self.fine_play_position = self.play_position
         while True:
-        #    for t in range(4):
-            #t = self.current_track
-            #print(self.clock.bpm,self.play_position, self.current_pos%64)
-        #    if ((self.current_pos//self.ticks)%16) < 16:
-            #if t.play_position  < 16:
-            #print("G1:",(self.current_pos//self.ticks)%16)
             self.draw()
             # TRIGGER SOMETHING
-            #ch1_note = None
-            #ch2_note = None
-            #for y in range(self.height): #re-enable this for polyphonic tracks
-                #print("y:",y, "pos:", self.play_position)
-                #if self.step_ch1[y][self.play_position] == 1:
             for track in self.current_pattern.tracks:
                 if track.tr[track.play_position] == 1:
-                    #print("Grid 1:", self.play_position,abs(y-7))
-                    #asyncio.async(self.trigger(abs(y-7),0))
-                    #change this to add the note at this position on this track into the trigger schedule
-                    #ch1_note = abs(y-7) #eventually look up the scale function for this note
-                    #print("notes: ", track.note[track.play_position])
-                    #print("duration: ", track.duration[track.play_position])
-                    #print("octave: ", track.octave[track.play_position])
                     for i in range(len(track.note[track.play_position])):
                     #    print(i,len(track.note[track.play_position]))
-                        #self.calc_scale(0) # change this later - should be set in grid_key
                         if track.scale_toggle:
                             current_note = self.cur_scale[track.note[track.play_position][i]-1]+track.octave[track.play_position]*12
                             #print("input note: ", track.note[track.play_position][i], "scaled_note: ", self.cur_scale[track.note[track.play_position][i]-1], "current note: ", current_note)
@@ -278,41 +250,18 @@ class Runcible(spanned_monome.VirtualGrid):
                             self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
                             #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
 
-                #if self.cutting:
-                    #t.play_position = t.next_position
-                    #self.held_keys = 0
-                    #print ("cutting to: ", self.next_position[t])
-                #elif self.play_position == self.width - 1:
-                #    self.play_position = 0
-                #elif t.play_position == t.loop_end and t.loop_start != 0:
-                #if t.play_position == t.loop_end and t.loop_start != 0:
-                    #self.play_position = self.loop_start
-                    #print ("looping to: ", self.next_position[t])
-                #else:
-                #    self.play_position += 1
-
                 self.cutting = False
-            #else:
-                #buffer = monome.LedBuffer(self.width, self.height)
-                #buffer.led_level_set(0, 0, 0)
-            #    self.draw()
 
             asyncio.async(self.trigger())
-            #yield from asyncio.sleep(0.1)
-            asyncio.async(self.clock_out())
-            #yield from self.clock.sync(self.ticks)
+            #asyncio.async(self.clock_out())
             yield from self.clock.sync(self.ticks)
             self.current_pos = yield from self.clock.sync()
             for track in self.current_pattern.tracks:
                 track.loop_length = abs(track.loop_end - track.loop_start)+1
                 track.play_position = (self.current_pos//self.ticks)%track.loop_length + track.loop_start
-            #print("updated play pos: ", self.play_position)
-            #self.fine_play_position = self.current_pos%96
-            #self.fine_play_position = self.play_position
 
     def insert_note(self,track,position,pitch,velocity,duration):
         self.insert_note_on(track,position,pitch,velocity)
-        #self.insert_note_off(track,(position+duration)%96,pitch)
         self.insert_note_off(track,(position+duration)%16,pitch)
         #print("note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
 
@@ -335,315 +284,291 @@ class Runcible(spanned_monome.VirtualGrid):
             self.note_off[position].append(new_note)
 
     def calc_scale(self, s):
-        self.cur_scale[0] = self.scale_data[s][0] + self.cur_trans
+        self.cur_scale[0] = self.current_preset.scale_data[s][0] + self.cur_trans
         for i1 in range(1,8):
-            self.cur_scale[i1] = self.cur_scale[i1-1] + self.scale_data[s][i1]
+            self.cur_scale[i1] = self.cur_scale[i1-1] + self.current_present.scale_data[s][i1]
 
-# to be removed
-    #def gridToSpan(self,x,y):
-    #    return [x,y]
 
-    #def spanToGrid(self,x,y):
-    #    return [x,y]
-
-#TODO: setup the note data structure and also change the noteon and noteoff structure to be dynamic lists rather than arrays (so we only pick up actual notes, not empties
     @asyncio.coroutine
     def trigger(self):
-        #print(self.play_position, self.fine_play_position)
-        #notes = list()
         for t in self.current_pattern.tracks:
             for note in self.note_off[t.play_position]:
-                #print("position: ", self.fine_play_position, " ending:", note.pitch, " on channel ", self.channel + note.channel_inc)
-                #notes.append((self.channel + note.channel_inc,note.pitch+40,0))
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
             del self.note_off[t.play_position][:] #clear the current midi output once it's been sent
 
             for note in self.note_on[t.play_position]:
-                #print("position: ", self.fine_play_position, " playing:", note.pitch, " on channel ", self.channel + note.channel_inc)
-                #notes.append((self.channel + note.channel_inc,note.pitch+40,note.velocity))
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,note.velocity)
             del self.note_on[t.play_position][:] #clear the current midi output once it's been sent
 
 
     @asyncio.coroutine
     def clock_out(self):
-        #print("Grid1", i)
-        #self.midi_out.note_on(40, 60, self.clock_ch)
-        #print("G1: clock on "  + " channel: " + str(self.clock_ch))
         yield from self.clock.sync(self.ticks)
-        #yield from asyncio.sleep(0.01)
-        #self.midi_out.note_off(40, 0, self.clock_ch)
-        #print("G1: clock off "  + " channel: " + str(self.clock_ch))
 
     def draw(self):
-        buffer = monome.LedBuffer(self.width, self.height)
+        if self.frame_dirty:
+            buffer = monome.LedBuffer(self.width, self.height)
 
-        # display steps
-            # highlight the play position - only useful for varibright
-            #if x == self.play_position:
-            #    highlight = 4
+            if self.current_track.track_id == 0:
+                buffer.led_level_set(0,7,15) #set the channel 1 indicator on
+                buffer.led_level_set(1,7,0)  #set the channel 2 indicator off
+                buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
+                buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
+                #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
+            elif self.current_track.track_id ==1:
+                buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
+                buffer.led_level_set(1,7,15)  #set the channel 2 indicator on
+                buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
+                buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
+                #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch2[y][x] * 11 + highlight)
+            elif self.current_track.track_id == 2:
+                buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
+                buffer.led_level_set(1,7,0)  #set the channel 2 indicator on
+                buffer.led_level_set(2,7,15)  #set the channel 3 indicator off
+                buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
+                #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch3[y][x] * 11 + highlight)
+            elif self.current_track.track_id == 3:
+                buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
+                buffer.led_level_set(1,7,0)  #set the channel 2 indicator on
+                buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
+                buffer.led_level_set(3,7,15)  #set the channel 4 indicator off
+                #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch4[y][x] * 11 + highlight)
+            if self.k_mode == Modes.mTr:
+                buffer.led_level_set(5,7,15) #set the channel 1 indicator on
+                buffer.led_level_set(6,7,0)  #set the channel 2 indicator off
+                buffer.led_level_set(7,7,0)  #set the channel 3 indicator off
+                buffer.led_level_set(8,7,0)  #set the channel 4 indicator off
+                buffer.led_level_set(9,7,0)
+                buffer.led_level_set(14,7,0)
+                buffer.led_level_set(15,7,0)
+                # display triggers for each track
+                for x in range(self.width):
+                    for track in self.current_pattern.tracks:
+                        buffer.led_level_set(x, 0+track.track_id, track.tr[x] * 15)
+                        # display scale toggle
+                        if x < 4:
+                            buffer.led_level_set(track.track_id, 5, track.scale_toggle * 15)
+                            #print("track: ", track.track_id, "x: ", x, "scale toggle: ", track.scale_toggle)
+            elif self.k_mode == Modes.mNote:
+                buffer.led_level_set(5,7,0)
+                buffer.led_level_set(6,7,15)
+                buffer.led_level_set(7,7,0)
+                buffer.led_level_set(8,7,0)
+                buffer.led_level_set(9,7,0)
+                buffer.led_level_set(14,7,0)
+                buffer.led_level_set(15,7,0)
+                for x in range(self.width):
+                    #show the triggers for that track on the top row
+                    #buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
+                    for y in range(1,self.height-1): #ignore bottom row
+                        #render_pos = self.spanToGrid(x,y)
+                        if self.current_track.track_id == 0:
+                            buffer.led_level_set(x, y, self.current_pattern.step_ch1[y][x] * 15 )
+                        elif self.current_track.track_id == 1:
+                            buffer.led_level_set(x, y, self.current_pattern.step_ch2[y][x] * 15 )
+                        elif self.current_track.track_id == 2:
+                            buffer.led_level_set(x, y, self.current_pattern.step_ch3[y][x] * 15 )
+                        elif self.current_track.track_id == 3:
+                            buffer.led_level_set(x, y, self.current_pattern.step_ch4[y][x] * 15 )
+            elif self.k_mode == Modes.mOct:
+                buffer.led_level_set(5,7,0)
+                buffer.led_level_set(6,7,0)
+                buffer.led_level_set(7,7,15)
+                buffer.led_level_set(8,7,0)
+                buffer.led_level_set(9,7,0)
+                buffer.led_level_set(14,7,0)
+                buffer.led_level_set(15,7,0)
+                for x in range(self.width):
+                    #show the triggers for that track on the top row
+                    buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
+                    #if self.current_channel == 1:
+                    #fill a column bottom up in the x position
+                    current_oct = self.current_track.octave[x]
+                    if current_oct >= 0:
+                        #print("start = ", 1, "end = ", 4-current_oct)
+                        for i in range (4-current_oct,5):
+                            buffer.led_level_set(x, i, 15)
+                            #print("current oct: ", current_oct, " drawing in row: ", i)
+                    if current_oct < 0:
+                        for i in range (4,5-current_oct):
+                            buffer.led_level_set(x, i, 15)
+                            #print("current oct: ", current_oct, " drawing in row: ", i)
+            elif self.k_mode == Modes.mDur:
+                buffer.led_level_set(5,7,0)
+                buffer.led_level_set(6,7,0)
+                buffer.led_level_set(7,7,0)
+                buffer.led_level_set(8,7,15)
+                buffer.led_level_set(9,7,0)
+                buffer.led_level_set(14,7,0)
+                buffer.led_level_set(15,7,0)
+                for x in range(self.width):
+                    #show the triggers for that track on the top row
+                    buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
+                    #draw the accent toggles - this will move to a velocity page?
+                    #if self.current_track.velocity[x]:
+                    #    buffer.led_level_set(x, 0, 15)
+                    #else:
+                    #    buffer.led_level_set(x, 0, 0)
+                    #if self.current_channel == 1:
+                        #fill a column top down in the x position
+                    for i in range (1,self.current_track.duration[x]+1): #ignore top row
+                        buffer.led_level_set(x, i, 15)
+                    for i in range (self.current_track.duration[x]+1,7): #ignore bottom row
+                        buffer.led_level_set(x, i, 0)
+                    #elif self.current_channel == 2:
+                        #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
+                        #    buffer.led_level_set(x, i, 15)
+                        #for i in range (self.current_pattern.tracks[1].duration[x]+1,7):
+                        #    buffer.led_level_set(x, i, 0)
+            elif self.k_mode == Modes.mVel:
+                buffer.led_level_set(5,7,0)
+                buffer.led_level_set(6,7,0)
+                buffer.led_level_set(7,7,0)
+                buffer.led_level_set(8,7,0)
+                buffer.led_level_set(9,7,15)
+                buffer.led_level_set(14,7,0)
+                buffer.led_level_set(15,7,0)
+                for x in range(self.width):
+                    #draw the accent toggles - this will move to a velocity page?
+                    #if self.current_track.velocity[x]:
+                    #    buffer.led_level_set(x, 0, 15)
+                    #else:
+                    #    buffer.led_level_set(x, 0, 0)
+                    #if self.current_channel == 1:
+                        #fill a column top down in the x position
+                    for i in range (7-self.current_track.velocity[x],7): #ignore bottom row
+                        buffer.led_level_set(x, i, 15)
+                    for i in range (0,7-self.current_track.velocity[x]): #ignore top row
+                        buffer.led_level_set(x, i, 0)
+                    #show the triggers for that track on the top row
+                    buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
+                    #elif self.current_channel == 2:
+                        #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
+                        #    buffer.led_level_set(x, i, 15)
+                        #for i in range (self.current_pattern.tracks[1].duration[x]+1,7):
+                        #    buffer.led_level_set(x, i, 0)
+            elif self.k_mode == Modes.mScale:
+                buffer.led_level_set(5,7,0)
+                buffer.led_level_set(6,7,0)
+                buffer.led_level_set(7,7,0)
+                buffer.led_level_set(8,7,0)
+                buffer.led_level_set(9,7,0)
+                buffer.led_level_set(14,7,15)
+                buffer.led_level_set(15,7,0)
+                buffer.led_level_set(15,7,0)
+                #clear any previous scale
+                for ix in range (15):
+                    for iy in range (1,7):
+                        buffer.led_level_set(ix,iy, 0)
+                # show the selected scale 
+                buffer.led_level_set(self.cur_scale_id//6,7-self.cur_scale_id%6-1, 15)
+                # set a transpose reference point
+                buffer.led_level_set(7,7,15)
+                #display the actual scale
+                for sd in range (1,8):
+                    buffer.led_level_set(7+self.cur_trans+self.current_preset.scale_data[self.cur_scale_id][sd],7-sd, 15)
+                    #print("sd: ", sd, "scale val: ", self.scale_data[self.cur_scale_id][sd], "pos: ", 4+self.scale_data[self.cur_scale_id][sd],7-sd-1)
+            elif self.k_mode == Modes.mPattern:
+                buffer.led_level_set(5,7,0)
+                buffer.led_level_set(6,7,0)
+                buffer.led_level_set(7,7,0)
+                buffer.led_level_set(8,7,0)
+                buffer.led_level_set(9,7,0)
+                buffer.led_level_set(14,7,0)
+                buffer.led_level_set(15,7,15)
+                for i in range(16):
+                    buffer.led_level_set(i,0,0)
+                buffer.led_level_set(self.current_pattern.pattern_id,0,15)
+            if self.k_mod_mode == ModModes.modLoop:
+                buffer.led_level_set(10,7,15)
+                buffer.led_level_set(11,7,0)
+                buffer.led_level_set(12,7,0)
+            elif self.k_mod_mode == ModModes.modTime:
+                buffer.led_level_set(10,7,0)
+                buffer.led_level_set(11,7,15)
+                buffer.led_level_set(12,7,0)
+            elif self.k_mod_mode == ModModes.modProb:
+                buffer.led_level_set(10,7,0)
+                buffer.led_level_set(11,7,0)
+                buffer.led_level_set(12,7,15)
+
+            # draw trigger bar and on-states
+    #        for x in range(self.width):
+    #            buffer.led_level_set(x, 6, 4)
+
+    #        for y in range(6):
+    #            if self.step_ch1[y][self.play_position] == 1:
+    #                buffer.led_level_set(self.play_position, 6, 15)
+
+            # draw play position
+            #current_pos = yield from self.clock.sync()
+            #print("runcible:",(self.current_pos//self.ticks)%16)
+            #render_pos = self.spanToGrid(self.play_position, 0)
+            #if ((self.current_pos//self.ticks)%16) < 16:
+    #           print("Pos",self.play_position)
+            #    buffer.led_level_set(render_pos[0], render_pos[1], 15)
             #else:
-            #    highlight = 0
+            #    buffer.led_level_set(render_pos[0], render_pos[1], 0) # change this to restore the original state of the led
 
-        if self.current_track.track_id == 0:
-            buffer.led_level_set(0,7,15) #set the channel 1 indicator on
-            buffer.led_level_set(1,7,0)  #set the channel 2 indicator off
-            buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
-            buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
-            #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch1[y][x] * 11 + highlight)
-        elif self.current_track.track_id ==1:
-            buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
-            buffer.led_level_set(1,7,15)  #set the channel 2 indicator on
-            buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
-            buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
-            #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch2[y][x] * 11 + highlight)
-        elif self.current_track.track_id == 2:
-            buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
-            buffer.led_level_set(1,7,0)  #set the channel 2 indicator on
-            buffer.led_level_set(2,7,15)  #set the channel 3 indicator off
-            buffer.led_level_set(3,7,0)  #set the channel 4 indicator off
-            #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch3[y][x] * 11 + highlight)
-        elif self.current_track.track_id == 3:
-            buffer.led_level_set(0,7,0)   #set the channel 1 indicator off
-            buffer.led_level_set(1,7,0)  #set the channel 2 indicator on
-            buffer.led_level_set(2,7,0)  #set the channel 3 indicator off
-            buffer.led_level_set(3,7,15)  #set the channel 4 indicator off
-            #buffer.led_level_set(render_pos[0], render_pos[1], self.step_ch4[y][x] * 11 + highlight)
-        if self.k_mode == Modes.mTr:
-            buffer.led_level_set(5,7,15) #set the channel 1 indicator on
-            buffer.led_level_set(6,7,0)  #set the channel 2 indicator off
-            buffer.led_level_set(7,7,0)  #set the channel 3 indicator off
-            buffer.led_level_set(8,7,0)  #set the channel 4 indicator off
-            buffer.led_level_set(9,7,0)
-            buffer.led_level_set(14,7,0)
-            buffer.led_level_set(15,7,0)
-            # display triggers for each track
-            for x in range(self.width):
+            # display the other track positions
+            # I think this could all be simplified
+            # change the bounds of the first if condition to match the
+            # loop start and end points
+            if self.k_mode == Modes.mTr:
+                previous_step = [0,0,0,0]
                 for track in self.current_pattern.tracks:
-                    buffer.led_level_set(x, 0+track.track_id, track.tr[x] * 15)
-                    # display scale toggle
-                    if x < 4:
-                        buffer.led_level_set(track.track_id, 5, track.scale_toggle * 15)
-                        #print("track: ", track.track_id, "x: ", x, "scale toggle: ", track.scale_toggle)
-        elif self.k_mode == Modes.mNote:
-            buffer.led_level_set(5,7,0)
-            buffer.led_level_set(6,7,15)
-            buffer.led_level_set(7,7,0)
-            buffer.led_level_set(8,7,0)
-            buffer.led_level_set(9,7,0)
-            buffer.led_level_set(14,7,0)
-            buffer.led_level_set(15,7,0)
-            for x in range(self.width):
-                #show the triggers for that track on the top row
-                #buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
-                for y in range(1,self.height-1): #ignore bottom row
-                    #render_pos = self.spanToGrid(x,y)
-                    if self.current_track.track_id == 0:
-                        buffer.led_level_set(x, y, self.current_pattern.step_ch1[y][x] * 15 )
-                    elif self.current_track.track_id == 1:
-                        buffer.led_level_set(x, y, self.current_pattern.step_ch2[y][x] * 15 )
-                    elif self.current_track.track_id == 2:
-                        buffer.led_level_set(x, y, self.current_pattern.step_ch3[y][x] * 15 )
-                    elif self.current_track.track_id == 3:
-                        buffer.led_level_set(x, y, self.current_pattern.step_ch4[y][x] * 15 )
-        elif self.k_mode == Modes.mOct:
-            buffer.led_level_set(5,7,0)
-            buffer.led_level_set(6,7,0)
-            buffer.led_level_set(7,7,15)
-            buffer.led_level_set(8,7,0)
-            buffer.led_level_set(9,7,0)
-            buffer.led_level_set(14,7,0)
-            buffer.led_level_set(15,7,0)
-            for x in range(self.width):
-                #show the triggers for that track on the top row
-                buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
-                #if self.current_channel == 1:
-                #fill a column bottom up in the x position
-                current_oct = self.current_track.octave[x]
-                if current_oct >= 0:
-                    #print("start = ", 1, "end = ", 4-current_oct)
-                    for i in range (4-current_oct,5):
-                        buffer.led_level_set(x, i, 15)
-                        #print("current oct: ", current_oct, " drawing in row: ", i)
-                if current_oct < 0:
-                    for i in range (4,5-current_oct):
-                        buffer.led_level_set(x, i, 15)
-                        #print("current oct: ", current_oct, " drawing in row: ", i)
-        elif self.k_mode == Modes.mDur:
-            buffer.led_level_set(5,7,0)
-            buffer.led_level_set(6,7,0)
-            buffer.led_level_set(7,7,0)
-            buffer.led_level_set(8,7,15)
-            buffer.led_level_set(9,7,0)
-            buffer.led_level_set(14,7,0)
-            buffer.led_level_set(15,7,0)
-            for x in range(self.width):
-                #show the triggers for that track on the top row
-                buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
-                #draw the accent toggles - this will move to a velocity page?
-                #if self.current_track.velocity[x]:
-                #    buffer.led_level_set(x, 0, 15)
-                #else:
-                #    buffer.led_level_set(x, 0, 0)
-                #if self.current_channel == 1:
-                    #fill a column top down in the x position
-                for i in range (1,self.current_track.duration[x]+1): #ignore top row
-                    buffer.led_level_set(x, i, 15)
-                for i in range (self.current_track.duration[x]+1,7): #ignore bottom row
-                    buffer.led_level_set(x, i, 0)
-                #elif self.current_channel == 2:
-                    #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
-                    #    buffer.led_level_set(x, i, 15)
-                    #for i in range (self.current_pattern.tracks[1].duration[x]+1,7):
-                    #    buffer.led_level_set(x, i, 0)
-        elif self.k_mode == Modes.mVel:
-            buffer.led_level_set(5,7,0)
-            buffer.led_level_set(6,7,0)
-            buffer.led_level_set(7,7,0)
-            buffer.led_level_set(8,7,0)
-            buffer.led_level_set(9,7,15)
-            buffer.led_level_set(14,7,0)
-            buffer.led_level_set(15,7,0)
-            for x in range(self.width):
-                #draw the accent toggles - this will move to a velocity page?
-                #if self.current_track.velocity[x]:
-                #    buffer.led_level_set(x, 0, 15)
-                #else:
-                #    buffer.led_level_set(x, 0, 0)
-                #if self.current_channel == 1:
-                    #fill a column top down in the x position
-                for i in range (7-self.current_track.velocity[x],7): #ignore bottom row
-                    buffer.led_level_set(x, i, 15)
-                for i in range (0,7-self.current_track.velocity[x]): #ignore top row
-                    buffer.led_level_set(x, i, 0)
-                #show the triggers for that track on the top row
-                buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
-                #elif self.current_channel == 2:
-                    #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
-                    #    buffer.led_level_set(x, i, 15)
-                    #for i in range (self.current_pattern.tracks[1].duration[x]+1,7):
-                    #    buffer.led_level_set(x, i, 0)
-        elif self.k_mode == Modes.mScale:
-            buffer.led_level_set(5,7,0)
-            buffer.led_level_set(6,7,0)
-            buffer.led_level_set(7,7,0)
-            buffer.led_level_set(8,7,0)
-            buffer.led_level_set(9,7,0)
-            buffer.led_level_set(14,7,15)
-            buffer.led_level_set(15,7,0)
-            buffer.led_level_set(15,7,0)
-            #clear any previous scale
-            for ix in range (15):
-                for iy in range (1,7):
-                    buffer.led_level_set(ix,iy, 0)
-            # show the selected scale 
-            buffer.led_level_set(self.cur_scale_id//6,7-self.cur_scale_id%6-1, 15)
-            # set a transpose reference point
-            buffer.led_level_set(7,7,15)
-            #display the actual scale
-            for sd in range (1,8):
-                buffer.led_level_set(7+self.cur_trans+self.scale_data[self.cur_scale_id][sd],7-sd, 15)
-                #print("sd: ", sd, "scale val: ", self.scale_data[self.cur_scale_id][sd], "pos: ", 4+self.scale_data[self.cur_scale_id][sd],7-sd-1)
-        elif self.k_mode == Modes.mPattern:
-            buffer.led_level_set(5,7,0)
-            buffer.led_level_set(6,7,0)
-            buffer.led_level_set(7,7,0)
-            buffer.led_level_set(8,7,0)
-            buffer.led_level_set(9,7,0)
-            buffer.led_level_set(14,7,0)
-            buffer.led_level_set(15,7,15)
-            for i in range(16):
-                buffer.led_level_set(i,0,0)
-            buffer.led_level_set(self.current_pattern.pattern_id,0,15)
-        if self.k_mod_mode == ModModes.modLoop:
-            buffer.led_level_set(10,7,15)
-            buffer.led_level_set(11,7,0)
-            buffer.led_level_set(12,7,0)
-        elif self.k_mod_mode == ModModes.modTime:
-            buffer.led_level_set(10,7,0)
-            buffer.led_level_set(11,7,15)
-            buffer.led_level_set(12,7,0)
-        elif self.k_mod_mode == ModModes.modProb:
-            buffer.led_level_set(10,7,0)
-            buffer.led_level_set(11,7,0)
-            buffer.led_level_set(12,7,15)
+                    #track 1
+                    if track.play_position >= track.loop_start and track.play_position <= track.loop_end:
+                    #if ((self.current_pos//self.ticks)%16) < 16:
+                        if buffer.levels[0+track.track_id][track.play_position] == 0:
+                            buffer.led_level_set(track.play_position -1, 0+track.track_id, previous_step[track.track_id])
+                            buffer.led_level_set(track.play_position, 0+track.track_id, 15)
+                            previous_step[track.track_id] = 0
+                        else: #toggle an already lit led as we pass over it
+                            previous_step[track.track_id] = 15
+                            buffer.led_level_set(track.play_position, 0+track.track_id, 0)
+                            #buffer.led_level_set(track.play_position, 0+track.track_id, 15)
+                    else:
+                        buffer.led_level_set(self.current_track.play_position, 0+track.track_id, 0)
 
-        # draw trigger bar and on-states
-#        for x in range(self.width):
-#            buffer.led_level_set(x, 6, 4)
-
-#        for y in range(6):
-#            if self.step_ch1[y][self.play_position] == 1:
-#                buffer.led_level_set(self.play_position, 6, 15)
-
-        # draw play position
-        #current_pos = yield from self.clock.sync()
-        #print("runcible:",(self.current_pos//self.ticks)%16)
-        #render_pos = self.spanToGrid(self.play_position, 0)
-        #if ((self.current_pos//self.ticks)%16) < 16:
- #           print("Pos",self.play_position)
-        #    buffer.led_level_set(render_pos[0], render_pos[1], 15)
-        #else:
-        #    buffer.led_level_set(render_pos[0], render_pos[1], 0) # change this to restore the original state of the led
-
-        # display the other track positions
-        # I think this could all be simplified
-        # change the bounds of the first if condition to match the
-        # loop start and end points
-        if self.k_mode == Modes.mTr:
-            previous_step = [0,0,0,0]
-            for track in self.current_pattern.tracks:
-                #track 1
-                if track.play_position >= track.loop_start and track.play_position <= track.loop_end:
                 #if ((self.current_pos//self.ticks)%16) < 16:
-                    if buffer.levels[0+track.track_id][track.play_position] == 0:
-                        buffer.led_level_set(track.play_position -1, 0+track.track_id, previous_step[track.track_id])
-                        buffer.led_level_set(track.play_position, 0+track.track_id, 15)
-                        previous_step[track.track_id] = 0
+                #    buffer.led_level_set(track.play_position, 0+track.track_id, 15)
+                #else:
+                #    buffer.led_level_set(self.current_track.play_position, 0, 0)
+                ##track 2
+                #if ((self.current_pos//self.ticks)%16) < 16:
+                #    buffer.led_level_set(self.current_track.play_position, 1, 15)
+                #else:
+                #    buffer.led_level_set(self.current_track.play_position, 1, 0)
+                ##track 3
+                #if ((self.current_pos//self.ticks)%16) < 16:
+                #    buffer.led_level_set(self.current_track.play_position, 2, 15)
+                #else:
+                #    buffer.led_level_set(self.current_track.play_position, 2, 0)
+                #track 4
+                #if ((self.current_pos//self.ticks)%16) < 16:
+                #    buffer.led_level_set(self.current_track.play_position, 3, 15)
+                #else:
+                #    buffer.led_level_set(self.current_track.play_position, 3, 0)
+            elif self.k_mode is not Modes.mPattern: # all other modes except pattern
+                #display play position of current track
+                #if ((self.current_pos//self.ticks)%16) >= self.loop_start and ((self.current_pos//self.ticks)%16) <= self.loop_end:
+                previous_step = [0,0,0,0]
+                if self.current_track.play_position >= self.current_track.loop_start and self.current_track.play_position <= self.current_track.loop_end:
+                    if buffer.levels[0+self.current_track.track_id][self.current_track.play_position] == 0:
+                        buffer.led_level_set(self.current_track.play_position -1, 0+self.current_track.track_id, previous_step[self.current_track.track_id])
+                        buffer.led_level_set(self.current_track.play_position, 0+self.current_track.track_id, 15)
+                        previous_step[self.current_track.track_id] = 0
                     else: #toggle an already lit led as we pass over it
-                        previous_step[track.track_id] = 15
-                        buffer.led_level_set(track.play_position, 0+track.track_id, 0)
-                        #buffer.led_level_set(track.play_position, 0+track.track_id, 15)
+                        previous_step[self.current_track.track_id] = 15
+                        buffer.led_level_set(self.current_track.play_position, 0+self.current_track.track_id, 0)
+                    #buffer.led_level_set(self.current_track.play_position, 0, 15)
                 else:
-                    buffer.led_level_set(self.current_track.play_position, 0+track.track_id, 0)
+                    buffer.led_level_set(self.current_track.play_position, 0, 0)
 
-            #if ((self.current_pos//self.ticks)%16) < 16:
-            #    buffer.led_level_set(track.play_position, 0+track.track_id, 15)
-            #else:
-            #    buffer.led_level_set(self.current_track.play_position, 0, 0)
-            ##track 2
-            #if ((self.current_pos//self.ticks)%16) < 16:
-            #    buffer.led_level_set(self.current_track.play_position, 1, 15)
-            #else:
-            #    buffer.led_level_set(self.current_track.play_position, 1, 0)
-            ##track 3
-            #if ((self.current_pos//self.ticks)%16) < 16:
-            #    buffer.led_level_set(self.current_track.play_position, 2, 15)
-            #else:
-            #    buffer.led_level_set(self.current_track.play_position, 2, 0)
-            #track 4
-            #if ((self.current_pos//self.ticks)%16) < 16:
-            #    buffer.led_level_set(self.current_track.play_position, 3, 15)
-            #else:
-            #    buffer.led_level_set(self.current_track.play_position, 3, 0)
-        elif self.k_mode is not Modes.mPattern: # all other modes except pattern
-            #display play position of current track
-            #if ((self.current_pos//self.ticks)%16) >= self.loop_start and ((self.current_pos//self.ticks)%16) <= self.loop_end:
-            previous_step = [0,0,0,0]
-            if self.current_track.play_position >= self.current_track.loop_start and self.current_track.play_position <= self.current_track.loop_end:
-                if buffer.levels[0+self.current_track.track_id][self.current_track.play_position] == 0:
-                    buffer.led_level_set(self.current_track.play_position -1, 0+self.current_track.track_id, previous_step[self.current_track.track_id])
-                    buffer.led_level_set(self.current_track.play_position, 0+self.current_track.track_id, 15)
-                    previous_step[self.current_track.track_id] = 0
-                else: #toggle an already lit led as we pass over it
-                    previous_step[self.current_track.track_id] = 15
-                    buffer.led_level_set(self.current_track.play_position, 0+self.current_track.track_id, 0)
-                #buffer.led_level_set(self.current_track.play_position, 0, 15)
-            else:
-                buffer.led_level_set(self.current_track.play_position, 0, 0)
-
-        # update grid
-        buffer.render(self)
+            # update grid
+            buffer.render(self)
+            self.frame_dirty = False 
 
     def grid_key(self, addr, path, *args):
         x, y, s = self.translate_key(addr,path, *args)
@@ -765,7 +690,8 @@ class Runcible(spanned_monome.VirtualGrid):
                     #    self.current_pattern.tracks[1].note[x] = y
                     #    self.current_pattern.tracks[1].duration[x] = 1
                     #    self.current_pattern.tracks[1].tr[x] ^= 1
-                    self.draw()
+                    #self.draw()
+                    self.frame_dirty = True 
                 # octave entry
                 if self.k_mode == Modes.mOct: 
                     #if self.current_channel == 1:
@@ -775,7 +701,8 @@ class Runcible(spanned_monome.VirtualGrid):
                     #else:
                     #    if y < 6 and y > 0:
                     #        self.current_pattern.tracks[1].octave[x] = y-3
-                    self.draw()
+                    #self.draw()
+                    self.frame_dirty = True 
                 # duration entry
                 if self.k_mode == Modes.mDur:
                     #if self.current_channel == 1:
@@ -788,14 +715,16 @@ class Runcible(spanned_monome.VirtualGrid):
                         self.current_track.duration[x] = 7-y
                     #else:
                     #    self.current_pattern.tracks[1].duration[x] = 7-y
-                    self.draw()
+                    #self.draw()
+                    self.frame_dirty = True 
                 if self.k_mode == Modes.mVel:
                     #if self.current_channel == 1:
                     self.current_track.velocity[x] = y
                     #print("entered velocity: ", self.current_track.velocity[x])
                     #else:
                     #    self.current_pattern.tracks[1].duration[x] = 7-y
-                    self.draw()
+                    #self.draw()
+                    self.frame_dirty = True 
                 if self.k_mode == Modes.mScale:
                     #if self.current_channel == 1:
                     if x < 3:
@@ -809,7 +738,8 @@ class Runcible(spanned_monome.VirtualGrid):
                         self.calc_scale(self.cur_scale_id)
                     #else:
                     #    self.current_pattern.tracks[1].duration[x] = 7-y
-                    self.draw()
+                    #self.draw()
+                    self.frame_dirty = True 
                 # preset entry
                 if self.k_mode == Modes.mPattern:
                     if x < 3:
@@ -817,7 +747,8 @@ class Runcible(spanned_monome.VirtualGrid):
                             self.state.current_preset_id = y-1+x*5
                             self.current_preset = self.state.presets[self.state.current_preset_id]
                             #print("selected preset: ", self.state.current_preset_id)
-                    self.draw()
+                    #self.draw()
+                    self.frame_dirty = True 
             # cut and loop
             elif self.k_mode == Modes.mPattern and y == 7:
                 self.current_preset.current_pattern = x
