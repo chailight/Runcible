@@ -39,13 +39,13 @@ def cancel_task(task):
         task.cancel()
 
 class Modes(Enum):
-    mTr = 1
-    mNote = 2
-    mOct = 3
-    mDur = 4
+    mTr = 0
+    mNote = 1
+    mOct = 2
+    mDur = 3
+    mVel = 4
     mScale = 5
     mPattern = 6
-    mVel = 7
 
 class ModModes(Enum):
     modNone = 1
@@ -70,12 +70,12 @@ class Track:
         self.velocity = [3 for i in range(16)]
         self.params = [[0] * self.num_params for i in range (16)] #initialise a 4x16 array
         self.dur_mul = 1; #duration multiplier
-        self.lstart = [[0] * self.num_params]
-        self.lend = [[15] * self.num_params]
-        self.swap = [[0] * self.num_params]
-        self.tmul = [[0] * self.num_params]
-        self.pos = [[0] * self.num_params for i in range(4)] #position for each parameter in each track
-        self.pos_mul = [[0] * self.num_params for i in range(4)] #something to do with the time multiplier
+        self.lstart = [0,0,0,0]
+        self.lend = [15,15,15,15]
+        self.swap = [[0] * self.num_params] # what is this actually for?
+        self.tmul = [1,1,1,1]
+        self.pos = [0,0,0,0] #current position for each parameter in each track - replaces play_position
+        self.pos_mul = [0,0,0,0]  #something to do with the time multiplier
         self.pos_reset = False
         self.track_id = track_id
         self.play_position = 0 # will switch to position for each parameter
@@ -88,6 +88,7 @@ class Track:
         self.loop_edit = 0
         self.scale_toggle = 1
         self.track_mute = 0
+
 
 class Pattern:
     def __init__(self,pattern_id):
@@ -203,6 +204,22 @@ class Runcible(spanned_monome.VirtualGrid):
         #output = process.communicate()[0]
         #print(output)
 
+    def next_step(self, track, parameter):
+       track.pos_mul[parameter] = track.pos_mul[paramter] + 1
+
+       if track.pos_mul[paramter] >= self.current_pattern.tracks[track.track_id].tmul[parameter]:
+            if track.pos[parameter] == self.current_pattern.tracks[track.track_id].lend[parameter]:
+                track.pos[parameter] = self.current_pattern.tracks[track.track_id].lstart[parameter]
+            else:
+                track.pos[parameter] = track.pos[parameter] + 1
+                if track.pos[paramter] > 15:
+                    track.pos[paramter] = 0
+            track.pos_mul[parameter] = 0
+            # add probabilities
+            return True
+       else:
+            return False
+
     @asyncio.coroutine
     def play(self):
         self.current_pos = yield from self.clock.sync()
@@ -216,40 +233,41 @@ class Runcible(spanned_monome.VirtualGrid):
             self.draw()
             # TRIGGER SOMETHING
             for track in self.current_pattern.tracks:
-                if track.tr[track.play_position] == 1:
-                    for i in range(len(track.note[track.play_position])):
-                    #    print(i,len(track.note[track.play_position]))
-                        if track.scale_toggle:
-                            current_note = self.cur_scale[track.note[track.play_position][i]-1]+track.octave[track.play_position]*12
-                            #print("input note: ", track.note[track.play_position][i], "scaled_note: ", self.cur_scale[track.note[track.play_position][i]-1], "current note: ", current_note)
-                        else:
-                            #set the note to an increment from some convenient base
-                            current_note = track.note[track.play_position][i]+35+track.octave[track.play_position]*12
+                if self.next_step(track, track.play_position, Modes.mTr):
+                    if track.tr[track.play_position] == 1:
+                        for i in range(len(track.note[track.play_position])):
+                        #    print(i,len(track.note[track.play_position]))
+                            if track.scale_toggle:
+                                current_note = self.cur_scale[track.note[track.play_position][i]-1]+track.octave[track.play_position]*12
+                                #print("input note: ", track.note[track.play_position][i], "scaled_note: ", self.cur_scale[track.note[track.play_position][i]-1], "current note: ", current_note)
+                            else:
+                                #set the note to an increment from some convenient base
+                                current_note = track.note[track.play_position][i]+35+track.octave[track.play_position]*12
 
-                        #print("input note: ", track.note[track.playposition[i], "scaled_note: ", current_note)
-                        scaled_duration = 0
-                        entered_duration = track.duration[track.play_position]
-                        if entered_duration == 1:
-                            scaled_duration = 1
-                        if entered_duration == 2:
-                            scaled_duration = 2
-                        if entered_duration == 3:
-                            scaled_duration =  3
-                        if entered_duration == 4:
-                            scaled_duration = 4
-                        elif entered_duration == 5:
-                            scaled_duration = 5
-                        elif entered_duration == 6:
-                            scaled_duration = 6
-                        velocity = track.velocity[track.play_position]*20
-                        #print("velocity: ", velocity)
-                        #velocity = 65
-                        #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
-                        if not track.track_mute:
-                            self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
-                            #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
+                            #print("input note: ", track.note[track.playposition[i], "scaled_note: ", current_note)
+                            scaled_duration = 0
+                            entered_duration = track.duration[track.play_position]
+                            if entered_duration == 1:
+                                scaled_duration = 1
+                            if entered_duration == 2:
+                                scaled_duration = 2
+                            if entered_duration == 3:
+                                scaled_duration =  3
+                            if entered_duration == 4:
+                                scaled_duration = 4
+                            elif entered_duration == 5:
+                                scaled_duration = 5
+                            elif entered_duration == 6:
+                                scaled_duration = 6
+                            velocity = track.velocity[track.play_position]*20
+                            #print("velocity: ", velocity)
+                            #velocity = 65
+                            #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
+                            if not track.track_mute:
+                                self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
+                                #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
 
-                self.cutting = False
+                    self.cutting = False
 
             asyncio.async(self.trigger())
             #asyncio.async(self.clock_out())
@@ -711,28 +729,19 @@ class Runcible(spanned_monome.VirtualGrid):
                     self.frame_dirty = True 
                 # duration entry
                 if self.k_mode == Modes.mDur:
-                    #if self.current_channel == 1:
-                    if y == 7:
-                        #add accent toggles on top row
-                        #self.current_track.accent[x] ^= 1
-                        print("accent shifting to velocity soon")
-                    else:
-                        #enter duration
-                        self.current_track.duration[x] = 7-y
-                    #else:
-                    #    self.current_pattern.tracks[1].duration[x] = 7-y
-                    #self.draw()
+                    # add loop setting code based on loop mod
+                    # add time setting code based on time mod
+                    # add probability setting based on prob mod - default to standard duration if prob comes up "false"?
+                    self.current_track.duration[x] = 7-y
                     self.frame_dirty = True 
                 if self.k_mode == Modes.mVel:
-                    #if self.current_channel == 1:
+                    # add loop setting code based on loop mod
+                    # add time setting code based on time mod
+                    # add probability setting based on prob mod - default to standard velocity if prob comes up "false"?
                     self.current_track.velocity[x] = y
                     #print("entered velocity: ", self.current_track.velocity[x])
-                    #else:
-                    #    self.current_pattern.tracks[1].duration[x] = 7-y
-                    #self.draw()
                     self.frame_dirty = True 
                 if self.k_mode == Modes.mScale:
-                    #if self.current_channel == 1:
                     if x < 3:
                         if y < 7 and y > 0:
                             self.cur_scale_id = y-1+x*6
@@ -742,9 +751,6 @@ class Runcible(spanned_monome.VirtualGrid):
                         # transpose the scale up or down by semitones from the mid point (col 7)
                         self.cur_trans = x-7
                         self.calc_scale(self.cur_scale_id)
-                    #else:
-                    #    self.current_pattern.tracks[1].duration[x] = 7-y
-                    #self.draw()
                     self.frame_dirty = True 
                 # preset entry
                 if self.k_mode == Modes.mPattern:
@@ -755,13 +761,12 @@ class Runcible(spanned_monome.VirtualGrid):
                             #print("selected preset: ", self.state.current_preset_id)
                     #self.draw()
                     self.frame_dirty = True 
-            # cut and loop
             elif self.k_mode == Modes.mPattern and y == 7:
                 self.current_preset.current_pattern = x
                 self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
                 self.current_track = self.current_pattern.tracks[self.current_track_id]
                # print("selected pattern: ", self.current_preset.current_pattern)
-            elif y == 7:
+            elif y == 7: #switch to require modLoop? - shift to be inside each parameter
                 self.keys_held = self.keys_held + (s * 2) - 1
                 #print("keys_held: ", self.keys_held)
                 # cut
