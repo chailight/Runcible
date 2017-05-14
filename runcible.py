@@ -273,7 +273,7 @@ class Runcible(spanned_monome.VirtualGrid):
                             if not track.track_mute:
                                 #self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
                                 self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
-                                #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value], track.play_position)
+                                print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value], track.play_position)
 
                     self.cutting = False
 
@@ -288,7 +288,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def insert_note(self,track,position,pitch,velocity,duration):
         self.insert_note_on(track,position,pitch,velocity)
         self.insert_note_off(track,(position+duration)%16,pitch)
-        #print("note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
+        print("note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
 
     def insert_note_on(self,track,position,pitch,velocity):
         already_exists = False
