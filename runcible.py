@@ -545,18 +545,18 @@ class Runcible(spanned_monome.VirtualGrid):
                 previous_step = [0,0,0,0]
                 for track in self.current_pattern.tracks:
                     #track 1
-                    if track.play_position >= track.loop_start and track.play_position <= track.loop_end:
+                    if track.pos[Modes.mTr.value] >= track.loop_start and track.play_position <= track.loop_end:
                     #if ((self.current_pos//self.ticks)%16) < 16:
-                        if buffer.levels[0+track.track_id][track.play_position] == 0:
-                            buffer.led_level_set(track.play_position -1, 0+track.track_id, previous_step[track.track_id])
-                            buffer.led_level_set(track.play_position, 0+track.track_id, 15)
+                        if buffer.levels[0+track.track_id][track.pos[Modes.mTr.value]] == 0:
+                            buffer.led_level_set(track.pos[Modes.mTr.value]-1, 0+track.track_id, previous_step[track.track_id])
+                            buffer.led_level_set(track.pos[Modes.mTr.value], 0+track.track_id, 15)
                             previous_step[track.track_id] = 0
                         else: #toggle an already lit led as we pass over it
                             previous_step[track.track_id] = 15
-                            buffer.led_level_set(track.play_position, 0+track.track_id, 0)
+                            buffer.led_level_set(track.pos[Modes.mTr.value], 0+track.track_id, 0)
                             #buffer.led_level_set(track.play_position, 0+track.track_id, 15)
                     else:
-                        buffer.led_level_set(self.current_track.play_position, 0, 0)
+                        buffer.led_level_set(self.current_track.pos[Modes.mTr.value], 0, 0)
 
                 #if ((self.current_pos//self.ticks)%16) < 16:
                 #    buffer.led_level_set(track.play_position, 0+track.track_id, 15)
