@@ -317,13 +317,16 @@ class Runcible(spanned_monome.VirtualGrid):
     @asyncio.coroutine
     def trigger(self):
         for t in self.current_pattern.tracks:
-            for note in self.note_off[t.play_position]:
+            #for note in self.note_off[t.play_position]:
+            for note in self.note_off[t.pos[Modes.mTr.value]]:
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
-            del self.note_off[t.play_position][:] #clear the current midi output once it's been sent
+            #del self.note_off[t.play_position][:] #clear the current midi output once it's been sent
+            del self.note_off[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
 
-            for note in self.note_on[t.play_position]:
+            #for note in self.note_on[t.play_position]:
+            for note in self.note_on[t.pos[Modes.mTr.value]]:
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,note.velocity)
-            del self.note_on[t.play_position][:] #clear the current midi output once it's been sent
+            del self.note_on[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
 
 
     @asyncio.coroutine
@@ -545,7 +548,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 previous_step = [0,0,0,0]
                 for track in self.current_pattern.tracks:
                     #track 1
-                    if track.pos[Modes.mTr.value] >= track.loop_start and track.play_position <= track.loop_end:
+                    if track.pos[Modes.mTr.value] >= track.loop_start and track.pos[Modes.mTr.value] <= track.loop_end:
                     #if ((self.current_pos//self.ticks)%16) < 16:
                         if buffer.levels[0+track.track_id][track.pos[Modes.mTr.value]] == 0:
                             buffer.led_level_set(track.pos[Modes.mTr.value]-1, 0+track.track_id, previous_step[track.track_id])
