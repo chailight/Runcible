@@ -783,7 +783,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 self.keys_held = self.keys_held + (s * 2) - 1
                 #print("keys_held: ", self.keys_held)
                 # cut
-                if s == 1 and self.keys_held == 1 and self.k_mod_mode == ModMode.modLoop:
+                if s == 1 and self.keys_held == 1 and self.k_mod_mode == ModModes.modLoop:
                     self.cutting = True
                     self.current_track.next_position = x
                     self.current_track.key_last = x
