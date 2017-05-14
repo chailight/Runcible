@@ -320,7 +320,7 @@ class Runcible(spanned_monome.VirtualGrid):
             #for note in self.note_off[t.play_position]:
             for note in self.note_off[t.pos[Modes.mTr.value]]:
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
-                print("turning note off at: ", t.pos[Modes.mTr.value])
+                print("turning note", note.pitch, " off at: ", t.pos[Modes.mTr.value])
             #del self.note_off[t.play_position][:] #clear the current midi output once it's been sent
             del self.note_off[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
 
