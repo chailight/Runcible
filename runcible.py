@@ -273,13 +273,13 @@ class Runcible(spanned_monome.VirtualGrid):
                             if not track.track_mute:
                                 #self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
                                 self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
-                                print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value], track.play_position)
+                                #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value], track.play_position)
 
                     self.cutting = False
 
             asyncio.async(self.trigger())
             #asyncio.async(self.clock_out())
-            yield from self.clock.sync(self.ticks//2)
+            yield from self.clock.sync(self.ticks//6)
             self.current_pos = yield from self.clock.sync()
             for track in self.current_pattern.tracks:
                 track.loop_length = abs(track.loop_end - track.loop_start)+1
