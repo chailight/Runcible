@@ -147,7 +147,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def __init__(self, clock, ticks, midi_out,channel_out,clock_out,other):
         super().__init__('runcible')
         self.clock = clock
-        self.ticks = ticks
+        self.ticks = ticks/2
         self.midi_out = midi_out
         self.channel = channel_out
         self.clock_ch = clock_out
