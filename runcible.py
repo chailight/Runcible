@@ -7,7 +7,7 @@
 #add input/display for probability, as per kria - implement a next_note function which returns true or false based on probability setting for that track at that position
 #at this stage, for polyphonic tracks, probabilities are per position - like velocity - not per note 
 #enable a per channel transpose setting? 
-#add timing modification
+#add timing modification - fix next_step so that it actually multiplies time rather than selecting every nth step, where n = timing multiplier
 #make looping independent for each parameter
 #add scale editing 
 #add preset copy
@@ -235,19 +235,24 @@ class Runcible(spanned_monome.VirtualGrid):
             # TRIGGER SOMETHING
             for track in self.current_pattern.tracks:
                 if self.next_step(track, Modes.mTr.value):
-                    if track.tr[track.play_position] == 1:
-                        for i in range(len(track.note[track.play_position])):
+                    #if track.tr[track.play_position] == 1:
+                    if track.tr[track.pos[Modes.mTr.value]] == 1:
+                        #for i in range(len(track.note[track.play_position])):
+                        for i in range(len(track.note[track.pos[Modes.mTr.value]])):
                         #    print(i,len(track.note[track.play_position]))
                             if track.scale_toggle:
-                                current_note = self.cur_scale[track.note[track.play_position][i]-1]+track.octave[track.play_position]*12
+                                #current_note = self.cur_scale[track.note[track.play_position][i]-1]+track.octave[track.play_position]*12
+                                current_note = self.cur_scale[track.note[track.pos[Modes.mTr.value]][i]-1]+track.octave[track.pos[Modes.mTr.value]]*12
                                 #print("input note: ", track.note[track.play_position][i], "scaled_note: ", self.cur_scale[track.note[track.play_position][i]-1], "current note: ", current_note)
                             else:
                                 #set the note to an increment from some convenient base
-                                current_note = track.note[track.play_position][i]+35+track.octave[track.play_position]*12
+                                #current_note = track.note[track.play_position][i]+35+track.octave[track.play_position]*12
+                                current_note = track.note[track.pos[Modes.mTr.value]][i]+35+track.octave[track.pos[Modes.mTr.value]]*12
 
                             #print("input note: ", track.note[track.playposition[i], "scaled_note: ", current_note)
                             scaled_duration = 0
-                            entered_duration = track.duration[track.play_position]
+                            #entered_duration = track.duration[track.play_position]
+                            entered_duration = track.duration[track.pos[Modes.mTr.value]]
                             if entered_duration == 1:
                                 scaled_duration = 1
                             if entered_duration == 2:
@@ -260,12 +265,14 @@ class Runcible(spanned_monome.VirtualGrid):
                                 scaled_duration = 5
                             elif entered_duration == 6:
                                 scaled_duration = 6
-                            velocity = track.velocity[track.play_position]*20
+                            #velocity = track.velocity[track.play_position]*20
+                            velocity = track.velocity[track.pos[Modes.mTr.value]]*20
                             #print("velocity: ", velocity)
                             #velocity = 65
                             #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
                             if not track.track_mute:
-                                self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
+                                #self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
+                                self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
                                 #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
 
                     self.cutting = False
