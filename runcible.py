@@ -288,7 +288,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def insert_note(self,track,position,pitch,velocity,duration):
         self.insert_note_on(track,position,pitch,velocity)
         self.insert_note_off(track,(position+duration)%16,pitch)
-        print("note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
+        print("setting note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
 
     def insert_note_on(self,track,position,pitch,velocity):
         already_exists = False
@@ -320,6 +320,7 @@ class Runcible(spanned_monome.VirtualGrid):
             #for note in self.note_off[t.play_position]:
             for note in self.note_off[t.pos[Modes.mTr.value]]:
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
+                print("turning note off at: ", t.pos[Modes.mTr.value])
             #del self.note_off[t.play_position][:] #clear the current midi output once it's been sent
             del self.note_off[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
 
