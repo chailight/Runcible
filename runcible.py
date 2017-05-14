@@ -273,7 +273,7 @@ class Runcible(spanned_monome.VirtualGrid):
                             if not track.track_mute:
                                 #self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
                                 self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
-                                #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.play_position)
+                                print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value], track.play_position)
 
                     self.cutting = False
 
@@ -783,7 +783,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 self.keys_held = self.keys_held + (s * 2) - 1
                 #print("keys_held: ", self.keys_held)
                 # cut
-                if s == 1 and self.keys_held == 1:
+                if s == 1 and self.keys_held == 1 and self.k_mod_mode == ModMode.modLoop:
                     self.cutting = True
                     self.current_track.next_position = x
                     self.current_track.key_last = x
