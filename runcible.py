@@ -279,7 +279,7 @@ class Runcible(spanned_monome.VirtualGrid):
 
             asyncio.async(self.trigger())
             #asyncio.async(self.clock_out())
-            yield from self.clock.sync(self.ticks//2)
+            yield from self.clock.sync(self.ticks)
             self.current_pos = yield from self.clock.sync()
             for track in self.current_pattern.tracks:
                 track.loop_length = abs(track.loop_end - track.loop_start)+1
