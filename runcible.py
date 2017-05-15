@@ -277,7 +277,7 @@ class Runcible(spanned_monome.VirtualGrid):
 
                     self.cutting = False
 
-            asyncio.async(self.trigger())
+            #asyncio.async(self.trigger())
             #asyncio.async(self.clock_out())
             yield from self.clock.sync(self.ticks)
             self.current_pos = yield from self.clock.sync()
@@ -286,12 +286,13 @@ class Runcible(spanned_monome.VirtualGrid):
                 track.play_position = (self.current_pos//self.ticks)%track.loop_length + track.loop_start
 
     def insert_note(self,track,position,pitch,velocity,duration):
-        self.insert_note_on(track,position,pitch,velocity)
+        asyncio.async(self.set_note_on(track,pitch,velocity))
         #self.insert_note_off(track,(position+duration)%16,pitch)
         #print("setting note on at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
         #print("setting note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
         asyncio.async(self.set_note_off_timer(track,duration,pitch))
 
+    @asyncio.coroutine
     def insert_note_on(self,track,position,pitch,velocity):
         already_exists = False
         for n in self.note_on[position]:
@@ -317,10 +318,16 @@ class Runcible(spanned_monome.VirtualGrid):
             print("setting note off ", self.channel + track, pitch, "at pos: ", position)
 
     @asyncio.coroutine
+    def set_note_on(self,track,pitch,velocity):
+        pos = yield from self.clock.sync()
+        self.midi_out.send_noteon(self.channel + track, pitch, velocity)
+        print("note off timer", self.channel + track, pitch, "at: ", pos%16)
+
+    @asyncio.coroutine
     def set_note_off_timer(self,track,duration,pitch):
         pos = yield from self.clock.sync(duration*3)
         self.midi_out.send_noteon(self.channel + track, pitch,0)
-        print("note off timer", self.channel + track, pitch, "at: ", pos)
+        print("note off timer", self.channel + track, pitch, "at: ", pos%16)
 
     def calc_scale(self, s):
         self.cur_scale[0] = self.current_preset.scale_data[s][0] + self.cur_trans
