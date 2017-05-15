@@ -273,7 +273,7 @@ class Runcible(spanned_monome.VirtualGrid):
                             if not track.track_mute:
                                 #self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
                                 self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
-                                print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value], track.play_position)
+                                print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
 
                     self.cutting = False
 
@@ -292,7 +292,6 @@ class Runcible(spanned_monome.VirtualGrid):
         #print("setting note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
         asyncio.async(self.set_note_off_timer(track,duration,pitch))
 
-    @asyncio.coroutine
     def insert_note_on(self,track,position,pitch,velocity):
         already_exists = False
         for n in self.note_on[position]:
@@ -321,7 +320,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def set_note_on(self,track,pitch,velocity):
         pos = yield from self.clock.sync()
         self.midi_out.send_noteon(self.channel + track, pitch, velocity)
-        print("note off timer", self.channel + track, pitch, "at: ", pos%16)
+        print("note on timer", self.channel + track, pitch, "at: ", pos%16)
 
     @asyncio.coroutine
     def set_note_off_timer(self,track,duration,pitch):
