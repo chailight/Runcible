@@ -1,16 +1,17 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
-#fix clear all on disconnect
-#fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops? maybe just close the midi stream?
+#fix note duration - try setting a duration value for each note when it is created and then in place of the call to trigger, use note off timer to decrement the duration of each note and ...
+#if the note duration is zero then send the midi note off messag, trigger  gets called 32 times so durations are in 8th note units (duration 2 = 1 quarter note, 3 = dotted quater note, 4 = half note, etc)
+#fix loop setting and display on all screens
+#make looping independent for each parameter
+#add a loop phase reset input as per kria
+#add preset copy
 #add note mutes for drum channel?
 #add input/display for probability, as per kria - implement a next_note function which returns true or false based on probability setting for that track at that position
 #at this stage, for polyphonic tracks, probabilities are per position - like velocity - not per note 
 #enable a per channel transpose setting? 
-#add timing modification - fix next_step so that it actually multiplies time rather than selecting every nth step, where n = timing multiplier
-#make looping independent for each parameter
 #add scale editing 
-#add preset copy
 #adjust preset selection to allow for meta sequencing
 #fix display of current preset
 #fix cutting - has to do with keys held
@@ -22,6 +23,8 @@
 #make note entry screen monophonic? - clear off other notes in that column if new note is entered - this should be configurable maybe on trigger page?
 #add settings screen with other adjustments like midi channel for each track?
 #fix pauses - network? other processes?
+#fix clear all on disconnect
+#fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops? maybe just close the midi stream?
 
 import pickle
 import os
