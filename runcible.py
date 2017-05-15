@@ -301,26 +301,27 @@ class Runcible(spanned_monome.VirtualGrid):
         if not already_exists:
             new_note = Note(track,pitch,velocity)
             self.note_on[position].append(new_note)
-            pos = yield from self.clock.sync()
-            print("setting note on ", self.channel + track, pitch, "at pos: ", pos)
+            #pos = yield from self.clock.sync()
+            print("setting note on ", self.channel + track, pitch, "at pos: ", position)
 
     def insert_note_off(self,track,position,pitch):
         already_exists = False
         for n in self.note_off[position]:
             if n.pitch == pitch:
                 already_exists = True
+                print("note off exists", self.channel + track, pitch, "at position: ", position)
         if not already_exists:
             new_note = Note(track,pitch,0)
             self.note_off[position].append(new_note)
-            pos = yield from self.clock.sync()
-            print("setting note off ", self.channel + track, pitch, "at pos: ", pos)
+            #pos = yield from self.clock.sync()
+            print("setting note off ", self.channel + track, pitch, "at pos: ", position)
 
     @asyncio.coroutine
     def set_note_off_timer(self,track,duration,pitch):
         yield from self.clock.sync(duration*3)
-        pos = yield from self.clock.sync()
+        #pos = yield from self.clock.sync()
         self.midi_out.send_noteon(self.channel + track, pitch,0)
-        print("setting note off ", self.channel + track, pitch, "at pos: ", pos)
+        print("setting note off ", self.channel + track, pitch)
 
     def calc_scale(self, s):
         self.cur_scale[0] = self.current_preset.scale_data[s][0] + self.cur_trans
