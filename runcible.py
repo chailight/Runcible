@@ -318,10 +318,9 @@ class Runcible(spanned_monome.VirtualGrid):
 
     @asyncio.coroutine
     def set_note_off_timer(self,track,duration,pitch):
-        yield from self.clock.sync(duration*3)
-        #pos = yield from self.clock.sync()
+        pos = yield from self.clock.sync(duration*3)
         self.midi_out.send_noteon(self.channel + track, pitch,0)
-        print("setting note off ", self.channel + track, pitch)
+        print("note off timer", self.channel + track, pitch "at: ", pos)
 
     def calc_scale(self, s):
         self.cur_scale[0] = self.current_preset.scale_data[s][0] + self.cur_trans
