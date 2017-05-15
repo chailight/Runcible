@@ -320,7 +320,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def set_note_off_timer(self,track,duration,pitch):
         pos = yield from self.clock.sync(duration*3)
         self.midi_out.send_noteon(self.channel + track, pitch,0)
-        print("note off timer", self.channel + track, pitch "at: ", pos)
+        print("note off timer", self.channel + track, pitch, "at: ", pos)
 
     def calc_scale(self, s):
         self.cur_scale[0] = self.current_preset.scale_data[s][0] + self.cur_trans
