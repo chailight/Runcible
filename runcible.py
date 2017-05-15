@@ -279,7 +279,7 @@ class Runcible(spanned_monome.VirtualGrid):
 
             asyncio.async(self.trigger())
             #asyncio.async(self.clock_out())
-            yield from self.clock.sync(self.ticks//3)
+            yield from self.clock.sync(self.ticks//2)
             self.current_pos = yield from self.clock.sync()
             for track in self.current_pattern.tracks:
                 track.loop_length = abs(track.loop_end - track.loop_start)+1
@@ -301,7 +301,7 @@ class Runcible(spanned_monome.VirtualGrid):
 
     def insert_note_off(self,track,position,pitch):
         already_exists = False
-        for n in self.note_on[position]:
+        for n in self.note_off[position]:
             if n.pitch == pitch:
                 already_exists = True
         if not already_exists:
