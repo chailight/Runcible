@@ -312,6 +312,8 @@ class Runcible(spanned_monome.VirtualGrid):
         if not already_exists:
             new_note = Note(track,pitch,0)
             self.note_off[position].append(new_note)
+            pos = yield from self.clock.sync()
+            print("setting note off ", self.channel + track, pitch, "at pos: ", pos)
 
     @asyncio.coroutine
     def set_note_off_timer(self,track,duration,pitch):
@@ -331,11 +333,11 @@ class Runcible(spanned_monome.VirtualGrid):
         print("trigger called")
         for t in self.current_pattern.tracks:
             #for note in self.note_off[t.play_position]:
-            #for note in self.note_off[t.pos[Modes.mTr.value]]:
-            #    self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
-            #    print("turning note", note.pitch, " off at: ", t.pos[Modes.mTr.value])
-            #del self.note_off[t.play_position][:] #clear the current midi output once it's been sent
-            #del self.note_off[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
+            for note in self.note_off[t.pos[Modes.mTr.value]]:
+                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
+                print("turning note", note.pitch, " off at: ", t.pos[Modes.mTr.value])
+            del self.note_off[t.play_position][:] #clear the current midi output once it's been sent
+            del self.note_off[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
 
             #for note in self.note_on[t.play_position]:
             for note in self.note_on[t.pos[Modes.mTr.value]]:
