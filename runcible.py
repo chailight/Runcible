@@ -330,7 +330,7 @@ class Runcible(spanned_monome.VirtualGrid):
 
     @asyncio.coroutine
     def trigger(self):
-        print("trigger called")
+        #print("trigger called")
         for t in self.current_pattern.tracks:
             #for note in self.note_off[t.play_position]:
             for note in self.note_off[t.pos[Modes.mTr.value]]:
