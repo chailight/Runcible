@@ -287,8 +287,9 @@ class Runcible(spanned_monome.VirtualGrid):
 
     def insert_note(self,track,position,pitch,velocity,duration):
         self.insert_note_on(track,position,pitch,velocity)
-        self.insert_note_off(track,(position+duration)%16,pitch)
-        print("setting note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
+        #self.insert_note_off(track,(position+duration)%16,pitch)
+        #print("setting note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
+        self.set_note_off_timer(track,duration,pitch)
 
     def insert_note_on(self,track,position,pitch,velocity):
         already_exists = False
@@ -298,6 +299,8 @@ class Runcible(spanned_monome.VirtualGrid):
         if not already_exists:
             new_note = Note(track,pitch,velocity)
             self.note_on[position].append(new_note)
+            pos = yield from self.clock.sync()
+            print("setting note on ", self.channel + track, pitch, "at pos: ", pos)
 
     def insert_note_off(self,track,position,pitch):
         already_exists = False
@@ -307,6 +310,13 @@ class Runcible(spanned_monome.VirtualGrid):
         if not already_exists:
             new_note = Note(track,pitch,0)
             self.note_off[position].append(new_note)
+
+    @asyncio.coroutine
+    def set_note_off_timer(self,track,duration,pitch):
+        yield from self.clock.sync(duration*3)
+        pos = yield from self.clock.sync()
+        self.midi_out.send_noteon(self.channel + track, pitch,0)
+        print("setting note off ", self.channel + track, pitch, "at pos: ", pos)
 
     def calc_scale(self, s):
         self.cur_scale[0] = self.current_preset.scale_data[s][0] + self.cur_trans
@@ -318,11 +328,11 @@ class Runcible(spanned_monome.VirtualGrid):
     def trigger(self):
         for t in self.current_pattern.tracks:
             #for note in self.note_off[t.play_position]:
-            for note in self.note_off[t.pos[Modes.mTr.value]]:
-                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
-                print("turning note", note.pitch, " off at: ", t.pos[Modes.mTr.value])
+            #for note in self.note_off[t.pos[Modes.mTr.value]]:
+            #    self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
+            #    print("turning note", note.pitch, " off at: ", t.pos[Modes.mTr.value])
             #del self.note_off[t.play_position][:] #clear the current midi output once it's been sent
-            del self.note_off[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
+            #del self.note_off[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
 
             #for note in self.note_on[t.play_position]:
             for note in self.note_on[t.pos[Modes.mTr.value]]:
