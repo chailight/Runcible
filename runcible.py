@@ -273,7 +273,7 @@ class Runcible(spanned_monome.VirtualGrid):
                             if not track.track_mute:
                                 #self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
                                 self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
-                                #print("inserted note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value], track.play_position)
+                                print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value], track.play_position)
 
                     self.cutting = False
 
@@ -288,6 +288,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def insert_note(self,track,position,pitch,velocity,duration):
         self.insert_note_on(track,position,pitch,velocity)
         #self.insert_note_off(track,(position+duration)%16,pitch)
+        print("setting note on at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
         #print("setting note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
         self.set_note_off_timer(track,duration,pitch)
 
@@ -801,12 +802,12 @@ class Runcible(spanned_monome.VirtualGrid):
                 if s == 1 and self.keys_held == 1 and self.k_mod_mode == ModModes.modLoop:
                     self.cutting = True
                     self.current_track.next_position = x
-                    self.current_track.key_last = x
+                    self.current_track.loop_last = x
                     #print("key_last: ", self.key_last[self.current_track])
                 # set loop points
                 elif s == 1 and self.keys_held == 2:
-                    if self.current_track.key_last < x: # don't wrap around, for now
-                        self.current_track.loop_start = self.current_track.key_last
+                    if self.current_track.loop_last < x: # don't wrap around, for now
+                        self.current_track.loop_start = self.current_track.loop_last
                         self.current_track.loop_end = x
                         self.keys_held = 0
                     else:
