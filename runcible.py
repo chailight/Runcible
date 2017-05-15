@@ -288,9 +288,9 @@ class Runcible(spanned_monome.VirtualGrid):
     def insert_note(self,track,position,pitch,velocity,duration):
         self.insert_note_on(track,position,pitch,velocity)
         #self.insert_note_off(track,(position+duration)%16,pitch)
-        print("setting note on at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
-        print("setting note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
-        self.set_note_off_timer(track,duration,pitch)
+        #print("setting note on at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
+        #print("setting note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
+        asyncio.async(self.set_note_off_timer(track,duration,pitch))
 
     def insert_note_on(self,track,position,pitch,velocity):
         already_exists = False
