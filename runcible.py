@@ -328,6 +328,7 @@ class Runcible(spanned_monome.VirtualGrid):
 
     @asyncio.coroutine
     def trigger(self):
+        print("trigger called")
         for t in self.current_pattern.tracks:
             #for note in self.note_off[t.play_position]:
             #for note in self.note_off[t.pos[Modes.mTr.value]]:
@@ -339,6 +340,7 @@ class Runcible(spanned_monome.VirtualGrid):
             #for note in self.note_on[t.play_position]:
             for note in self.note_on[t.pos[Modes.mTr.value]]:
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,note.velocity)
+                print("turning note", note.pitch, " on at: ", t.pos[Modes.mTr.value])
             del self.note_on[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
 
 
