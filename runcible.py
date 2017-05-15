@@ -296,6 +296,7 @@ class Runcible(spanned_monome.VirtualGrid):
         for n in self.note_on[position]:
             if n.pitch == pitch:
                 already_exists = True
+                print("note on exists", self.channel + track, pitch, "at position: ", position)
         if not already_exists:
             new_note = Note(track,pitch,velocity)
             self.note_on[position].append(new_note)
