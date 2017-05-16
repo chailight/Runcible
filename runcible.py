@@ -355,19 +355,7 @@ class Runcible(spanned_monome.VirtualGrid):
     @asyncio.coroutine
     def trigger(self):
         #print("trigger called")
-        i = 0
-        finished_notes = list()
-        for note in self.duration_timers:
-            note.decrement_duration()
-            print("decreasing duration for note:", note.pitch, "at: ", self.current_pos%16, "to: ", note.duration )
-            if note.duration == 0:
-                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
-                print("ending note", self.channel + note.channel_inc, note.pitch, " at: ", self.current_pos%16)
-                finished_notes.append(i) # mark this note for removal from the timer list
-            i = i + 1
-        for n in finished_notes:
-            del self.duration_timers[n] #clear the timer once it's exhausted 
-
+        # play all notes in this position
         for t in self.current_pattern.tracks:
             #for note in self.note_off[t.play_position]:
             #for note in self.note_off[t.pos[Modes.mTr.value]]:
@@ -377,8 +365,22 @@ class Runcible(spanned_monome.VirtualGrid):
             #for note in self.note_on[t.play_position]:
             for note in self.note_on[t.pos[Modes.mTr.value]]:
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,note.velocity)
-                print("playing note", self.channel + note.channel_inc, note.pitch, " at: ",self.current_pos%16)
+                print("playing note", self.channel + note.channel_inc, note.pitch, " at: ",self.current_pos%32)
             del self.note_on[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
+
+        #end all notes that have expired
+        i = 0
+        finished_notes = list()
+        for note in self.duration_timers:
+            note.decrement_duration()
+            print("decreasing duration for note:", note.pitch, "at: ", self.current_pos%32, "to: ", note.duration )
+            if note.duration == 0:
+                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
+                print("ending note", self.channel + note.channel_inc, note.pitch, " at: ", self.current_pos%32)
+                finished_notes.append(i) # mark this note for removal from the timer list
+            i = i + 1
+        for n in finished_notes:
+            del self.duration_timers[n] #clear the timer once it's exhausted 
 
 
     @asyncio.coroutine
