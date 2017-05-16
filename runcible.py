@@ -164,6 +164,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.note_on = [[Note()] for i in range(16)]
         #self.note_off = [[Note()] for i in range(96)]
         self.note_off = [[Note()] for i in range(16)]
+        self.duration_timers = [Note()] 
         #call ready() directly because virtual device doesn't get triggered
         self.pickle_file_path = "/home/pi/monome/runcible/runcible.pickle" 
         self.ctrl_keys_held = 0
@@ -281,6 +282,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     self.cutting = False
 
             #asyncio.async(self.trigger())
+            asyncio.async(self.check_for_ending_notes())
             #asyncio.async(self.clock_out())
             yield from self.clock.sync(self.ticks//2)
             self.current_pos = yield from self.clock.sync()
@@ -289,11 +291,11 @@ class Runcible(spanned_monome.VirtualGrid):
                 track.play_position = (self.current_pos//self.ticks)%track.loop_length + track.loop_start
 
     def insert_note(self,track,position,pitch,velocity,duration):
-        asyncio.async(self.set_note_on(track,pitch,velocity))
+        asyncio.async(self.set_note_on(track,pitch,velocity,duration))
         #self.insert_note_off(track,(position+duration)%16,pitch)
         #print("setting note on at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
         #print("setting note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
-        asyncio.async(self.set_note_off_timer(track,duration,pitch))
+        #asyncio.async(self.set_note_off_timer(track,duration,pitch))
 
     def insert_note_on(self,track,position,pitch,velocity):
         already_exists = False
@@ -323,6 +325,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def set_note_on(self,track,pitch,velocity):
         pos = yield from self.clock.sync()
         self.midi_out.send_noteon(self.channel + track, pitch, velocity)
+        self.duration_timers.append(new_note) # add this to the list of notes to track for when they end
         print("note on timer", self.channel + track, pitch, "at: ", pos%16)
 
     @asyncio.coroutine
@@ -338,21 +341,30 @@ class Runcible(spanned_monome.VirtualGrid):
 
 
     @asyncio.coroutine
-    def trigger(self):
+    def check_for_ending_notes(self):
         #print("trigger called")
         for t in self.current_pattern.tracks:
             #for note in self.note_off[t.play_position]:
-            for note in self.note_off[t.pos[Modes.mTr.value]]:
-                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
-                print("turning note", note.pitch, " off at: ", t.pos[Modes.mTr.value])
-            del self.note_off[t.play_position][:] #clear the current midi output once it's been sent
-            del self.note_off[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
+            #for note in self.note_off[t.pos[Modes.mTr.value]]:
+            i = 0
+            finished_notes = list()
+            for note in self.duration_timers:
+                note.duration = note.duration - 1
+                if note.duration == 0:
+                    self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
+                    print("turning note", note.pitch, " off at: ", t.pos[Modes.mTr.value])
+                    finished_notes.add(i) # mark this note for removal from the timer list
+                i = i + 1
+            for n in finished_notes:
+                del self.duration_timers[n] #clear the timer once it's exhausted 
+            #del self.note_off[t.play_position][:] #clear the current midi output once it's been sent
+            #del self.note_off[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
 
             #for note in self.note_on[t.play_position]:
-            for note in self.note_on[t.pos[Modes.mTr.value]]:
-                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,note.velocity)
-                print("turning note", note.pitch, " on at: ", t.pos[Modes.mTr.value])
-            del self.note_on[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
+            #for note in self.note_on[t.pos[Modes.mTr.value]]:
+            #    self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,note.velocity)
+            #    print("turning note", note.pitch, " on at: ", t.pos[Modes.mTr.value])
+            #del self.note_on[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
 
 
     @asyncio.coroutine
