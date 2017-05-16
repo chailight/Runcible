@@ -363,7 +363,7 @@ class Runcible(spanned_monome.VirtualGrid):
             if note.duration == 0:
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
                 print("turning note", note.pitch, " off at: ", self.current_pos%16)
-                finished_notes.add(i) # mark this note for removal from the timer list
+                finished_notes.append(i) # mark this note for removal from the timer list
             i = i + 1
         for n in finished_notes:
             del self.duration_timers[n] #clear the timer once it's exhausted 
