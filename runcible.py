@@ -371,7 +371,7 @@ class Runcible(spanned_monome.VirtualGrid):
         #end all notes that have expired
         i = 0
         finished_notes = list()
-        new_duration_timers = [Notes()]
+        new_duration_timers = [Note()]
         for note in self.duration_timers:
             note.decrement_duration()
             print("decreasing duration for note:", note.pitch, "at: ", self.current_pos%32, "to: ", note.duration )
