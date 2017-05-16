@@ -282,7 +282,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     self.cutting = False
 
             #asyncio.async(self.trigger())
-            asyncio.async(self.check_for_ending_notes())
+            asyncio.async(self.trigger())
             #asyncio.async(self.clock_out())
             yield from self.clock.sync(self.ticks//2)
             self.current_pos = yield from self.clock.sync()
@@ -291,7 +291,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 track.play_position = (self.current_pos//self.ticks)%track.loop_length + track.loop_start
 
     def insert_note(self,track,position,pitch,velocity,duration):
-        asyncio.async(self.set_note_on(track,pitch,velocity,duration))
+        asyncio.async(self.set_note_on(track,position,pitch,velocity,duration))
         #self.insert_note_off(track,(position+duration)%16,pitch)
         #print("setting note on at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
         #print("setting note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
@@ -322,11 +322,19 @@ class Runcible(spanned_monome.VirtualGrid):
             print("setting note off ", self.channel + track, pitch, "at pos: ", position)
 
     @asyncio.coroutine
-    def set_note_on(self,track,pitch,velocity,duration):
-        pos = yield from self.clock.sync()
-        self.midi_out.send_noteon(self.channel + track, pitch, velocity)
-        self.duration_timers.append(new_note) # add this to the list of notes to track for when they end
-        print("note on timer", self.channel + track, pitch, "at: ", pos%16)
+    def set_note_on(self,track,position,pitch,velocity,duration):
+        already_exists = False
+        for n in self.note_on[position]:
+            if n.pitch == pitch:
+                already_exists = True
+                print("note on exists", self.channel + track, pitch, "at position: ", position)
+        if not already_exists:
+            new_note = Note(track,pitch,velocity)
+            self.note_on[position].append(new_note)
+            #pos = yield from self.clock.sync()
+            #self.midi_out.send_noteon(self.channel + track, pitch, velocity)
+            self.duration_timers.append(new_note) # add this to the list of notes to track for when they end
+            print("set note on: ", self.channel + track, pitch, "at: ", pos%16)
 
     @asyncio.coroutine
     def set_note_off_timer(self,track,duration,pitch):
@@ -341,7 +349,7 @@ class Runcible(spanned_monome.VirtualGrid):
 
 
     @asyncio.coroutine
-    def check_for_ending_notes(self):
+    def trigger(self):
         #print("trigger called")
         for t in self.current_pattern.tracks:
             #for note in self.note_off[t.play_position]:
@@ -361,10 +369,10 @@ class Runcible(spanned_monome.VirtualGrid):
             #del self.note_off[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
 
             #for note in self.note_on[t.play_position]:
-            #for note in self.note_on[t.pos[Modes.mTr.value]]:
-            #    self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,note.velocity)
-            #    print("turning note", note.pitch, " on at: ", t.pos[Modes.mTr.value])
-            #del self.note_on[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
+            for note in self.note_on[t.pos[Modes.mTr.value]]:
+                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,note.velocity)
+                print("playing note", note.pitch, " at: ", t.pos[Modes.mTr.value])
+            del self.note_on[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
 
 
     @asyncio.coroutine
