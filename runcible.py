@@ -63,6 +63,10 @@ class Note:
         self.velocity = velocity
         self.duration = duration
 
+    def decrement_duration(self):
+        if self.duration > 0: 
+            self.duration = self.duration - 1
+
 class Track:
     def __init__(self,track_id):
         self.num_params = 4
@@ -354,7 +358,7 @@ class Runcible(spanned_monome.VirtualGrid):
         i = 0
         finished_notes = list()
         for note in self.duration_timers:
-            note.duration = note.duration - 1
+            note.decrement_duration()
             print("decreasing duration for note:", note.pitch, "at: ", self.current_pos%16, "to: ", note.duration )
             if note.duration == 0:
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
