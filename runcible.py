@@ -322,7 +322,7 @@ class Runcible(spanned_monome.VirtualGrid):
             print("setting note off ", self.channel + track, pitch, "at pos: ", position)
 
     @asyncio.coroutine
-    def set_note_on(self,track,pitch,velocity):
+    def set_note_on(self,track,pitch,velocity,duration):
         pos = yield from self.clock.sync()
         self.midi_out.send_noteon(self.channel + track, pitch, velocity)
         self.duration_timers.append(new_note) # add this to the list of notes to track for when they end
