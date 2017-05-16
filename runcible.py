@@ -1,8 +1,7 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
-#fix note duration - try setting a duration value for each note when it is created and then in place of the call to trigger, use note off timer to decrement the duration of each note and ...
-#if the note duration is zero then send the midi note off messag, trigger  gets called 32 times so durations are in 8th note units (duration 2 = 1 quarter note, 3 = dotted quater note, 4 = half note, etc)
+#tweak note duration - get the right scaled values 
 #fix loop setting and display on all screens
 #make looping independent for each parameter
 #add a loop phase reset input as per kria
@@ -266,13 +265,13 @@ class Runcible(spanned_monome.VirtualGrid):
                             if entered_duration == 3:
                                 scaled_duration = 4
                             if entered_duration == 3:
-                                scaled_duration =  5
+                                scaled_duration =  6
                             if entered_duration == 4:
-                                scaled_duration = 6
-                            elif entered_duration == 5:
-                                scaled_duration = 7
-                            elif entered_duration == 6:
                                 scaled_duration = 8
+                            elif entered_duration == 5:
+                                scaled_duration = 10 
+                            elif entered_duration == 6:
+                                scaled_duration = 12 
                             #velocity = track.velocity[track.play_position]*20
                             velocity = track.velocity[track.pos[Modes.mTr.value]]*20
                             #print("velocity: ", velocity)
@@ -607,7 +606,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 previous_step = [0,0,0,0]
                 for track in self.current_pattern.tracks:
                     #track 1
-                    if track.pos[Modes.mTr.value] >= track.loop_start and track.pos[Modes.mTr.value] <= track.loop_end:
+                    if track.pos[Modes.mTr.value] >= track.lstart[Modes.mTr.value] and track.pos[Modes.mTr.value] <= track.lend[Modes.mTr.value]:
                     #if ((self.current_pos//self.ticks)%16) < 16:
                         if buffer.levels[0+track.track_id][track.pos[Modes.mTr.value]] == 0:
                             buffer.led_level_set(track.pos[Modes.mTr.value]-1, 0+track.track_id, previous_step[track.track_id])
