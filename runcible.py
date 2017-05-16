@@ -160,7 +160,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.cur_scale = [0,0,0,0,0,0,0,0]
         self.cur_scale_id = 0
         self.cur_trans = 0
-        self.k_mode = Modes.mNote
+        self.k_mode = Modes.mNone
         self.k_mod_mode = ModModes.modNone
         self.state = State()
         #self.note_on = [[Note()] for i in range(96)] #full resolution
@@ -330,14 +330,14 @@ class Runcible(spanned_monome.VirtualGrid):
         for n in self.note_on[position]:
             if n.pitch == pitch:
                 already_exists = True
-                print("note on exists", self.channel + track, pitch, "at position: ", position)
+            #    print("note on exists", self.channel + track, pitch, "at position: ", position)
         if not already_exists:
             new_note = Note(track,pitch,velocity,duration)
             self.note_on[position].append(new_note)
             #pos = yield from self.clock.sync()
             #self.midi_out.send_noteon(self.channel + track, pitch, velocity)
             self.duration_timers.append(new_note) # add this to the list of notes to track for when they end
-            print("set note on: ", self.channel + track, pitch, "at: ", position)
+            #print("set note on: ", self.channel + track, pitch, "at: ", position)
 
     @asyncio.coroutine
     def set_note_off_timer(self,track,duration,pitch):
@@ -364,7 +364,7 @@ class Runcible(spanned_monome.VirtualGrid):
             #for note in self.note_on[t.play_position]:
             for note in self.note_on[t.pos[Modes.mTr.value]]:
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,note.velocity)
-                print("playing note", self.channel + note.channel_inc, note.pitch, " at: ",self.current_pos%32)
+            #    print("playing note", self.channel + note.channel_inc, note.pitch, " at: ",self.current_pos%32)
             del self.note_on[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
 
         #end all notes that have expired
@@ -373,10 +373,10 @@ class Runcible(spanned_monome.VirtualGrid):
         new_duration_timers = [Note()]
         for note in self.duration_timers:
             note.decrement_duration()
-            print("decreasing duration for note:", note.pitch, "at: ", self.current_pos%32, "to: ", note.duration )
+            #print("decreasing duration for note:", note.pitch, "at: ", self.current_pos%32, "to: ", note.duration )
             if note.duration == 0:
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
-                print("ending note", self.channel + note.channel_inc, note.pitch, " at: ", self.current_pos%32)
+            #    print("ending note", self.channel + note.channel_inc, note.pitch, " at: ", self.current_pos%32)
                 finished_notes.append(i) # mark this note for removal from the timer list
             else:
                 new_duration_timers.append(note)
@@ -642,6 +642,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 #display play position of current track
                 #if ((self.current_pos//self.ticks)%16) >= self.loop_start and ((self.current_pos//self.ticks)%16) <= self.loop_end:
                 previous_step = [0,0,0,0]
+                # change to use the paramter track position and parameter lstart and lend
                 if self.current_track.play_position >= self.current_track.loop_start and self.current_track.play_position <= self.current_track.loop_end:
                     if buffer.levels[0+self.current_track.track_id][self.current_track.play_position] == 0:
                         buffer.led_level_set(self.current_track.play_position -1, 0+self.current_track.track_id, previous_step[self.current_track.track_id])
@@ -846,14 +847,14 @@ class Runcible(spanned_monome.VirtualGrid):
                 # cut
                 if s == 1 and self.keys_held == 1 and self.k_mod_mode == ModModes.modLoop:
                     self.cutting = True
-                    self.current_track.next_position = x
-                    self.current_track.loop_last = x
+                    self.current_track.next_position = x #change to be per parameter next
+                    self.current_track.loop_last = x #change to be per parameter last
                     #print("key_last: ", self.key_last[self.current_track])
                 # set loop points
                 elif s == 1 and self.keys_held == 2:
                     if self.current_track.loop_last < x: # don't wrap around, for now
-                        self.current_track.loop_start = self.current_track.loop_last
-                        self.current_track.loop_end = x
+                        self.current_track.loop_start = self.current_track.loop_last #change to per parameter lstart
+                        self.current_track.loop_end = x #change to per parameter lend: self.current_track.lend[self.k_mode.value] = x
                         self.keys_held = 0
                     else:
                         self.keys_held = 0
