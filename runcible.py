@@ -334,7 +334,7 @@ class Runcible(spanned_monome.VirtualGrid):
             #pos = yield from self.clock.sync()
             #self.midi_out.send_noteon(self.channel + track, pitch, velocity)
             self.duration_timers.append(new_note) # add this to the list of notes to track for when they end
-            print("set note on: ", self.channel + track, pitch, "at: ", pos%16)
+            print("set note on: ", self.channel + track, pitch, "at: ", position)
 
     @asyncio.coroutine
     def set_note_off_timer(self,track,duration,pitch):
@@ -351,20 +351,22 @@ class Runcible(spanned_monome.VirtualGrid):
     @asyncio.coroutine
     def trigger(self):
         #print("trigger called")
+        i = 0
+        finished_notes = list()
+        for note in self.duration_timers:
+            note.duration = note.duration - 1
+            print("decreasing duration for note:", note.pitch, "at: ", t.pos[Modes.mTr.value], "to: ", note.duration )
+            if note.duration == 0:
+                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
+                print("turning note", note.pitch, " off at: ", t.pos[Modes.mTr.value])
+                finished_notes.add(i) # mark this note for removal from the timer list
+            i = i + 1
+        for n in finished_notes:
+            del self.duration_timers[n] #clear the timer once it's exhausted 
+
         for t in self.current_pattern.tracks:
             #for note in self.note_off[t.play_position]:
             #for note in self.note_off[t.pos[Modes.mTr.value]]:
-            i = 0
-            finished_notes = list()
-            for note in self.duration_timers:
-                note.duration = note.duration - 1
-                if note.duration == 0:
-                    self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
-                    print("turning note", note.pitch, " off at: ", t.pos[Modes.mTr.value])
-                    finished_notes.add(i) # mark this note for removal from the timer list
-                i = i + 1
-            for n in finished_notes:
-                del self.duration_timers[n] #clear the timer once it's exhausted 
             #del self.note_off[t.play_position][:] #clear the current midi output once it's been sent
             #del self.note_off[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
 
