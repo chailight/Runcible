@@ -333,7 +333,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 already_exists = True
                 print("note on exists", self.channel + track, pitch, "at position: ", position)
         if not already_exists:
-            new_note = Note(track,pitch,velocity)
+            new_note = Note(track,pitch,velocity,duration)
             self.note_on[position].append(new_note)
             #pos = yield from self.clock.sync()
             #self.midi_out.send_noteon(self.channel + track, pitch, velocity)
