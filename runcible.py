@@ -262,17 +262,17 @@ class Runcible(spanned_monome.VirtualGrid):
                             #entered_duration = track.duration[track.play_position]
                             entered_duration = track.duration[track.pos[Modes.mTr.value]]
                             if entered_duration == 1:
-                                scaled_duration = 1
-                            if entered_duration == 2:
                                 scaled_duration = 2
                             if entered_duration == 3:
-                                scaled_duration =  3
-                            if entered_duration == 4:
                                 scaled_duration = 4
-                            elif entered_duration == 5:
-                                scaled_duration = 5
-                            elif entered_duration == 6:
+                            if entered_duration == 3:
+                                scaled_duration =  5
+                            if entered_duration == 4:
                                 scaled_duration = 6
+                            elif entered_duration == 5:
+                                scaled_duration = 7
+                            elif entered_duration == 6:
+                                scaled_duration = 8
                             #velocity = track.velocity[track.play_position]*20
                             velocity = track.velocity[track.pos[Modes.mTr.value]]*20
                             #print("velocity: ", velocity)
@@ -371,6 +371,7 @@ class Runcible(spanned_monome.VirtualGrid):
         #end all notes that have expired
         i = 0
         finished_notes = list()
+        new_duration_timers = [Notes()]
         for note in self.duration_timers:
             note.decrement_duration()
             print("decreasing duration for note:", note.pitch, "at: ", self.current_pos%32, "to: ", note.duration )
@@ -378,9 +379,13 @@ class Runcible(spanned_monome.VirtualGrid):
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
                 print("ending note", self.channel + note.channel_inc, note.pitch, " at: ", self.current_pos%32)
                 finished_notes.append(i) # mark this note for removal from the timer list
+            else:
+                new_duration_timers.append(note)
             i = i + 1
-        for n in finished_notes:
-            del self.duration_timers[n] #clear the timer once it's exhausted 
+        del self.duration_timers[:]
+        self.duration_timers = new_duration_timers # set the duration timers list to the be non-zero items
+        #for n in finished_notes:
+        #    del self.duration_timers[n] #clear the timer once it's exhausted 
 
 
     @asyncio.coroutine
