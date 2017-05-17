@@ -646,16 +646,16 @@ class Runcible(spanned_monome.VirtualGrid):
                 previous_step = [0,0,0,0]
                 # change to use the paramter track position and parameter lstart and lend
                 #if self.current_track.play_position >= self.current_track.loop_start and self.current_track.play_position <= self.current_track.loop_end:
-                if buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode]] == 0:
-                    buffer.led_level_set(self.current_track.pos[self.k_mode]-1, 0+self.current_track.track_id, previous_step[self.current_track.track_id])
-                    buffer.led_level_set(self.current_track.pos[self.k_mode], 0+self.current_track.track_id, 15)
+                if buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
+                    buffer.led_level_set(self.current_track.pos[self.k_mode.value]-1, 0+self.current_track.track_id, previous_step[self.current_track.track_id])
+                    buffer.led_level_set(self.current_track.pos[self.k_mode.value], 0+self.current_track.track_id, 15)
                     previous_step[self.current_track.track_id] = 0
                 else: #toggle an already lit led as we pass over it
                     previous_step[self.current_track.track_id] = 15
-                    buffer.led_level_set(self.current_track.pos[self.k_mode], 0+self.current_track.track_id, 0)
+                    buffer.led_level_set(self.current_track.pos[self.k_mode.value], 0+self.current_track.track_id, 0)
                 #buffer.led_level_set(self.current_track.play_position, 0, 15)
             else:
-                buffer.led_level_set(self.current_track.pos[self.k_mode], 0, 0)
+                buffer.led_level_set(self.current_track.pos[self.k_mode.value], 0, 0)
 
             # update grid
             buffer.render(self)
@@ -851,16 +851,16 @@ class Runcible(spanned_monome.VirtualGrid):
                     self.cutting = True
                     self.current_track.next_position = x #change to be per parameter next
                     self.current_track.loop_last = x #change to be per parameter last
-                    self.current_track.next_pos[self.k_mode]= x #change to be per parameter next
-                    self.current_track.last_pos[self.k_mode] = x
+                    self.current_track.next_pos[self.k_mode.value]= x #change to be per parameter next
+                    self.current_track.last_pos[self.k_mode.value] = x
                     #print("key_last: ", self.key_last[self.current_track])
                 # set loop points
                 elif s == 1 and self.keys_held == 2:
                     if self.current_track.loop_last < x: # don't wrap around, for now
                         #self.current_track.loop_start = self.current_track.loop_last #change to per parameter lstart
-                        self.current_track.lstart[self.k_mode] = self.current_track.last_pos[self.k-mode]#change to per parameter lstart
+                        self.current_track.lstart[self.k_mode.value] = self.current_track.last_pos[self.k-mode]#change to per parameter lstart
                         #self.current_track.loop_end = x #change to per parameter lend: self.current_track.lend[self.k_mode.value] = x
-                        self.current_track.lend[self.k_mode] = x #change to per parameter lend: self.current_track.lend[self.k_mode.value] = x
+                        self.current_track.lend[self.k_mode.value] = x #change to per parameter lend: self.current_track.lend[self.k_mode.value] = x
                         self.keys_held = 0
                     else:
                         self.keys_held = 0
