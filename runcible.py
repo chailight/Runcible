@@ -162,7 +162,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.cur_scale = [0,0,0,0,0,0,0,0]
         self.cur_scale_id = 0
         self.cur_trans = 0
-        self.k_mode = Modes.mNone
+        self.k_mode = Modes.mNote
         self.k_mod_mode = ModModes.modNone
         self.state = State()
         #self.note_on = [[Note()] for i in range(96)] #full resolution
