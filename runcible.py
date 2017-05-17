@@ -246,7 +246,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 self.next_step(track, Modes.mNote.value)
                 self.next_step(track, Modes.mOct.value)
                 self.next_step(track, Modes.mDur.value)
-                #self.next_step(track, Modes.mVel.value)
+                self.next_step(track, Modes.mVel.value)
                 if self.next_step(track, Modes.mTr.value):
                     #if track.tr[track.play_position] == 1:
                     if track.tr[track.pos[Modes.mTr.value]] == 1:
