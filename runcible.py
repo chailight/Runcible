@@ -858,18 +858,20 @@ class Runcible(spanned_monome.VirtualGrid):
                 # cut
                 if s == 1 and self.keys_held == 1 and self.k_mod_mode == ModModes.modLoop:
                     self.cutting = True
-                    self.current_track.next_position = x #change to be per parameter next
-                    self.current_track.loop_last = x #change to be per parameter last
+                    #self.current_track.next_position = x #change to be per parameter next
+                    #self.current_track.loop_last = x #change to be per parameter last
                     self.current_track.next_pos[self.k_mode.value]= x #change to be per parameter next
                     self.current_track.last_pos[self.k_mode.value] = x
-                    #print("key_last: ", self.key_last[self.current_track])
+                    print("track_last: ", self.current_track.last_pos[self.k_mode.value])
                 # set loop points
                 elif s == 1 and self.keys_held == 2:
-                    if self.current_track.loop_last < x: # don't wrap around, for now
+                    if self.current_track.last_pos[self.k_mode.value] < x: # don't wrap around, for now
                         #self.current_track.loop_start = self.current_track.loop_last #change to per parameter lstart
-                        self.current_track.lstart[self.k_mode.value] = self.current_track.last_pos[self.k-mode]#change to per parameter lstart
+                        self.current_track.lstart[self.k_mode.value] = self.current_track.last_pos[self.k-mode.value]#change to per parameter lstart
+                        print("track_lstart: ", self.current_track.lstart[self.k_mode.value])
                         #self.current_track.loop_end = x #change to per parameter lend: self.current_track.lend[self.k_mode.value] = x
                         self.current_track.lend[self.k_mode.value] = x #change to per parameter lend: self.current_track.lend[self.k_mode.value] = x
+                        print("key_lend: ", self.current_track.lend[self.k_mode.value])
                         self.keys_held = 0
                     else:
                         self.keys_held = 0
