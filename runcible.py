@@ -252,15 +252,17 @@ class Runcible(spanned_monome.VirtualGrid):
                     if track.tr[track.pos[Modes.mTr.value]] == 1:
                         #for i in range(len(track.note[track.play_position])):
                         for i in range(len(track.note[track.pos[Modes.mTr.value]])):
-                        #    print(i,len(track.note[track.play_position]))
+                            # add toggles here for loop sync - if track then set position to mTr.value, else set to parameter 
+                            note_pos = Modes.mNote.value
+                            oct_pos = Modes.mOct.value
                             if track.scale_toggle:
                                 #current_note = self.cur_scale[track.note[track.play_position][i]-1]+track.octave[track.play_position]*12
-                                current_note = self.cur_scale[track.note[track.pos[Modes.mTr.value]][i]-1]+track.octave[track.pos[Modes.mTr.value]]*12
+                                current_note = self.cur_scale[track.note[track.pos[note_pos]][i]-1]+track.octave[track.pos[oct_pos]]*12
                                 #print("input note: ", track.note[track.play_position][i], "scaled_note: ", self.cur_scale[track.note[track.play_position][i]-1], "current note: ", current_note)
                             else:
                                 #set the note to an increment from some convenient base
                                 #current_note = track.note[track.play_position][i]+35+track.octave[track.play_position]*12
-                                current_note = track.note[track.pos[Modes.mTr.value]][i]+35+track.octave[track.pos[Modes.mTr.value]]*12
+                                current_note = track.note[track.pos[note_pos]][i]+35+track.octave[track.pos[oct_pos]]*12
 
                             #print("input note: ", track.note[track.playposition[i], "scaled_note: ", current_note)
                             scaled_duration = 0
