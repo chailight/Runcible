@@ -644,22 +644,23 @@ class Runcible(spanned_monome.VirtualGrid):
                 #    buffer.led_level_set(self.current_track.play_position, 3, 15)
                 #else:
                 #    buffer.led_level_set(self.current_track.play_position, 3, 0)
-            elif self.k_mode.value < Modes.mScale.value : # all other modes except scale or pattern
-                #display play position of current track
-                #if ((self.current_pos//self.ticks)%16) >= self.loop_start and ((self.current_pos//self.ticks)%16) <= self.loop_end:
-                previous_step = [0,0,0,0]
-                # change to use the paramter track position and parameter lstart and lend
-                #if self.current_track.play_position >= self.current_track.loop_start and self.current_track.play_position <= self.current_track.loop_end:
-                if buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
-                    buffer.led_level_set(self.current_track.pos[self.k_mode.value]-1, 0+self.current_track.track_id, previous_step[self.current_track.track_id])
-                    buffer.led_level_set(self.current_track.pos[self.k_mode.value], 0+self.current_track.track_id, 15)
-                    previous_step[self.current_track.track_id] = 0
-                else: #toggle an already lit led as we pass over it
-                    previous_step[self.current_track.track_id] = 15
-                    buffer.led_level_set(self.current_track.pos[self.k_mode.value], 0+self.current_track.track_id, 0)
-                #buffer.led_level_set(self.current_track.play_position, 0, 15)
             else:
-                buffer.led_level_set(self.current_track.pos[self.k_mode.value], 0, 0)
+                if self.k_mode.value < Modes.mScale.value : # all other modes except scale or pattern
+                    #display play position of current track
+                    #if ((self.current_pos//self.ticks)%16) >= self.loop_start and ((self.current_pos//self.ticks)%16) <= self.loop_end:
+                    previous_step = [0,0,0,0]
+                    # change to use the paramter track position and parameter lstart and lend
+                    #if self.current_track.play_position >= self.current_track.loop_start and self.current_track.play_position <= self.current_track.loop_end:
+                    if buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
+                        buffer.led_level_set(self.current_track.pos[self.k_mode.value]-1, 0, previous_step[self.current_track.track_id])
+                        buffer.led_level_set(self.current_track.pos[self.k_mode.value], 0, 15)
+                        previous_step[self.current_track.track_id] = 0
+                    else: #toggle an already lit led as we pass over it
+                        previous_step[self.current_track.track_id] = 15
+                        buffer.led_level_set(self.current_track.pos[self.k_mode.value], 0, 0)
+                    #buffer.led_level_set(self.current_track.play_position, 0, 15)
+                #else:
+                #    buffer.led_level_set(self.current_track.pos[self.k_mode.value], 0, 0)
 
             # update grid
             buffer.render(self)
