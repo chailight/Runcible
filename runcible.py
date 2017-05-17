@@ -76,14 +76,14 @@ class Track:
         self.velocity = [3 for i in range(16)]
         self.params = [[0] * self.num_params for i in range (16)] #initialise a 4x16 array
         self.dur_mul = 1; #duration multiplier
-        self.lstart = [0,0,0,0]
-        self.lend = [15,15,15,15]
-        self.last_pos = [15,15,15,15]
-        self.next_pos = [15,15,15,15]
+        self.lstart = [0,0,0,0,0]
+        self.lend = [15,15,15,15,15]
+        self.last_pos = [15,15,15,15,15]
+        self.next_pos = [15,15,15,15,15]
         self.swap = [[0] * self.num_params] # what is this actually for?
-        self.tmul = [1,1,1,1]
-        self.pos = [0,0,0,0] #current position for each parameter in each track - replaces play_position
-        self.pos_mul = [0,0,0,0]  #something to do with the time multiplier
+        self.tmul = [1,1,1,1,1]
+        self.pos = [0,0,0,0,0] #current position for each parameter in each track - replaces play_position
+        self.pos_mul = [0,0,0,0,0]  #something to do with the time multiplier
         self.pos_reset = False
         self.track_id = track_id
         self.play_position = 0 # will switch to position for each parameter
@@ -243,6 +243,10 @@ class Runcible(spanned_monome.VirtualGrid):
             self.draw()
             # TRIGGER SOMETHING
             for track in self.current_pattern.tracks:
+                self.next_step(track, Modes.mNote.value)
+                self.next_step(track, Modes.mOct.value)
+                self.next_step(track, Modes.mDur.value)
+                self.next_step(track, Modes.mVel.value)
                 if self.next_step(track, Modes.mTr.value):
                     #if track.tr[track.play_position] == 1:
                     if track.tr[track.pos[Modes.mTr.value]] == 1:
@@ -282,7 +286,7 @@ class Runcible(spanned_monome.VirtualGrid):
                             if not track.track_mute:
                                 #self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
                                 self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
-                                print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
+                                #print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
 
                     self.cutting = False
 
