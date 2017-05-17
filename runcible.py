@@ -752,6 +752,10 @@ class Runcible(spanned_monome.VirtualGrid):
                 if self.k_mode == Modes.mTr:
                     if self.k_mod_mode == ModModes.modTime:
                         self.current_track.tmul[Modes.mTr.value] = x
+                        self.current_track.tmul[Modes.mNote.value] = x # for now all time multipliers are set at once
+                        self.current_track.tmul[Modes.mOct.value] = x
+                        self.current_track.tmul[Modes.mDur.value] = x
+                        self.current_track.tmul[Modes.mVel.value] = x
                         print("tmul: ", self.current_track.tmul[Modes.mTr.value])
             if y < 7:
                 #set scale mode toggles
