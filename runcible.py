@@ -250,7 +250,7 @@ class Runcible(spanned_monome.VirtualGrid):
             # TRIGGER SOMETHING
             for track in self.current_pattern.tracks:
                 if self.next_step(track, Modes.mNote.value):
-                    if track.note[track.pos[Modes.mNote.value]][0]:
+                    if track.note[track.pos[Modes.mNote.value]]:
                         self.current_pitch = track.note[track.pos[Modes.mNote.value]][0] #need to adjust for polyphonic
                     print("current_pitch: ", self.current_pitch)
                 if self.next_step(track, Modes.mOct.value):
