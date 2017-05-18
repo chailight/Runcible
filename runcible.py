@@ -250,16 +250,16 @@ class Runcible(spanned_monome.VirtualGrid):
             # TRIGGER SOMETHING
             for track in self.current_pattern.tracks:
                 if self.next_step(track, Modes.mNote.value):
-                    self.current_pitch = track.pos[Modes.mNote.value]
+                    self.current_pitch = track.note[track.pos[Modes.mNote.value]]
                     print("current_pitch: ", self.current_pitch)
                 if self.next_step(track, Modes.mOct.value):
-                    self.current_oct = track.pos[Modes.mOct.value]
+                    self.current_oct = track.octave[track.pos[Modes.mOct.value]]
                     print("current_oct: ", self.current_oct)
                 if self.next_step(track, Modes.mDur.value):
-                    self.current_dur = track.pos[Modes.mDur.value]
+                    self.current_dur = track.durration[track.pos[Modes.mDur.value]]
                     print("current_dur: ", self.current_dur)
                 if self.next_step(track, Modes.mVel.value):
-                    self.current_vel = track.pos[Modes.mVel.value]
+                    self.current_vel = track.velocity[track.pos[Modes.mVel.value]]
                     print("current_vel: ", self.current_vel)
                 if self.next_step(track, Modes.mTr.value):
                     #if track.tr[track.play_position] == 1:
@@ -270,7 +270,7 @@ class Runcible(spanned_monome.VirtualGrid):
                             if track.scale_toggle:
                                 #current_note = self.cur_scale[track.note[track.play_position][i]-1]+track.octave[track.play_position]*12
                                 #print("track.pos: ", track.pos[note_pos], "i: ", i, "current_note: ", track.note[track.pos[note_pos]])
-                                current_note = self.cur_scale[self.current_pitch] + self.current_oct*12 #may have to introduce a check for self.current_pitch not being zero
+                                current_note = self.cur_scale[self.current_pitch-1] + self.current_oct*12 #may have to introduce a check for self.current_pitch not being zero
                                 print("input note: ", self.current_pitch, "current note: ", current_note)
                             else:
                                 #set the note to an increment from some convenient base
