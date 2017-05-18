@@ -258,7 +258,7 @@ class Runcible(spanned_monome.VirtualGrid):
                             oct_pos = Modes.mOct.value
                             if track.scale_toggle:
                                 #current_note = self.cur_scale[track.note[track.play_position][i]-1]+track.octave[track.play_position]*12
-                                print("track.pos: ", track.pos[note_pos], "i: ", i, "current_note: ", track.note[track.pos[note_pos]][i]
+                                print("track.pos: ", track.pos[note_pos], "i: ", i, "current_note: ", track.note[track.pos[note_pos]][i])
                                 current_note = self.cur_scale[track.note[track.pos[note_pos]][i]-1]+track.octave[track.pos[oct_pos]]*12
                                 #print("input note: ", track.note[track.play_position][i], "scaled_note: ", self.cur_scale[track.note[track.play_position][i]-1], "current note: ", current_note)
                             else:
