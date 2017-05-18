@@ -2,11 +2,13 @@
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
 #tweak note duration - get the right scaled values 
-#fix loop setting and display on all screens
-#make looping independent for each parameter
+#fix display of current time multiplier when the time mod button is selected
+#fix display of position chaser on velocity? page
+#fix loop setting and display on all screens - there was a gltich on looping notes
+#make looping independent for each parameter - test this more thoroughly - disable for polyphonic tracks (where it doesn't make sense? - maybe it does?)
 #add a loop phase reset input as per kria
 #add preset copy
-#add note mutes for drum channel?
+#add note mutes for drum channel? - maybe note mutes are for the currently selected track
 #add input/display for probability, as per kria - implement a next_note function which returns true or false based on probability setting for that track at that position
 #at this stage, for polyphonic tracks, probabilities are per position - like velocity - not per note 
 #enable a per channel transpose setting? 
