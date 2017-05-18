@@ -252,6 +252,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     if track.tr[track.pos[Modes.mTr.value]] == 1:
                         #for i in range(len(track.note[track.play_position])):
                         for i in range(len(track.note[track.pos[Modes.mTr.value]])):
+                            print(i)
                             # add toggles here for loop sync - if track then set position to mTr.value, else set to parameter 
                             note_pos = Modes.mNote.value
                             oct_pos = Modes.mOct.value
