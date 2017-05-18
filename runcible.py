@@ -189,6 +189,12 @@ class Runcible(spanned_monome.VirtualGrid):
         #self.loop_length = [self.width, self.width, self.width, self.width]
         self.keys_held = 0
         self.key_last = [0,0,0,0]
+
+        self.current_pitch = [0,0,0,0]
+        self.current_oct = [0,0,0,0]
+        self.current_dur = [0,0,0,0]
+        self.current_vel = [0,0,0,0]
+
         if os.path.isfile(self.pickle_file_path):
             self.restore_state()
         self.current_preset = self.state.presets[0]
@@ -243,33 +249,40 @@ class Runcible(spanned_monome.VirtualGrid):
             self.draw()
             # TRIGGER SOMETHING
             for track in self.current_pattern.tracks:
-                self.next_step(track, Modes.mNote.value)
-                self.next_step(track, Modes.mOct.value)
-                self.next_step(track, Modes.mDur.value)
-                self.next_step(track, Modes.mVel.value)
+                if self.next_step(track, Modes.mNote.value):
+                    self.current_pitch = track.pos[Modes.mNote.value]
+                    print("current_pitch: ", self.current_pitch)
+                if self.next_step(track, Modes.mOct.value):
+                    self.current_oct = track.pos[Modes.mOct.value]
+                    print("current_oct: ", self.current_oct)
+                if self.next_step(track, Modes.mDur.value):
+                    self.current_dur = track.pos[Modes.mDur.value]
+                    print("current_dur: ", self.current_dur)
+                if self.next_step(track, Modes.mVel.value):
+                    self.current_vel = track.pos[Modes.mVel.value]
+                    print("current_vel: ", self.current_vel)
                 if self.next_step(track, Modes.mTr.value):
                     #if track.tr[track.play_position] == 1:
                     if track.tr[track.pos[Modes.mTr.value]] == 1:
                         #for i in range(len(track.note[track.play_position])):
-                        for i in range(len(track.note[track.pos[Modes.mTr.value]])):
-                            print(i)
+                        for i in range(len(track.note[track.pos[Modes.mTr.value]])): #this needs to be fixed so that polyphonic mode forces track sync
                             # add toggles here for loop sync - if track then set position to mTr.value, else set to parameter 
-                            note_pos = Modes.mNote.value
-                            oct_pos = Modes.mOct.value
                             if track.scale_toggle:
                                 #current_note = self.cur_scale[track.note[track.play_position][i]-1]+track.octave[track.play_position]*12
-                                print("track.pos: ", track.pos[note_pos], "i: ", i, "current_note: ", track.note[track.pos[note_pos]])
-                                current_note = self.cur_scale[track.note[track.pos[note_pos]][i]-1]+track.octave[track.pos[oct_pos]]*12
-                                #print("input note: ", track.note[track.play_position][i], "scaled_note: ", self.cur_scale[track.note[track.play_position][i]-1], "current note: ", current_note)
+                                #print("track.pos: ", track.pos[note_pos], "i: ", i, "current_note: ", track.note[track.pos[note_pos]])
+                                current_note = self.cur_scale[self.current_note-1] + self.current_oct*12
+                                print("input note: ", self.current_pitch, "current note: ", current_note)
                             else:
                                 #set the note to an increment from some convenient base
                                 #current_note = track.note[track.play_position][i]+35+track.octave[track.play_position]*12
-                                current_note = track.note[track.pos[note_pos]][i]+35+track.octave[track.pos[oct_pos]]*12
+                                #current_note = track.note[track.pos[note_pos]][i]+35+track.octave[track.pos[oct_pos]]*12
+                                current_note = self.current_note+35 + self.current_oct*12
+                                print("input note: ", self.current_pitch, "current note: ", current_note)
 
                             #print("input note: ", track.note[track.playposition[i], "scaled_note: ", current_note)
                             scaled_duration = 0
                             #entered_duration = track.duration[track.play_position]
-                            entered_duration = track.duration[track.pos[Modes.mTr.value]]
+                            entered_duration = self.current_dur
                             if entered_duration == 1:
                                 scaled_duration = 2
                             if entered_duration == 3:
@@ -279,11 +292,12 @@ class Runcible(spanned_monome.VirtualGrid):
                             if entered_duration == 4:
                                 scaled_duration = 8
                             elif entered_duration == 5:
-                                scaled_duration = 10 
+                                scaled_duration = 10
                             elif entered_duration == 6:
-                                scaled_duration = 12 
+                                scaled_duration = 12
                             #velocity = track.velocity[track.play_position]*20
-                            velocity = track.velocity[track.pos[Modes.mTr.value]]*20
+                            #velocity = track.velocity[track.pos[Modes.mTr.value]]*20
+                            velocity = self.current_vel*20
                             #print("velocity: ", velocity)
                             #velocity = 65
                             #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
