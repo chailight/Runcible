@@ -256,7 +256,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     self.current_oct = track.octave[track.pos[Modes.mOct.value]]
                     print("current_oct: ", self.current_oct)
                 if self.next_step(track, Modes.mDur.value):
-                    self.current_dur = track.durration[track.pos[Modes.mDur.value]]
+                    self.current_dur = track.duration[track.pos[Modes.mDur.value]]
                     print("current_dur: ", self.current_dur)
                 if self.next_step(track, Modes.mVel.value):
                     self.current_vel = track.velocity[track.pos[Modes.mVel.value]]
