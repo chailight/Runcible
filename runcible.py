@@ -36,8 +36,24 @@ import monome
 import spanned_monome
 import clocks
 import rtmidi2
-from rtmidi2.midiconstants import (ALL_SOUND_OFF, CONTROL_CHANGE, RESEAT_ALL_CONTROLLERS)
 from enum import Enum
+
+# see Channel Mode Messages for Controller Numbers
+CONTROLLER_CHANGE = CONTROL_CHANGE = 0xB0
+# 1011cccc 0ccccccc 0vvvvvvv (channel, controller, value)
+
+PROGRAM_CHANGE = 0xC0
+# 1100cccc 0ppppppp (channel, program)
+# controller value byte should be 0
+
+ALL_SOUND_OFF = 0x78
+# controller value byte should be 0
+RESET_ALL_CONTROLLERS = 0x79
+# 0 = off, 127 = on
+LOCAL_CONTROL = LOCAL_CONTROL_ONOFF = 0x7A
+# controller value byte should be 0
+ALL_NOTES_OFF = 0x7B
+# controller value byte should be 0, also causes ANO
 
 def cancel_task(task):
     if task:
