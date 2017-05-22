@@ -25,7 +25,6 @@
 #add settings screen with other adjustments like midi channel for each track?
 #fix pauses - network? other processes?
 #fix clear all on disconnect
-#fix hanging notes on sequencer stop? how? either note creation becomes atomic or else there's a midi panic that gets called when the clock stops? maybe just close the midi stream?
 
 import pickle
 import os
