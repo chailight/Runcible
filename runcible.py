@@ -231,7 +231,7 @@ class Runcible(spanned_monome.VirtualGrid):
         print("Disconnecting... thanks for playing!")
         for channel in range(16):
             self.midi_out.send_cc(channel,ALL_SOUND_OFF, 0)
-            self.midi_out.sendMessage(channel, RESET_ALL_CONTROLLERS, 0)
+            self.midi_out.send_cc(channel, RESET_ALL_CONTROLLERS, 0)
         self.midi_out.close_port()
         self.save_state()
         super().disconnect()
