@@ -192,10 +192,10 @@ class Runcible(spanned_monome.VirtualGrid):
         self.keys_held = 0
         self.key_last = [0,0,0,0]
 
-        self.current_pitch = [0,0,0,0]
-        self.current_oct = [0,0,0,0]
-        self.current_dur = [0,0,0,0]
-        self.current_vel = [0,0,0,0]
+        self.current_pitch = 0
+        self.current_oct = 0
+        self.current_dur = 1
+        self.current_vel = 3
 
         if os.path.isfile(self.pickle_file_path):
             self.restore_state()
