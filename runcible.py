@@ -114,6 +114,7 @@ class Track:
         self.loop_edit = 0
         self.scale_toggle = 1
         self.track_mute = 0
+        self.sync_mode = 1
 
 
 class Pattern:
@@ -492,8 +493,6 @@ class Runcible(spanned_monome.VirtualGrid):
                 buffer.led_level_set(14,7,0)
                 buffer.led_level_set(15,7,0)
                 for x in range(self.width):
-                    #show the triggers for that track on the top row
-                    #buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
                     for y in range(1,self.height-1): #ignore bottom row
                         #render_pos = self.spanToGrid(x,y)
                         if self.current_track.track_id == 0:
@@ -563,13 +562,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 buffer.led_level_set(14,7,0)
                 buffer.led_level_set(15,7,0)
                 for x in range(self.width):
-                    #draw the accent toggles - this will move to a velocity page?
-                    #if self.current_track.velocity[x]:
-                    #    buffer.led_level_set(x, 0, 15)
-                    #else:
-                    #    buffer.led_level_set(x, 0, 0)
-                    #if self.current_channel == 1:
-                        #fill a column top down in the x position
+                    buffer.led_level_set(x, 0, self.current_track.tr[x] * 15)
                     for i in range (7-self.current_track.velocity[x],7): #ignore bottom row
                         buffer.led_level_set(x, i, 15)
                     for i in range (0,7-self.current_track.velocity[x]): #ignore top row
@@ -686,18 +679,23 @@ class Runcible(spanned_monome.VirtualGrid):
                 #    buffer.led_level_set(self.current_track.play_position, 3, 0)
             else:
                 if self.k_mode.value < Modes.mScale.value : # all other modes except scale or pattern
-                    #display play position of current track
-                    #if ((self.current_pos//self.ticks)%16) >= self.loop_start and ((self.current_pos//self.ticks)%16) <= self.loop_end:
-                    previous_step = [0,0,0,0]
-                    # change to use the paramter track position and parameter lstart and lend
-                    #if self.current_track.play_position >= self.current_track.loop_start and self.current_track.play_position <= self.current_track.loop_end:
-                    if buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
-                        buffer.led_level_set(self.current_track.pos[self.k_mode.value]-1, 0, previous_step[self.current_track.track_id])
-                        buffer.led_level_set(self.current_track.pos[self.k_mode.value], 0, 15)
-                        previous_step[self.current_track.track_id] = 0
-                    else: #toggle an already lit led as we pass over it
-                        previous_step[self.current_track.track_id] = 15
-                        buffer.led_level_set(self.current_track.pos[self.k_mode.value], 0, 0)
+                    if self.k_mod_mode == ModModes.modTime:
+                        # capture top row ?
+                        # blank the top row
+                        for i in range(16):
+                            buffer.led_level_set(i,0,0)
+                        # light up the current time multiplier
+                        buffer.led_level_set(self.current_track.tmul[self.k_mode.value], 0, 15)
+                    else:
+                        #display play pcurrent_rowosition of current track & current parameter
+                        previous_step = [0,0,0,0]
+                        if buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
+                            buffer.led_level_set(self.current_track.pos[self.k_mode.value]-1, 0, previous_step[self.current_track.track_id])
+                            buffer.led_level_set(self.current_track.pos[self.k_mode.value], 0, 15)
+                            previous_step[self.current_track.track_id] = 0
+                        else: #toggle an already lit led as we pass over it
+                            previous_step[self.current_track.track_id] = 15
+                            buffer.led_level_set(self.current_track.pos[self.k_mode.value], 0, 0)
                     #buffer.led_level_set(self.current_track.play_position, 0, 15)
                 #else:
                 #    buffer.led_level_set(self.current_track.pos[self.k_mode.value], 0, 0)
@@ -789,14 +787,24 @@ class Runcible(spanned_monome.VirtualGrid):
             del self.ctrl_keys_last[:]
         elif s == 1 and y > 0:
             if y == 7:
-                if self.k_mode == Modes.mTr:
-                    if self.k_mod_mode == ModModes.modTime:
+                #if self.k_mode == Modes.mTr: # enable this in all modes
+                if self.k_mod_mode == ModModes.modTime:
+                    if self.current_track.sync_mode == 0: # set the time multiplier for this parameter only
+                        self.current_track.tmul[self.k_mode.value] = x 
+                    elif self.current_track.sync_mode == 1: #set the time multiplier for all parameters of this track
                         self.current_track.tmul[Modes.mTr.value] = x
-                        self.current_track.tmul[Modes.mNote.value] = x # for now all time multipliers are set at once
+                        self.current_track.tmul[Modes.mNote.value] = x 
                         self.current_track.tmul[Modes.mOct.value] = x
                         self.current_track.tmul[Modes.mDur.value] = x
                         self.current_track.tmul[Modes.mVel.value] = x
-                        print("tmul: ", self.current_track.tmul[Modes.mTr.value])
+                    else:
+                        for track in self.current_preset.tracks: # change time for all tracks
+                            track.tmul[Modes.mTr.value] = x
+                            track.tmul[Modes.mNote.value] = x 
+                            track.tmul[Modes.mOct.value] = x
+                            track.tmul[Modes.mDur.value] = x
+                            track.tmul[Modes.mVel.value] = x
+                    #print("tmul: ", self.k_mode, self.current_track.tmul[Modes.mTr.value])
             if y < 7:
                 #set scale mode toggles
                 if self.k_mode == Modes.mTr:
