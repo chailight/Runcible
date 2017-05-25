@@ -775,6 +775,16 @@ class Runcible(spanned_monome.VirtualGrid):
             self.ctrl_keys_held = 0
             del self.ctrl_keys_last[:]
         elif s == 1 and y > 0:
+            if self.k_mode == Modes.mTr and self.k_mod_mode == ModModes.modTime:
+                if y > 3 and y < 8:
+                    if self.current_pattern.tracks[7-y].sync_mode == 0: # set the time multiplier for this parameter only
+                        self.current_pattern.tracks[7-y].tmul[self.k_mode.value] = x
+                    elif self.current_pattern.tracks[7-y].sync_mode == 1: #set the time multiplier for all parameters of this track
+                        self.current_pattern.tracks[7-y].tmul[Modes.mTr.value] = x
+                        self.current_pattern.tracks[7-y].tmul[Modes.mNote.value] = x
+                        self.current_pattern.tracks[7-y].tmul[Modes.mOct.value] = x
+                        self.current_pattern.tracks[7-y].tmul[Modes.mDur.value] = x
+                        self.current_pattern.tracks[7-y].tmul[Modes.mVel.value] = x
             if y == 7:
                 #if self.k_mode == Modes.mTr: # enable this in all modes
                 if self.k_mod_mode == ModModes.modTime:
