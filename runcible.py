@@ -3,7 +3,6 @@
 #TODO:
 #tweak note duration - get the right scaled values 
 #fix display of current time multiplier when the time mod button is selected
-#fix display of position chaser on velocity? page
 #fix loop setting and display on all screens - there was a gltich on looping notes
 #make looping independent for each parameter - test this more thoroughly - disable for polyphonic tracks (where it doesn't make sense? - maybe it does?)
 #add a loop phase reset input as per kria
@@ -642,41 +641,31 @@ class Runcible(spanned_monome.VirtualGrid):
             # change the bounds of the first if condition to match the
             # loop start and end points
             if self.k_mode == Modes.mTr:
-                previous_step = [0,0,0,0]
-                for track in self.current_pattern.tracks:
-                    #track 1
-                    if track.pos[Modes.mTr.value] >= track.lstart[Modes.mTr.value] and track.pos[Modes.mTr.value] <= track.lend[Modes.mTr.value]:
-                    #if ((self.current_pos//self.ticks)%16) < 16:
-                        if buffer.levels[0+track.track_id][track.pos[Modes.mTr.value]] == 0:
-                            buffer.led_level_set(track.pos[Modes.mTr.value]-1, 0+track.track_id, previous_step[track.track_id])
-                            buffer.led_level_set(track.pos[Modes.mTr.value], 0+track.track_id, 15)
-                            previous_step[track.track_id] = 0
-                        else: #toggle an already lit led as we pass over it
-                            previous_step[track.track_id] = 15
-                            buffer.led_level_set(track.pos[Modes.mTr.value], 0+track.track_id, 0)
-                            #buffer.led_level_set(track.play_position, 0+track.track_id, 15)
-                    else:
-                        buffer.led_level_set(self.current_track.pos[Modes.mTr.value], 0, 0)
+                if self.k_mod_mode == ModModes.modTime:
+                    for track in self.current_pattern.tracks:
+                        # capture top row ?
+                        # blank the top row
+                        for i in range(16):
+                            buffer.led_level_set(i,0+track.track_id,0)
+                        # light up the current time multiplier
+                        buffer.led_level_set(track.tmul[self.k_mode.value], 0+track.track_id, 15)
+                else:
+                    previous_step = [0,0,0,0]
+                    for track in self.current_pattern.tracks:
+                        #track 1
+                        if track.pos[Modes.mTr.value] >= track.lstart[Modes.mTr.value] and track.pos[Modes.mTr.value] <= track.lend[Modes.mTr.value]:
+                        #if ((self.current_pos//self.ticks)%16) < 16:
+                            if buffer.levels[0+track.track_id][track.pos[Modes.mTr.value]] == 0:
+                                buffer.led_level_set(track.pos[Modes.mTr.value]-1, 0+track.track_id, previous_step[track.track_id])
+                                buffer.led_level_set(track.pos[Modes.mTr.value], 0+track.track_id, 15)
+                                previous_step[track.track_id] = 0
+                            else: #toggle an already lit led as we pass over it
+                                previous_step[track.track_id] = 15
+                                buffer.led_level_set(track.pos[Modes.mTr.value], 0+track.track_id, 0)
+                                #buffer.led_level_set(track.play_position, 0+track.track_id, 15)
+                        else:
+                            buffer.led_level_set(self.current_track.pos[Modes.mTr.value], 0, 0)
 
-                #if ((self.current_pos//self.ticks)%16) < 16:
-                #    buffer.led_level_set(track.play_position, 0+track.track_id, 15)
-                #else:
-                #    buffer.led_level_set(self.current_track.play_position, 0, 0)
-                ##track 2
-                #if ((self.current_pos//self.ticks)%16) < 16:
-                #    buffer.led_level_set(self.current_track.play_position, 1, 15)
-                #else:
-                #    buffer.led_level_set(self.current_track.play_position, 1, 0)
-                ##track 3
-                #if ((self.current_pos//self.ticks)%16) < 16:
-                #    buffer.led_level_set(self.current_track.play_position, 2, 15)
-                #else:
-                #    buffer.led_level_set(self.current_track.play_position, 2, 0)
-                #track 4
-                #if ((self.current_pos//self.ticks)%16) < 16:
-                #    buffer.led_level_set(self.current_track.play_position, 3, 15)
-                #else:
-                #    buffer.led_level_set(self.current_track.play_position, 3, 0)
             else:
                 if self.k_mode.value < Modes.mScale.value : # all other modes except scale or pattern
                     if self.k_mod_mode == ModModes.modTime:
