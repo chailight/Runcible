@@ -2,7 +2,7 @@
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
 #tweak note duration - get the right scaled values 
-#fix display of current time multiplier when the time mod button is selected
+#add trigger entry on trigger screen if not parameters are not sync'd
 #fix loop setting and display on all screens - there was a gltich on looping notes
 #make looping independent for each parameter - test this more thoroughly - disable for polyphonic tracks (where it doesn't make sense? - maybe it does?)
 #add a loop phase reset input as per kria
@@ -698,15 +698,21 @@ class Runcible(spanned_monome.VirtualGrid):
         #self.led_set(x, y, s)
         if s ==1 and y == 0:
             if x == 0:
-                #print("Selected Track 1")
-                self.current_track = self.current_pattern.tracks[0]
-                self.current_track_id = self.current_pattern.tracks[0].track_id
-                # track a ctrl key hold here
-                self.ctrl_keys_held = self.ctrl_keys_held + (s * 2) - 1
-                print("ctr_keys_held: ", self.ctrl_keys_held)
-                if self.ctrl_keys_held == 1:
-                    self.ctrl_keys_last.append(x)
-                    print("ctr_keys_last: ", self.ctrl_keys_last)
+                if self.k_mod_mode == ModModes.modTime:
+                    #reset all posititions to 0
+                    for track in self.current_preset.tracks:
+                        for p in range(5):
+                            track.pos[p] = 0
+                else:
+                    #print("Selected Track 1")
+                    self.current_track = self.current_pattern.tracks[0]
+                    self.current_track_id = self.current_pattern.tracks[0].track_id
+                    # track a ctrl key hold here
+                    self.ctrl_keys_held = self.ctrl_keys_held + (s * 2) - 1
+                    print("ctr_keys_held: ", self.ctrl_keys_held)
+                    if self.ctrl_keys_held == 1:
+                        self.ctrl_keys_last.append(x)
+                        print("ctr_keys_last: ", self.ctrl_keys_last)
             elif x == 1:
                 #print("Selected Track 2")
                 self.current_track = self.current_pattern.tracks[1]
