@@ -700,7 +700,7 @@ class Runcible(spanned_monome.VirtualGrid):
             if x == 0:
                 if self.k_mod_mode == ModModes.modTime:
                     #reset all posititions to 0
-                    for track in self.current_preset.tracks:
+                    for track in self.current_pattern.tracks:
                         for p in range(5):
                             track.pos[p] = 0
                 else:
