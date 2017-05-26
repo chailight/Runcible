@@ -5,7 +5,8 @@
 #add trigger entry on trigger screen if not parameters are not sync'd
 #fix loop setting and display on all screens - there was a gltich on looping notes
 #make looping independent for each parameter - test this more thoroughly - disable for polyphonic tracks (where it doesn't make sense? - maybe it does?)
-#add a loop phase reset input as per kria
+#test loop phase reset input as per kria
+#add loop sync mode setting
 #add preset copy
 #add note mutes for drum channel? - maybe note mutes are for the currently selected track
 #add input/display for probability, as per kria - implement a next_note function which returns true or false based on probability setting for that track at that position
@@ -270,6 +271,11 @@ class Runcible(spanned_monome.VirtualGrid):
             self.draw()
             # TRIGGER SOMETHING
             for track in self.current_pattern.tracks:
+                if track.pos_reset:
+                    for p in range(5):
+                        track.pos[p] = track.lend[p] 
+                    track.pos_reset = False
+                    
                 if self.next_step(track, Modes.mNote.value):
                     if track.note[track.pos[Modes.mNote.value]]:
                         self.current_pitch = track.note[track.pos[Modes.mNote.value]][0] #need to adjust for polyphonic
@@ -474,8 +480,11 @@ class Runcible(spanned_monome.VirtualGrid):
                 buffer.led_level_set(9,7,0)
                 buffer.led_level_set(14,7,0)
                 buffer.led_level_set(15,7,0)
+
                 # display triggers for each track
                 for x in range(self.width):
+                    if x > 4 and < 8: #clear the sync mode
+                        buffer.led_level_set(x, 5, 0) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
                     for track in self.current_pattern.tracks:
                         buffer.led_level_set(x, 0+track.track_id, track.tr[x] * 15)
                         # display scale toggle
@@ -483,6 +492,8 @@ class Runcible(spanned_monome.VirtualGrid):
                             buffer.led_level_set(track.track_id, 5, track.scale_toggle * 15)
                             #print("track: ", track.track_id, "x: ", x, "scale toggle: ", track.scale_toggle)
                             buffer.led_level_set(track.track_id, 6, (1-track.track_mute) * 15) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
+                # display loop sync mode
+                buffer.led_level_set(5+self.current_track.sync_mode, 5, 15) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
             elif self.k_mode == Modes.mNote:
                 buffer.led_level_set(5,7,0)
                 buffer.led_level_set(6,7,15)
@@ -701,8 +712,7 @@ class Runcible(spanned_monome.VirtualGrid):
                 if self.k_mod_mode == ModModes.modTime:
                     #reset all posititions to 0
                     for track in self.current_pattern.tracks:
-                        for p in range(5):
-                            track.pos[p] = 0
+                        track.pos_reset = True
                 else:
                     #print("Selected Track 1")
                     self.current_track = self.current_pattern.tracks[0]
@@ -820,6 +830,12 @@ class Runcible(spanned_monome.VirtualGrid):
                     if y == 1 and x < 4:
                         self.current_pattern.tracks[x].track_mute ^= 1
                         #print ("toggling mute for track: ", x)
+                    if y == 2 and x > 4 and x < 8: # set the sync mode for all tracks
+                        self.current_pattern.tracks[0].sync_mode = x-5
+                        self.current_pattern.tracks[1].sync_mode = x-5
+                        self.current_pattern.tracks[2].sync_mode = x-5
+                        self.current_pattern.tracks[3].sync_mode = x-5
+                        print ("sync mode: ", x-5)
                 # Note entry
                 if self.k_mode == Modes.mNote:
                     if self.current_track.track_id == 0:
