@@ -483,7 +483,7 @@ class Runcible(spanned_monome.VirtualGrid):
 
                 # display triggers for each track
                 for x in range(self.width):
-                    if x > 4 and < 8: #clear the sync mode
+                    if x > 4 and x < 8: #clear the sync mode
                         buffer.led_level_set(x, 5, 0) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
                     for track in self.current_pattern.tracks:
                         buffer.led_level_set(x, 0+track.track_id, track.tr[x] * 15)
