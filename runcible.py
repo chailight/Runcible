@@ -1,27 +1,34 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
-#tweak note duration - get the right scaled values 
-#add trigger entry on trigger screen if not parameters are not sync'd
-#fix loop setting and display on all screens - there was a gltich on looping notes
-#make looping independent for each parameter - test this more thoroughly - disable for polyphonic tracks (where it doesn't make sense? - maybe it does?)
-#test loop phase reset input as per kria
-#add loop sync mode setting
 #add preset copy
-#add note mutes for drum channel? - maybe note mutes are for the currently selected track
 #add input/display for probability, as per kria - implement a next_note function which returns true or false based on probability setting for that track at that position
-#at this stage, for polyphonic tracks, probabilities are per position - like velocity - not per note 
-#enable a per channel transpose setting? 
-#add scale editing 
+#
+#fix loop setting and display on all screens - there was a gltich on looping notes - it needs to run only on the loop mod button, not all buttons
+#test looping independent for each parameter - test this more thoroughly - disable for polyphonic tracks (where it doesn't make sense? - maybe it does?)
+#test loop phase reset input as per kria
+#
 #adjust preset selection to allow for meta sequencing
 #fix display of current preset
-#fix cutting - has to do with keys held
-#enable looping around the end of the loop start_loop is higher than end_loop
 #add pattern cue timer
 #add meta mode (pattern sequencing)
+#
+#add trigger entry on trigger screen if not parameters are not sync'd
+#add note mutes for drum channel? - maybe note mutes are for the currently selected track
+#at this stage, for polyphonic tracks, probabilities are per position - like velocity - not per note 
+#
+#enable a per channel transpose setting? 
+#add scale editing 
+#
+#fix cutting - has to do with keys held
+#enable looping around the end of the loop start_loop is higher than end_loop
 #consider per row velocity settings for polyphonic tracks
+#
+#tweak note duration - get the right scaled values 
 #adjust use of duration settings 1/8, 1/16 & 1/32 notes?  (6 duration positions = 1/32, 1/16, 1/8, 1/4, 1/2, 1)
+#
 #make note entry screen monophonic? - clear off other notes in that column if new note is entered - this should be configurable maybe on trigger page?
+#
 #add settings screen with other adjustments like midi channel for each track?
 #fix pauses - network? other processes?
 #fix clear all on disconnect
