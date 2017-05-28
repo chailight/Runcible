@@ -341,7 +341,7 @@ class Runcible(spanned_monome.VirtualGrid):
                                 self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
                                 #print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
 
-                    self.cutting = False
+                    #self.cutting = False
 
             #asyncio.async(self.trigger())
             asyncio.async(self.trigger())
@@ -951,7 +951,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     self.current_track.last_pos[self.k_mode.value] = x
                     print("track_last: ", self.current_track.last_pos[self.k_mode.value])
                 # set loop points
-                elif s == 1 and self.keys_held == 2:
+                elif s == 1 and self.keys_held == 2 and self.cutting = True:
                     if self.current_track.last_pos[self.k_mode.value] < x: # don't wrap around, for now
                         #self.current_track.loop_start = self.current_track.loop_last #change to per parameter lstart
                         self.current_track.lstart[self.k_mode.value] = self.current_track.last_pos[self.k_mode.value]#change to per parameter lstart
@@ -960,6 +960,7 @@ class Runcible(spanned_monome.VirtualGrid):
                         self.current_track.lend[self.k_mode.value] = x #change to per parameter lend: self.current_track.lend[self.k_mode.value] = x
                         print("key_lend: ", self.current_track.lend[self.k_mode.value])
                         self.keys_held = 0
+                        self.cutting = False
                     else:
                         self.keys_held = 0
                     #print("loop start: ", self.loop_start[self.current_track], "end: ", self.loop_end[self.current_track])
