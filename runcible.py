@@ -1,16 +1,15 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
-#add preset copy
-#add input/display for probability, as per kria - implement a next_note function which returns true or false based on probability setting for that track at that position
-#
-#test looping independent for each parameter - test this more thoroughly - disable for polyphonic tracks (where it doesn't make sense? - maybe it does?)
-#test loop phase reset input as per kria
-#
 #adjust preset selection to allow for meta sequencing
 #fix display of current preset
 #add pattern cue timer
 #add meta mode (pattern sequencing)
+#
+#add input/display for probability, as per kria - implement a next_note function which returns true or false based on probability setting for that track at that position
+#
+#test looping independent for each parameter - test this more thoroughly - disable for polyphonic tracks (where it doesn't make sense? - maybe it does?)
+#test loop phase reset input as per kria
 #
 #add trigger entry on trigger screen if not parameters are not sync'd
 #add note mutes for drum channel? - maybe note mutes are for the currently selected track
