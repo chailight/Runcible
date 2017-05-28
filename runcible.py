@@ -941,7 +941,7 @@ class Runcible(spanned_monome.VirtualGrid):
                # print("selected pattern: ", self.current_preset.current_pattern)
             elif y == 7: #switch to require modLoop? - shift to be inside each parameter
                 self.keys_held = self.keys_held + (s * 2) - 1
-                #print("keys_held: ", self.keys_held)
+                print("keys_held: ", self.keys_held)
                 # cut
                 if s == 1 and self.keys_held == 1 and self.k_mod_mode == ModModes.modLoop:
                     self.cutting = True
@@ -950,6 +950,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     self.current_track.next_pos[self.k_mode.value]= x #change to be per parameter next
                     self.current_track.last_pos[self.k_mode.value] = x
                     print("track_last: ", self.current_track.last_pos[self.k_mode.value])
+                    print("cutting: ", self.cutting)
                 # set loop points
                 elif s == 1 and self.keys_held == 2 and self.cutting == True:
                     if self.current_track.last_pos[self.k_mode.value] < x: # don't wrap around, for now
@@ -961,6 +962,7 @@ class Runcible(spanned_monome.VirtualGrid):
                         print("key_lend: ", self.current_track.lend[self.k_mode.value])
                         self.keys_held = 0
                         self.cutting = False
+                        print("cutting: ", self.cutting)
                     else:
                         self.keys_held = 0
                     #print("loop start: ", self.loop_start[self.current_track], "end: ", self.loop_end[self.current_track])
