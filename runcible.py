@@ -965,6 +965,8 @@ class Runcible(spanned_monome.VirtualGrid):
                         print("cutting: ", self.cutting)
                     else:
                         self.keys_held = 0
+                else:
+                    self.keys_held = 0
                     #print("loop start: ", self.loop_start[self.current_track], "end: ", self.loop_end[self.current_track])
 
     def restore_state(self):
