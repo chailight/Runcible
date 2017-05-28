@@ -700,7 +700,7 @@ class Runcible(spanned_monome.VirtualGrid):
                         buffer.led_level_set(self.current_track.tmul[self.k_mode.value], 0, 15)
                     elif self.k_mod_mode == ModModes.modLoop:
                             for i in range(16):
-                                if i >= self.current_track.lstart[Modes.mTr.value] and i <= track.lend[Modes.mTr.value]:
+                                if i >= self.current_track.lstart[Modes.mTr.value] and i <= self.current_track.lend[Modes.mTr.value]:
                                     buffer.led_level_set(i,0,15)
                                 else:
                                     buffer.led_level_set(i,0,0)
