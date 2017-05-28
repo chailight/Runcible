@@ -951,7 +951,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     self.current_track.last_pos[self.k_mode.value] = x
                     print("track_last: ", self.current_track.last_pos[self.k_mode.value])
                 # set loop points
-                elif s == 1 and self.keys_held == 2 and self.cutting = True:
+                elif s == 1 and self.keys_held == 2 and self.cutting == True:
                     if self.current_track.last_pos[self.k_mode.value] < x: # don't wrap around, for now
                         #self.current_track.loop_start = self.current_track.loop_last #change to per parameter lstart
                         self.current_track.lstart[self.k_mode.value] = self.current_track.last_pos[self.k_mode.value]#change to per parameter lstart
