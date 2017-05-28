@@ -979,6 +979,9 @@ class Runcible(spanned_monome.VirtualGrid):
                 else:
                     self.keys_held = 0
                     #print("loop start: ", self.loop_start[self.current_track], "end: ", self.loop_end[self.current_track])
+        else:
+            self.keys_held = 0
+            del self.key_last[:]
 
     def restore_state(self):
         #load the pickled AST for this feature
