@@ -944,6 +944,7 @@ class Runcible(spanned_monome.VirtualGrid):
                     self.current_track = self.current_pattern.tracks[self.current_track_id]
                 elif s == 1 and self.keys_held == 2:
                     self.current_preset.patterns[x] = copy.deepcopy(self.current_preset.patterns[self.key_last[0]])
+                    self.current_preset.patterns[x].pattern_id = x #need to set the pattern id again after deep copy
                     self.keys_held = 0
                     del self.key_last[:]
                 else:
