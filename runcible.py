@@ -937,7 +937,7 @@ class Runcible(spanned_monome.VirtualGrid):
             elif self.k_mode == Modes.mPattern and y == 7:
                 self.keys_held = self.keys_held + (s * 2) - 1
                 self.key_last.append(x)
-                print("keys_held: ", self.keys_held, self.key_last)
+                print("keys_held: ", self.keys_held, self.key_last, s)
                 if s == 1 and self.keys_held == 1:
                     self.current_preset.current_pattern = x
                     self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
