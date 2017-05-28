@@ -4,7 +4,6 @@
 #add preset copy
 #add input/display for probability, as per kria - implement a next_note function which returns true or false based on probability setting for that track at that position
 #
-#fix loop setting and display on all screens - there was a gltich on looping notes - it needs to run only on the loop mod button, not all buttons
 #test looping independent for each parameter - test this more thoroughly - disable for polyphonic tracks (where it doesn't make sense? - maybe it does?)
 #test loop phase reset input as per kria
 #
@@ -33,6 +32,7 @@
 #fix pauses - network? other processes?
 #fix clear all on disconnect
 
+import copy
 import pickle
 import os
 import sys
@@ -214,7 +214,7 @@ class Runcible(spanned_monome.VirtualGrid):
         #self.loop_end = [self.width - 1, self.width -1, self.width -1, self.width -1]
         #self.loop_length = [self.width, self.width, self.width, self.width]
         self.keys_held = 0
-        self.key_last = [0,0,0,0]
+        self.key_last = list() 
 
         self.current_pitch = 0
         self.current_oct = 0
@@ -935,9 +935,20 @@ class Runcible(spanned_monome.VirtualGrid):
                     #self.draw()
                     self.frame_dirty = True 
             elif self.k_mode == Modes.mPattern and y == 7:
-                self.current_preset.current_pattern = x
-                self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
-                self.current_track = self.current_pattern.tracks[self.current_track_id]
+                self.keys_held = self.keys_held + (s * 2) - 1
+                self.key_last.append(x)
+                print("keys_held: ", self.keys_held, self.key_last)
+                if s == 1 and self.keys_held == 1:
+                    self.current_preset.current_pattern = x
+                    self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
+                    self.current_track = self.current_pattern.tracks[self.current_track_id]
+                elif s == 1 and self.keys_held == 2:
+                    self.current_preset.patterns[x] = copy.deepcopy(self.current_preset.patterns[self.key_last[0]])
+                    self.keys_held = 0
+                    del self.key_last[:]
+                else:
+                    self.keys_held = 0
+                    del self.key_last[:]
                # print("selected pattern: ", self.current_preset.current_pattern)
             elif y == 7: #switch to require modLoop? - shift to be inside each parameter
                 self.keys_held = self.keys_held + (s * 2) - 1
