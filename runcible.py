@@ -661,12 +661,17 @@ class Runcible(spanned_monome.VirtualGrid):
             if self.k_mode == Modes.mTr:
                 if self.k_mod_mode == ModModes.modTime:
                     for track in self.current_pattern.tracks:
-                        # capture top row ?
-                        # blank the top row
                         for i in range(16):
                             buffer.led_level_set(i,0+track.track_id,0)
                         # light up the current time multiplier
                         buffer.led_level_set(track.tmul[self.k_mode.value], 0+track.track_id, 15)
+                elif self.k_mod_mode == ModModes.modLoop:
+                    for track in self.current_pattern.tracks:
+                        for i in range(16):
+                            if i >= track.lstart[Modes.modTr.value] and i <= track.lend[Modes.modTr.value]:
+                                buffer.led_level_set(i,0+track.track_id,15)
+                            else:
+                                buffer.led_level_set(i,0+track.track_id,0)
                 else:
                     previous_step = [0,0,0,0]
                     for track in self.current_pattern.tracks:
@@ -693,6 +698,12 @@ class Runcible(spanned_monome.VirtualGrid):
                             buffer.led_level_set(i,0,0)
                         # light up the current time multiplier
                         buffer.led_level_set(self.current_track.tmul[self.k_mode.value], 0, 15)
+                    elif self.k_mod_mode == ModModes.modLoop:
+                            for i in range(16):
+                                if i >= self.current_track.lstart[Modes.modTr.value] and i <= track.lend[Modes.modTr.value]:
+                                    buffer.led_level_set(i,0,15)
+                                else:
+                                    buffer.led_level_set(i,0,0)
                     else:
                         #display play pcurrent_rowosition of current track & current parameter
                         previous_step = [0,0,0,0]
