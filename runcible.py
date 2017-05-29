@@ -733,7 +733,7 @@ class Runcible(spanned_monome.VirtualGrid):
                             buffer.led_level_set(self.current_track.pos[self.k_mode.value], 0, 0)
                 elif self.k_mode == Modes.mPattern:
                     if self.k_mod_mode == ModModes.modTime:
-                        buffer.led_level_set(self.cue_div, 1, 15)
+                        buffer.led_level_set(self.state.cue_div, 1, 15)
                     else:
                         if self.cue_pos > 0:
                             buffer.led_level_set(self.cue_pos-1, 1, 0) # set the previous cue indicator off
