@@ -268,7 +268,7 @@ class Runcible(spanned_monome.VirtualGrid):
     @asyncio.coroutine
     def play(self):
         self.current_pos = yield from self.clock.sync()
-        self.cue_pos = (self.current_pos//self.ticks)%self.state.cue_steps
+        self.cue_pos = (self.current_pos//self.ticks)%((self.state.cue_steps+1)*2)
         for t in self.current_pattern.tracks:
             #self.loop_length[t] = abs(self.loop_end[self.current_track] - self.loop_start[t])+1
             t.loop_length = abs(t.loop_end - t.loop_start)+1
@@ -349,7 +349,7 @@ class Runcible(spanned_monome.VirtualGrid):
             #asyncio.async(self.clock_out())
             yield from self.clock.sync(self.ticks//2)
             self.current_pos = yield from self.clock.sync()
-            self.cue_pos = (self.current_pos//self.ticks)%self.state.cue_steps
+            self.cue_pos = (self.current_pos//self.ticks)%((self.state.cue_steps+1)*2)
             for track in self.current_pattern.tracks:
                 track.loop_length = abs(track.loop_end - track.loop_start)+1
                 track.play_position = (self.current_pos//self.ticks)%track.loop_length + track.loop_start
