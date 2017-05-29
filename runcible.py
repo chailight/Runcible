@@ -204,6 +204,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def ready(self):
         print ("using grid on port :%s" % self.id)
         self.current_pos = 0
+        self.cue_pos = 0
         #self.play_position = [0,0,0,0] # one position for each track
         #self.fine_play_position = 0
         #self.next_position = [0,0,0,0]
@@ -267,6 +268,7 @@ class Runcible(spanned_monome.VirtualGrid):
     @asyncio.coroutine
     def play(self):
         self.current_pos = yield from self.clock.sync()
+        self.cue_pos = (self.current_pos//self.ticks)%self.state.cue_steps
         for t in self.current_pattern.tracks:
             #self.loop_length[t] = abs(self.loop_end[self.current_track] - self.loop_start[t])+1
             t.loop_length = abs(t.loop_end - t.loop_start)+1
@@ -347,6 +349,7 @@ class Runcible(spanned_monome.VirtualGrid):
             #asyncio.async(self.clock_out())
             yield from self.clock.sync(self.ticks//2)
             self.current_pos = yield from self.clock.sync()
+            self.cue_pos = (self.current_pos//self.ticks)%self.state.cue_steps
             for track in self.current_pattern.tracks:
                 track.loop_length = abs(track.loop_end - track.loop_start)+1
                 track.play_position = (self.current_pos//self.ticks)%track.loop_length + track.loop_start
@@ -713,6 +716,13 @@ class Runcible(spanned_monome.VirtualGrid):
                         else: #toggle an already lit led as we pass over it
                             previous_step[self.current_track.track_id] = 15
                             buffer.led_level_set(self.current_track.pos[self.k_mode.value], 0, 0)
+                elif self.k_mode == Modes.mPattern:
+                    if self.cue_pos > 0:
+                        buffer.led_level_set(self.cue_pos-1, 1, 0) # set the previous cue indicator off
+                    else:
+                        buffer.led_level_set(self.state.cue_steps, 1, 0) 
+                    buffer.led_level_set(self.cue_pos, 1, 15) #set the current cue indicator on
+
                     #buffer.led_level_set(self.current_track.play_position, 0, 15)
                 #else:
                 #    buffer.led_level_set(self.current_track.pos[self.k_mode.value], 0, 0)
@@ -926,9 +936,11 @@ class Runcible(spanned_monome.VirtualGrid):
                     self.frame_dirty = True 
                 # preset entry
                 if self.k_mode == Modes.mPattern:
+                    if y == 6:
+                        self.state.cue_steps = x
                     if x < 3:
-                        if y < 6 and y > 0:
-                            self.state.current_preset_id = y-1+x*5
+                        if y < 6 and y > 1:
+                            self.state.current_preset_id = y-1+x*4
                             self.current_preset = self.state.presets[self.state.current_preset_id]
                             #print("selected preset: ", self.state.current_preset_id)
                     #self.draw()
