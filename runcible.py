@@ -170,7 +170,7 @@ class State:
         self.current_preset_id = 0
         self.note_sync = True
         self.loop_sync = 0
-        self.cue_div = 0
+        self.cue_div = 2
         self.cue_steps = 4
         self.meta = 0
         self.presets = [Preset() for i in range(15)]
@@ -204,6 +204,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def ready(self):
         print ("using grid on port :%s" % self.id)
         self.current_pos = 0
+        self.cue_sub_pos = 0
         self.cue_pos = 0
         #self.play_position = [0,0,0,0] # one position for each track
         #self.fine_play_position = 0
@@ -268,7 +269,14 @@ class Runcible(spanned_monome.VirtualGrid):
     @asyncio.coroutine
     def play(self):
         self.current_pos = yield from self.clock.sync()
-        self.cue_pos = (self.current_pos//self.ticks)%((self.state.cue_steps+1)*2)
+
+        self.cue_sub_pos = self.current_pos//self.ticks
+        if self.cue_sub_pos >= self.state.cue_div + 1:
+            self.cue_sub_pos = 0
+            self.cue_pos = self.cue_pos + 1
+            if self.cue_pos >= self.state.cue_steps + 1:
+                self.cue_pos = 0
+
         for t in self.current_pattern.tracks:
             #self.loop_length[t] = abs(self.loop_end[self.current_track] - self.loop_start[t])+1
             t.loop_length = abs(t.loop_end - t.loop_start)+1
@@ -349,7 +357,14 @@ class Runcible(spanned_monome.VirtualGrid):
             #asyncio.async(self.clock_out())
             yield from self.clock.sync(self.ticks//2)
             self.current_pos = yield from self.clock.sync()
-            self.cue_pos = (self.current_pos//self.ticks)%((self.state.cue_steps+1)*2)
+
+            self.cue_sub_pos = self.current_pos//self.ticks
+            if self.cue_sub_pos >= self.state.cue_div + 1:
+                self.cue_sub_pos = 0
+                self.cue_pos = self.cue_pos + 1
+                if self.cue_pos >= self.state.cue_steps + 1:
+                    self.cue_pos = 0
+
             for track in self.current_pattern.tracks:
                 track.loop_length = abs(track.loop_end - track.loop_start)+1
                 track.play_position = (self.current_pos//self.ticks)%track.loop_length + track.loop_start
