@@ -732,11 +732,14 @@ class Runcible(spanned_monome.VirtualGrid):
                             previous_step[self.current_track.track_id] = 15
                             buffer.led_level_set(self.current_track.pos[self.k_mode.value], 0, 0)
                 elif self.k_mode == Modes.mPattern:
-                    if self.cue_pos > 0:
-                        buffer.led_level_set(self.cue_pos-1, 1, 0) # set the previous cue indicator off
+                    if self.k_mod_mode == ModModes.modTime:
+                        buffer.led_level_set(self.cue_div, 1, 15)
                     else:
-                        buffer.led_level_set(self.state.cue_steps, 1, 0) 
-                    buffer.led_level_set(self.cue_pos, 1, 15) #set the current cue indicator on
+                        if self.cue_pos > 0:
+                            buffer.led_level_set(self.cue_pos-1, 1, 0) # set the previous cue indicator off
+                        else:
+                            buffer.led_level_set(self.state.cue_steps, 1, 0) 
+                        buffer.led_level_set(self.cue_pos, 1, 15) #set the current cue indicator on
 
                     #buffer.led_level_set(self.current_track.play_position, 0, 15)
                 #else:
@@ -952,7 +955,10 @@ class Runcible(spanned_monome.VirtualGrid):
                 # preset entry
                 if self.k_mode == Modes.mPattern:
                     if y == 6:
-                        self.state.cue_steps = x
+                        if self.k_mod_mode == ModModes.modTime:
+                            self.state.cue_div = x
+                        else:
+                            self.state.cue_steps = x
                     if x < 3:
                         if y < 6 and y > 1:
                             self.state.current_preset_id = y-1+x*4
