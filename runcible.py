@@ -1,6 +1,9 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
+#fix pattern copy - current pattern is wiped during copy? problem arises after introducing cue
+#fix pattern cuing not quite in sync?
+#fix too many files open - problem in spanner?
 #adjust preset selection to allow for meta sequencing
 #fix display of current preset
 #add pattern cue timer
