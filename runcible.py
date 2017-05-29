@@ -270,7 +270,7 @@ class Runcible(spanned_monome.VirtualGrid):
     def play(self):
         self.current_pos = yield from self.clock.sync()
 
-        self.cue_sub_pos = (self.current_pos//self.ticks)%16
+        self.cue_sub_pos = self.cue_sub_pos + 1
         if self.cue_sub_pos >= self.state.cue_div + 1:
             self.cue_sub_pos = 0
             self.cue_pos = self.cue_pos + 1
@@ -358,11 +358,13 @@ class Runcible(spanned_monome.VirtualGrid):
             yield from self.clock.sync(self.ticks//2)
             self.current_pos = yield from self.clock.sync()
 
-            self.cue_sub_pos = (self.current_pos//self.ticks)%16
-            if self.cue_sub_pos >= self.state.cue_div + 1:
+            self.cue_sub_pos = self.cue_sub_pos + 1 
+            print("cue sub pos", self.cue_sub_pos)
+            print("cue pos", self.cue_pos)
+            if self.cue_sub_pos > self.state.cue_div:
                 self.cue_sub_pos = 0
                 self.cue_pos = self.cue_pos + 1
-                if self.cue_pos >= self.state.cue_steps + 1:
+                if self.cue_pos > self.state.cue_steps:
                     self.cue_pos = 0
 
             for track in self.current_pattern.tracks:
