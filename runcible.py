@@ -206,6 +206,7 @@ class Runcible(spanned_monome.VirtualGrid):
         self.current_pos = 0
         self.cue_sub_pos = 0
         self.cue_pos = 0
+        self.cue_pat_next = 0
         #self.play_position = [0,0,0,0] # one position for each track
         #self.fine_play_position = 0
         #self.next_position = [0,0,0,0]
@@ -358,14 +359,18 @@ class Runcible(spanned_monome.VirtualGrid):
             yield from self.clock.sync(self.ticks//2)
             self.current_pos = yield from self.clock.sync()
 
-            self.cue_sub_pos = self.cue_sub_pos + 1 
-            print("cue sub pos", self.cue_sub_pos)
-            print("cue pos", self.cue_pos)
+            self.cue_sub_pos = self.cue_sub_pos + 1
             if self.cue_sub_pos > self.state.cue_div:
                 self.cue_sub_pos = 0
                 self.cue_pos = self.cue_pos + 1
                 if self.cue_pos > self.state.cue_steps:
                     self.cue_pos = 0
+                    if self.cue_pat_next:
+                        #self.change_pattern(self.cue_pat_next -1)
+                        self.current_preset.current_pattern = self.cue_pat_next - 1
+                        self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
+                        self.current_track = self.current_pattern.tracks[self.current_track_id]
+                        self.cue_pat_next = 0
 
             for track in self.current_pattern.tracks:
                 track.loop_length = abs(track.loop_end - track.loop_start)+1
@@ -973,9 +978,12 @@ class Runcible(spanned_monome.VirtualGrid):
                 self.key_last.append(x)
                 print("keys_held: ", self.keys_held, self.key_last, s)
                 if s == 1 and self.keys_held == 1:
-                    self.current_preset.current_pattern = x
-                    self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
-                    self.current_track = self.current_pattern.tracks[self.current_track_id]
+                    if self.state.cue_steps == 0: #change pattern immediately
+                        self.current_preset.current_pattern = x
+                        self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
+                        self.current_track = self.current_pattern.tracks[self.current_track_id]
+                    else:
+                        self.cue_pat_next = x+1
                 elif s == 1 and self.keys_held == 2:
                     self.current_preset.patterns[x] = copy.deepcopy(self.current_preset.patterns[self.key_last[0]])
                     self.current_preset.patterns[x].pattern_id = x #need to set the pattern id again after deep copy
