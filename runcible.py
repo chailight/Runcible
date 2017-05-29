@@ -171,7 +171,7 @@ class State:
         self.note_sync = True
         self.loop_sync = 0
         self.cue_div = 0
-        self.cue_steps = 0
+        self.cue_steps = 4
         self.meta = 0
         self.presets = [Preset() for i in range(15)]
 
