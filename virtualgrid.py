@@ -215,4 +215,5 @@ class SpanningSerialOsc(monome.SerialOsc):
         self.physical_grid2.connect()
         print("creating spanning grid")
         self.grid = VirtualGridWrapper(self.physical_grid1, self.physical_grid2)
+        print("attaching app to grid")
         self.autoconnect_app.attach(self.grid)

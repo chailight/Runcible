@@ -181,6 +181,8 @@ class State:
 #runcible sequencer, based on ansible kria
 class Runcible(monome.App):
     def __init__(self, clock, ticks, midi_out,channel_out,clock_out,other):
+        super().__init__()
+        self.prefix = "runcible"
         self.clock = clock
         self.ticks = ticks
         self.midi_out = midi_out
@@ -201,9 +203,9 @@ class Runcible(monome.App):
         self.pickle_file_path = "/home/pi/monome/runcible/runcible.pickle" 
         self.ctrl_keys_held = 0
         self.ctrl_keys_last = list()
-        self.ready()
+        #self.ready()
 
-    def ready(self):
+    def on_grid_ready(self):
         self.current_pos = 0
         self.cue_sub_pos = 0
         self.cue_pos = 0
@@ -230,9 +232,23 @@ class Runcible(monome.App):
         self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
         self.current_track = self.current_pattern.tracks[0]
         self.current_track_id = self.current_pattern.tracks[0].track_id
-        self.calc_scale(self.cur_scale_id)
+        #self.calc_scale(self.cur_scale_id)
         self.frame_dirty = False 
         asyncio.async(self.play())
+
+    @asyncio.coroutine
+    def play(self):
+        print("playing")
+        self.current_pos = yield from self.clock.sync()
+        while True:
+            yield from self.clock.sync(self.ticks//2)
+            self.current_pos = yield from self.clock.sync()
+            #print(self.current_pos%16)
+            led_pos = self.current_pos%16
+            self.grid.led_set(led_pos,0,1)
+            self.grid.led_set((led_pos-1)%16,0,0)
+            self.grid.led_set((led_pos-2)%16,0,0)
+            #self.grid.led_set((led_pos-3)%16,0,0)
 
     def dummy_disconnect(self):
         print("Disconnecting... thanks for playing!")
@@ -285,7 +301,7 @@ if __name__ == '__main__':
     runcible_app  = Runcible(clock,6,midi_out,channel_out,clock_out,None)
 
     try: 
-        asyncio.async(SpanningSerialOsc.create(loop=loop, autoconnect_app=hello_app))
+        asyncio.async(virtualgrid.SpanningSerialOsc.create(loop=loop, autoconnect_app=runcible_app))
         loop.run_forever()
     except KeyboardInterrupt:
         runcible_app.disconnect()
