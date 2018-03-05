@@ -255,7 +255,7 @@ class Runcible(monome.App):
 
     def draw(self):
         if self.frame_dirty:
-            #print("drawing grid")
+            print("drawing grid")
             buffer = monome.LedBuffer(self.width, self.height)
 
             if self.current_track.track_id == 0:
