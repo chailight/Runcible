@@ -91,21 +91,33 @@ class VirtualGridWrapper(monome.GridWrapper):
         self.grid2.led_intensity(i)
 
     def led_level_set(self, x, y, l):
-        #self.grid1.led_level_set(x, y, l)
-        #self.grid2.led_level_set(x, y, l)
-        #not bothering to repeat logic here for my non-varibright grid
-        s = 0
-        if l > 0:
-            s = 1
-        led_set(self,x,y,s)
+        if x < 8:
+            self.grid1.led_level_set(x, y, l)
+        else:
+            r = x
+            x = abs(y+8)
+            y = r
+            self.grid2.led_level_set(x, y, l)
 
     def led_level_all(self, l):
         self.grid1.led_level_all(l)
         self.grid2.led_level_all(l)
 
     def led_level_map(self, x_offset, y_offset, data):
-        self.grid1.led_level_map(x_offset, y_offset, data)
-        self.grid2.led_level_map(x_offset, y_offset, data)
+        grid1_data = [0,0,0,0,0,0,0,0]
+        grid2_data = [0,0,0,0,0,0,0,0]
+        if len(data[0]) == 16:
+            #need to split each row of data in half and then re-assemble into list of lists
+            for i in range(8):
+                grid1_data[i]=data[i][0:8]
+                grid2_data[i]=data[i][8:]
+            #print(grid1_data)
+            #print(grid2_data)
+            self.grid1.led_map(x_offset, y_offset, grid1_data)
+            self.grid2.led_map(x_offset, y_offset, grid2_data)
+        if len(data[0]) == 8:
+            self.grid1.led_map(x_offset, y_offset, data)
+            self.grid2.led_map(x_offset, y_offset, data)
 
     def led_level_row(self, x_offset, y, data):
         self.grid1.led_level_row(x_offset, y, data)
@@ -147,6 +159,17 @@ class PhysicalGridWrapper_1(monome.GridWrapper):
         adjusted_data = rotated2
         self.grid.led_map(x_offset, y_offset, adjusted_data)
 
+    def led_level_map(self, x_offset, y_offset, data):
+        rotated1 = list(zip(*data[::-1]))
+        rotated2 = list(zip(*rotated1[::-1]))
+        #print("rotated 1")
+        #for i in range(8):
+        #    print (rotated1[i])
+        #print("rotated 2")
+        #print(rotated2)
+        adjusted_data = rotated2
+        self.grid.led_level_map(x_offset, y_offset, adjusted_data)
+
     def led_col(self, x, y_offset, data):
         #print("Grid 1: col data")
         #print(data)
@@ -176,6 +199,12 @@ class PhysicalGridWrapper_2(monome.GridWrapper):
         rotated1 = list(zip(*data[::-1]))
         adjusted_data = rotated1 
         self.grid.led_map(x_offset, y_offset, adjusted_data)
+
+    #rotates data 90
+    def led_level_map(self, x_offset, y_offset, data):
+        rotated1 = list(zip(*data[::-1]))
+        adjusted_data = rotated1 
+        self.grid.led_level_map(x_offset, y_offset, adjusted_data)
 
     def led_col(self, x, y_offset, data):
         self.grid.led_row(x, y_offset+x, data)
