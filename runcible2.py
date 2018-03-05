@@ -554,87 +554,88 @@ class Runcible(monome.App):
             #buffer.render(self.grid)
             self.grid.led_map(0,0,buffer.levels)
             self.frame_dirty = False 
-    def select_track(self, x)
-            if x == 0:
-                if self.k_mod_mode == ModModes.modTime:
-                    #reset all posititions to 0
-                    for track in self.current_pattern.tracks:
-                        track.pos_reset = True
+
+    def select_track(self, x, s):
+        if x == 0:
+            if self.k_mod_mode == ModModes.modTime:
+                #reset all posititions to 0
+                for track in self.current_pattern.tracks:
+                    track.pos_reset = True
+            else:
+                print("Selected Track 1")
+                self.current_track = self.current_pattern.tracks[0]
+                self.current_track_id = self.current_pattern.tracks[0].track_id
+                # track a ctrl key hold here
+                self.ctrl_keys_held = self.ctrl_keys_held + (s * 2) - 1
+                print("ctr_keys_held: ", self.ctrl_keys_held)
+                if self.ctrl_keys_held == 1:
+                    self.ctrl_keys_last.append(x)
+                    print("ctr_keys_last: ", self.ctrl_keys_last)
+        elif x == 1:
+            print("Selected Track 2")
+            self.current_track = self.current_pattern.tracks[1]
+            self.current_track_id = self.current_pattern.tracks[1].track_id
+        elif x == 2:
+            print("Selected Track 3")
+            self.current_track = self.current_pattern.tracks[2]
+            self.current_track_id = self.current_pattern.tracks[2].track_id
+
+            # track a ctrl key hold here
+            self.ctrl_keys_held = self.ctrl_keys_held + (s * 2) - 1
+            print("ctr_keys_held: ", self.ctrl_keys_held)
+            if self.ctrl_keys_held == 2:
+                self.ctrl_keys_last.append(x)
+                print("ctr_keys_last: ", self.ctrl_keys_last)
+        elif x == 3:
+            print("Selected Track 4")
+            self.current_track = self.current_pattern.tracks[3]
+            self.current_track_id = self.current_pattern.tracks[3].track_id
+
+    def select_mode(self, x, s):
+        if x == 5:
+            self.k_mode = Modes.mTr
+            print("Selected:", self.k_mode)
+        elif x == 6:
+            self.k_mode = Modes.mNote
+            print("Selected:", self.k_mode)
+        elif x == 7:
+            self.k_mode = Modes.mOct
+            print("Selected:", self.k_mode)
+        elif x == 8:
+            self.k_mode = Modes.mDur
+            print("Selected:", self.k_mode)
+        elif x == 9:
+            self.k_mode = Modes.mVel
+            print("Selected:", self.k_mode)
+        elif x == 14:
+            self.k_mode = Modes.mScale
+            print("Selected:", self.k_mode)
+        elif x == 15:
+            self.k_mode = Modes.mPattern
+            print("Selected:", self.k_mode)
+            # track a ctrl key hold here
+            self.ctrl_keys_held = self.ctrl_keys_held + (s * 2) - 1
+            print("ctr_keys_held: ", self.ctrl_keys_held)
+            if self.ctrl_keys_held == 3:
+                self.ctrl_keys_last.append(x)
+                print("ctr_keys_last: ", self.ctrl_keys_last)
+                self.ctrl_keys_held = 0
+                if self.ctrl_keys_last == [0,2,15]:
+                    del self.ctrl_keys_last[:]
+                    self.disconnect()
                 else:
-                    print("Selected Track 1")
-                    self.current_track = self.current_pattern.tracks[0]
-                    self.current_track_id = self.current_pattern.tracks[0].track_id
-                    # track a ctrl key hold here
-                    self.ctrl_keys_held = self.ctrl_keys_held + (s * 2) - 1
-                    print("ctr_keys_held: ", self.ctrl_keys_held)
-                    if self.ctrl_keys_held == 1:
-                        self.ctrl_keys_last.append(x)
-                        print("ctr_keys_last: ", self.ctrl_keys_last)
-            elif x == 1:
-                print("Selected Track 2")
-                self.current_track = self.current_pattern.tracks[1]
-                self.current_track_id = self.current_pattern.tracks[1].track_id
-            elif x == 2:
-                print("Selected Track 3")
-                self.current_track = self.current_pattern.tracks[2]
-                self.current_track_id = self.current_pattern.tracks[2].track_id
-
-                # track a ctrl key hold here
-                self.ctrl_keys_held = self.ctrl_keys_held + (s * 2) - 1
-                print("ctr_keys_held: ", self.ctrl_keys_held)
-                if self.ctrl_keys_held == 2:
-                    self.ctrl_keys_last.append(x)
-                    print("ctr_keys_last: ", self.ctrl_keys_last)
-            elif x == 3:
-                print("Selected Track 4")
-                self.current_track = self.current_pattern.tracks[3]
-                self.current_track_id = self.current_pattern.tracks[3].track_id
-
-    def select_mode(self, x):
-            if x == 5:
-                self.k_mode = Modes.mTr
-                print("Selected:", self.k_mode)
-            elif x == 6:
-                self.k_mode = Modes.mNote
-                print("Selected:", self.k_mode)
-            elif x == 7:
-                self.k_mode = Modes.mOct
-                print("Selected:", self.k_mode)
-            elif x == 8:
-                self.k_mode = Modes.mDur
-                print("Selected:", self.k_mode)
-            elif x == 9:
-                self.k_mode = Modes.mVel
-                print("Selected:", self.k_mode)
-            elif x == 14:
-                self.k_mode = Modes.mScale
-                print("Selected:", self.k_mode)
-            elif x == 15:
-                self.k_mode = Modes.mPattern
-                print("Selected:", self.k_mode)
-                # track a ctrl key hold here
-                self.ctrl_keys_held = self.ctrl_keys_held + (s * 2) - 1
-                print("ctr_keys_held: ", self.ctrl_keys_held)
-                if self.ctrl_keys_held == 3:
-                    self.ctrl_keys_last.append(x)
-                    print("ctr_keys_last: ", self.ctrl_keys_last)
-                    self.ctrl_keys_held = 0
-                    if self.ctrl_keys_last == [0,2,15]:
-                        del self.ctrl_keys_last[:]
-                        self.disconnect()
-                    else:
-                        del self.ctrl_keys_last[:]
+                    del self.ctrl_keys_last[:]
 
     def select_modifier(x):
-            if x == 10:
-                self.k_mod_mode = ModModes.modLoop
-                print("Selected:", self.k_mod_mode)
-            elif x == 11:
-                self.k_mod_mode = ModModes.modTime
-                print("Selected:", self.k_mod_mode)
-            elif x == 12:
-                self.k_mod_mode = ModModes.modProb
-                print("Selected:", self.k_mod_mode)
+        if x == 10:
+            self.k_mod_mode = ModModes.modLoop
+            print("Selected:", self.k_mod_mode)
+        elif x == 11:
+            self.k_mod_mode = ModModes.modTime
+            print("Selected:", self.k_mod_mode)
+        elif x == 12:
+            self.k_mod_mode = ModModes.modProb
+            print("Selected:", self.k_mod_mode)
 
     def set_global_time_multiplier(x,y):
         if self.k_mode == Modes.mTr and self.k_mod_mode == ModModes.modTime:
@@ -648,6 +649,7 @@ class Runcible(monome.App):
                     self.current_pattern.tracks[7-y].tmul[Modes.mOct.value] = x
                     self.current_pattern.tracks[7-y].tmul[Modes.mDur.value] = x
                     self.current_pattern.tracks[7-y].tmul[Modes.mVel.value] = x
+
     def set_track_time_multiplier(x):
         #if self.k_mode == Modes.mTr: # enable this in all modes
         if self.k_mod_mode == ModModes.modTime:
@@ -719,6 +721,7 @@ class Runcible(monome.App):
             #    self.current_pattern.tracks[1].tr[x] ^= 1
             #self.draw()
             self.frame_dirty = True
+
     def duration_entry(self, x, y):
         if self.k_mode == Modes.mDur:
             # add loop setting code based on loop mod
@@ -738,6 +741,7 @@ class Runcible(monome.App):
             #        self.current_pattern.tracks[1].octave[x] = y-3
             #self.draw()
             self.frame_dirty = True 
+
     def velocity_entry(self, x, y):
         if self.k_mode == Modes.mVel:
             # add loop setting code based on loop mod
@@ -774,7 +778,7 @@ class Runcible(monome.App):
                     #print("selected preset: ", self.state.current_preset_id)
             #self.draw()
             self.frame_dirty = True 
-            elif y == 7:
+            if y == 7:
                 self.keys_held = self.keys_held + (s * 2) - 1
                 self.key_last.append(x)
                 print("keys_held: ", self.keys_held, self.key_last, s)
@@ -800,16 +804,18 @@ class Runcible(monome.App):
         # handle bottom row controls
         if s ==1 and y == 0:
             #select track
-            self.select_track(x)
+            self.select_track(x,s)
             #select mode
-            self.select_mode(x)
-            self.select_modifier(x)
+            self.select_mode(x,s)
+            #self.select_modifier(x)
         elif s == 0 and y == 0 and (x == 10 or x == 11 or x == 12):
                 self.k_mod_mode = ModModes.modNone
         elif s == 0 and y == 0:
             self.ctrl_keys_held = 0
             del self.ctrl_keys_last[:]
         elif s == 1 and y > 0:
+            # preset entry
+            self.preset_entry(x,y)
             self.set_global_time_multiplier(x,y)
             if y == 7: #handle top row interactions
                 self.set_track_time_multiplier(x,y)
@@ -826,8 +832,6 @@ class Runcible(monome.App):
                 self.velocity_entry(x,y)
                 # scale entry
                 self.scale_entry(x,y)
-                # preset entry
-                self.preset_entry(x,y)
             elif y == 7: #switch to require modLoop? - shift to be inside each parameter
                 self.keys_held = self.keys_held + (s * 2) - 1
                 print("keys_held: ", self.keys_held)
