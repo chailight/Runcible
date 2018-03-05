@@ -50,13 +50,35 @@ class VirtualGridWrapper(monome.GridWrapper):
 
     #todo: split the data according to position
     def led_map(self, x_offset, y_offset, data):
-        self.grid1.led_map(x_offset, y_offset, data)
-        self.grid2.led_map(x_offset, y_offset, data)
+        grid1_data = [0,0,0,0,0,0,0,0]
+        grid2_data = [0,0,0,0,0,0,0,0]
+        if len(data[0]) == 16:
+            #need to split each row of data in half and then re-assemble into list of lists
+            for i in range(8):
+                grid1_data[i]=data[i][0:8]
+                grid2_data[i]=data[i][8:]
+            #print(grid1_data)
+            #print(grid2_data)
+            self.grid1.led_map(x_offset, y_offset, grid1_data)
+            self.grid2.led_map(x_offset, y_offset, grid2_data)
+        if len(data[0]) == 8:
+            self.grid1.led_map(x_offset, y_offset, data)
+            self.grid2.led_map(x_offset, y_offset, data)
 
     #todo: split the data according to position
     def led_row(self, x_offset, y, data):
-        self.grid1.led_row(x_offset, y, data)
-        self.grid2.led_row(x_offset, y, data)
+        grid1_data = [0,0,0,0,0,0,0,0]
+        grid2_data = [0,0,0,0,0,0,0,0]
+        if len(data) == 16:
+            grid1_data=data[0:8]
+            grid2_data=data[8:]
+            #print(grid1_data)
+            #print(grid2_data)
+            self.grid1.led_row(x_offset, y, grid1_data)
+            self.grid2.led_row(x_offset, y, grid2_data)
+        if len(data) == 8:
+            self.grid1.led_row(x_offset, y, data)
+            self.grid2.led_row(x_offset, y, data)
 
     def led_col(self, x, y_offset, data):
         if x < 8:
@@ -128,9 +150,10 @@ class PhysicalGridWrapper_1(monome.GridWrapper):
         #adjusted_data = rotated2
         self.grid.led_col(7-x, y_offset, data)
     
-    #todo: test this
+    #todo: make this responsive to rotation setting in config file 
     def led_row(self, x_offset, y, data):
-        self.grid.led_row(7-x_offset, y, data)
+        data.reverse() #rotate 180
+        self.grid.led_row(x_offset, y, data)
 
 # this wrapper makes adjustments for the orientation of the physical grid
 # todo: make this responsive to a configuration file
@@ -215,6 +238,17 @@ class Hello(monome.App):
                 [0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0]]
 
+        data3 = [[0,1,0,1,0,1,0,1,0,0,1,0,0,1,0,0],
+                [1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1],
+                [1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+
+        data4 = [0,1,0,1,0,1,0,1,0,0,1,0,0,1,0,0]
+
         clear_all = [[0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0],
@@ -252,6 +286,12 @@ class Hello(monome.App):
 
         if x==0 and y==3:
             self.grid.led_map(0,0,clear_all)
+
+        if x==0 and y==4:
+            self.grid.led_map(0,0,data3)
+
+        if x==0 and y==5:
+            self.grid.led_row(0,0,data4)
 
 
 FADERS_MAX_VALUE = 100
@@ -298,5 +338,5 @@ if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     hello_app = Hello()
     faders_app = Faders()
-    asyncio.async(SpanningSerialOsc.create(loop=loop, autoconnect_app=faders_app))
+    asyncio.async(SpanningSerialOsc.create(loop=loop, autoconnect_app=hello_app))
     loop.run_forever()
