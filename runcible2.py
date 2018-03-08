@@ -242,6 +242,7 @@ class Runcible(monome.App):
         self.current_pos = yield from self.clock.sync()
         while True:
             self.frame_dirty = True #if nothing else has happend, at least the position has moved
+            print("calling draw at position: ", self.current_pos)
             self.draw()
             yield from self.clock.sync(self.ticks//2)
             self.current_pos = yield from self.clock.sync()
@@ -254,8 +255,8 @@ class Runcible(monome.App):
 
 
     def draw(self):
+        print("drawing grid")
         if self.frame_dirty:
-            print("drawing grid")
             buffer = monome.LedBuffer(self.width, self.height)
 
             if self.current_track.track_id == 0:
