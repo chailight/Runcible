@@ -91,8 +91,13 @@ class VirtualGridWrapper(monome.GridWrapper):
         self.grid2.led_intensity(i)
 
     def led_level_set(self, x, y, l):
-        self.grid1.led_level_set(x, y, l)
-        self.grid2.led_level_set(x, y, l)
+        #self.grid1.led_level_set(x, y, l)
+        #self.grid2.led_level_set(x, y, l)
+        #not bothering to repeat logic here for my non-varibright grid
+        s = 0
+        if l > 0:
+            s = 1
+        led_set(self,x,y,s)
 
     def led_level_all(self, l):
         self.grid1.led_level_all(l)
