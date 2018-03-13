@@ -271,6 +271,7 @@ class Runcible(monome.App):
             #self.loop_length[t] = abs(self.loop_end[self.current_track] - self.loop_start[t])+1
             t.loop_length = abs(t.loop_end - t.loop_start)+1
             t.play_position = (self.current_pos//self.ticks)%t.loop_length + t.loop_start
+            t.tmul=16 ### remove this after testing is done
 
         while True:
             self.frame_dirty = True #if nothing else has happend, at least the position has moved
