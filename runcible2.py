@@ -108,7 +108,7 @@ class Track:
         self.last_pos = [15,15,15,15,15]
         self.next_pos = [15,15,15,15,15]
         self.swap = [[0] * self.num_params] # what is this actually for?
-        self.tmul = [1,1,1,1,1]
+        self.tmul = [2,2,2,2,2]
         self.pos = [0,0,0,0,0] #current position for each parameter in each track - replaces play_position
         self.pos_mul = [0,0,0,0,0]  #something to do with the time multiplier
         self.pos_reset = False
