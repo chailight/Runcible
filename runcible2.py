@@ -288,25 +288,26 @@ class Runcible(monome.App):
             for track in self.current_pattern.tracks:
                 track.loop_length = abs(track.loop_end - track.loop_start)+1
                 track.play_position = (self.current_pos//self.ticks)%track.loop_length + track.loop_start
+
     def draw(self):
         if self.frame_dirty:
             buffer = monome.GridBuffer(self.grid.width, self.grid.height)
             if self.k_mode == Modes.mNote:
-                buffer.led_set(5,7,0)
-                buffer.led_set(6,7,15)
-                buffer.led_set(7,7,0)
-                buffer.led_set(8,7,0)
-                buffer.led_set(9,7,0)
-                buffer.led_set(14,7,0)
-                buffer.led_set(15,7,0)
+                buffer.led_set(5,0,0)
+                buffer.led_set(6,0,15)
+                buffer.led_set(7,0,0)
+                buffer.led_set(8,0,0)
+                buffer.led_set(9,0,0)
+                buffer.led_set(14,0,0)
+                buffer.led_set(15,0,0)
             else:
-                buffer.led_set(5,7,0)
-                buffer.led_set(6,7,0)
-                buffer.led_set(7,7,0)
-                buffer.led_set(8,7,0)
-                buffer.led_set(9,7,0)
-                buffer.led_set(14,7,0)
-                buffer.led_set(15,7,0)
+                buffer.led_set(5,0,0)
+                buffer.led_set(6,0,0)
+                buffer.led_set(7,0,0)
+                buffer.led_set(8,0,0)
+                buffer.led_set(9,0,0)
+                buffer.led_set(14,0,0)
+                buffer.led_set(15,0,0)
 
     def draw2(self):
         #print("drawing grid")
