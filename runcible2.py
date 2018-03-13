@@ -239,6 +239,7 @@ class Runcible(monome.App):
 
     def next_step(self, track, parameter):
        print("track.pos_mul: ", parameter, track.pos_mul[parameter])
+       print("track.tmul: ", parameter, self.current_pattern.tracks[track.track_id].tmul[parameter])
        track.pos_mul[parameter] = int(track.pos_mul[parameter]) + 1
 
        if track.pos_mul[parameter] >= self.current_pattern.tracks[track.track_id].tmul[parameter]:
