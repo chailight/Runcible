@@ -237,6 +237,23 @@ class Runcible(monome.App):
         self.frame_dirty = False 
         asyncio.async(self.play())
 
+    def next_step(self, track, parameter):
+       #print("track.pos_mul: ", parameter, track.pos_mul[parameter])
+       track.pos_mul[parameter] = int(track.pos_mul[parameter]) + 1
+
+       if track.pos_mul[parameter] >= self.current_pattern.tracks[track.track_id].tmul[parameter]:
+            if track.pos[parameter] == self.current_pattern.tracks[track.track_id].lend[parameter]:
+                track.pos[parameter] = self.current_pattern.tracks[track.track_id].lstart[parameter]
+            else:
+                track.pos[parameter] = int(track.pos[parameter]) + 1
+                if track.pos[parameter] > 15:
+                    track.pos[parameter] = 0
+            track.pos_mul[parameter] = 0
+            # add probabilities
+            return True
+       else:
+            return False
+
     @asyncio.coroutine
     def play(self):
         print("playing")
@@ -258,16 +275,20 @@ class Runcible(monome.App):
             self.frame_dirty = True #if nothing else has happend, at least the position has moved
             #print("calling draw at position: ", self.current_pos)
             self.draw()
-            yield from self.clock.sync(self.ticks//2)
-            self.current_pos = yield from self.clock.sync()
-            #print(self.current_pos%16)
-            #led_pos = self.current_pos%16
-            #self.grid.led_set(led_pos,0,1)
-            #self.grid.led_set((led_pos-1)%16,0,0)
-            #self.grid.led_set((led_pos-2)%16,0,0)
-            #self.grid.led_set((led_pos-3)%16,0,0)
-
             #insert triggering logic here
+            for track in self.current_pattern.tracks:
+                if track.pos_reset:
+                    for p in range(5):
+                        track.pos[p] = track.lend[p] 
+                    track.pos_reset = False
+
+                if self.next_step(track, Modes.mNote.value):
+                    if track.note[track.pos[Modes.mNote.value]]:
+                        self.current_pitch = track.note[track.pos[Modes.mNote.value]][0] #need to adjust for polyphonic
+
+            #yield from self.clock.sync(self.ticks//2)
+            #self.current_pos = yield from self.clock.sync()
+
 
             yield from self.clock.sync(self.ticks//2)
             self.current_pos = yield from self.clock.sync()
