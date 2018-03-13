@@ -354,6 +354,14 @@ class Runcible(monome.App):
                 buffer.led_set(9,0,0)
                 buffer.led_set(14,0,0)
                 buffer.led_set(15,0,0)
+                previous_step = [0,0,0,0]
+                if buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
+                    buffer.led_set(self.current_track.pos[self.k_mode.value]-1, 7, previous_step[self.current_track.track_id])
+                    buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 15)
+                    previous_step[self.current_track.track_id] = 0
+                else: #toggle an already lit led as we pass over it
+                    previous_step[self.current_track.track_id] = 15
+                    buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 0)
 
         buffer.levels.reverse()
         self.grid.led_map(0,0,buffer.levels)
