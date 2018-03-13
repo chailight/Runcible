@@ -554,10 +554,7 @@ class Runcible(monome.App):
             #buffer.render(self.grid)
             self.grid.led_map(0,0,buffer.levels)
             self.frame_dirty = False 
-
-    def on_grid_key(self, x, y, s):
-        print(x,y)
-        if s ==1 and y == 0:
+    def select_track(self, x)
             if x == 0:
                 if self.k_mod_mode == ModModes.modTime:
                     #reset all posititions to 0
@@ -592,7 +589,9 @@ class Runcible(monome.App):
                 print("Selected Track 4")
                 self.current_track = self.current_pattern.tracks[3]
                 self.current_track_id = self.current_pattern.tracks[3].track_id
-            elif x == 5:
+
+    def select_mode(self, x):
+            if x == 5:
                 self.k_mode = Modes.mTr
                 print("Selected:", self.k_mode)
             elif x == 6:
@@ -607,22 +606,12 @@ class Runcible(monome.App):
             elif x == 9:
                 self.k_mode = Modes.mVel
                 print("Selected:", self.k_mode)
-            elif x == 10:
-                self.k_mod_mode = ModModes.modLoop
-                print("Selected:", self.k_mod_mode)
-            elif x == 11:
-                self.k_mod_mode = ModModes.modTime
-                print("Selected:", self.k_mod_mode)
-            elif x == 12:
-                self.k_mod_mode = ModModes.modProb
-                print("Selected:", self.k_mod_mode)
             elif x == 14:
                 self.k_mode = Modes.mScale
                 print("Selected:", self.k_mode)
             elif x == 15:
                 self.k_mode = Modes.mPattern
                 print("Selected:", self.k_mode)
-
                 # track a ctrl key hold here
                 self.ctrl_keys_held = self.ctrl_keys_held + (s * 2) - 1
                 print("ctr_keys_held: ", self.ctrl_keys_held)
@@ -635,143 +624,157 @@ class Runcible(monome.App):
                         self.disconnect()
                     else:
                         del self.ctrl_keys_last[:]
-        elif s == 0 and y == 0 and (x == 10 or x == 11 or x == 12):
-                self.k_mod_mode = ModModes.modNone
-        elif s == 0 and y == 0:
-            self.ctrl_keys_held = 0
-            del self.ctrl_keys_last[:]
-        elif s == 1 and y > 0:
-            if self.k_mode == Modes.mTr and self.k_mod_mode == ModModes.modTime:
-                if y > 3 and y < 8:
-                    if self.current_pattern.tracks[7-y].sync_mode == 0: # set the time multiplier for this parameter only
-                        self.current_pattern.tracks[7-y].tmul[self.k_mode.value] = x
-                    elif self.current_pattern.tracks[7-y].sync_mode == 1: #set the time multiplier for all parameters of this track
-                        self.current_pattern.tracks[7-y].tmul[Modes.mTr.value] = x
-                        self.current_pattern.tracks[7-y].tmul[Modes.mNote.value] = x
-                        self.current_pattern.tracks[7-y].tmul[Modes.mOct.value] = x
-                        self.current_pattern.tracks[7-y].tmul[Modes.mDur.value] = x
-                        self.current_pattern.tracks[7-y].tmul[Modes.mVel.value] = x
-            if y == 7:
-                #if self.k_mode == Modes.mTr: # enable this in all modes
-                if self.k_mod_mode == ModModes.modTime:
-                    if self.current_track.sync_mode == 0: # set the time multiplier for this parameter only
-                        self.current_track.tmul[self.k_mode.value] = x 
-                    elif self.current_track.sync_mode == 1: #set the time multiplier for all parameters of this track
-                        self.current_track.tmul[Modes.mTr.value] = x
-                        self.current_track.tmul[Modes.mNote.value] = x 
-                        self.current_track.tmul[Modes.mOct.value] = x
-                        self.current_track.tmul[Modes.mDur.value] = x
-                        self.current_track.tmul[Modes.mVel.value] = x
-                    else:
-                        for track in self.current_preset.tracks: # change time for all tracks
-                            track.tmul[Modes.mTr.value] = x
-                            track.tmul[Modes.mNote.value] = x 
-                            track.tmul[Modes.mOct.value] = x
-                            track.tmul[Modes.mDur.value] = x
-                            track.tmul[Modes.mVel.value] = x
-                    print("tmul: ", self.k_mode, self.current_track.tmul[Modes.mTr.value])
-            if y < 7:
-                #set scale mode toggles
-                if self.k_mode == Modes.mTr:
-                    #print("Trigger page key:", x, y)
-                    if y == 2 and x < 4:
-                        self.current_pattern.tracks[x].scale_toggle ^= 1
-                        print ("toggling scale for track: ", x)
-                    if y == 1 and x < 4:
-                        self.current_pattern.tracks[x].track_mute ^= 1
-                        print ("toggling mute for track: ", x)
-                    if y == 2 and x > 4 and x < 8: # set the sync mode for all tracks
-                        self.current_pattern.tracks[0].sync_mode = x-5
-                        self.current_pattern.tracks[1].sync_mode = x-5
-                        self.current_pattern.tracks[2].sync_mode = x-5
-                        self.current_pattern.tracks[3].sync_mode = x-5
-                        print ("sync mode: ", x-5)
-                # Note entry
-                if self.k_mode == Modes.mNote:
-                    if self.current_track.track_id == 0:
-                        self.current_pattern.step_ch1[7-y][x] ^= 1
-                    elif self.current_track.track_id == 1:
-                        self.current_pattern.step_ch2[7-y][x] ^= 1
-                    elif self.current_track.track_id == 2:
-                        self.current_pattern.step_ch3[7-y][x] ^= 1
-                    else:
-                        self.current_pattern.step_ch4[7-y][x] ^= 1
-                    if y not in self.current_track.note[x]:
-                        self.current_track.note[x].append(y)
-                        #print("append: ", y, "at ", x)
-                    else:
-                        self.current_track.note[x].remove(y)
-                        #print("remove: ", y, "at ", x)
-                    if self.current_track.duration[x] == 0:
-                        self.current_track.duration[x] = 1
-                    # toggle the trigger if there are no notes
-                    if len(self.current_track.note[x]) > 0:
-                        self.current_track.tr[x] = 1
-                        #print("note len: ", self.current_track.note[x])
-                    else:
-                        self.current_track.tr[x] = 0
-                        #print("note len: ", self.current_track.note[x])
 
-                    #if self.current_track.tr[x] == 0:
-                    #    self.current_track.duration[x] = 0 # change this when param_sync is off
-                    #else:
-                    #    self.step_ch2[7-y][x] ^= 1
-                    #    self.current_pattern.tracks[1].note[x] = y
-                    #    self.current_pattern.tracks[1].duration[x] = 1
-                    #    self.current_pattern.tracks[1].tr[x] ^= 1
-                    #self.draw()
-                    self.frame_dirty = True 
-                # octave entry
-                if self.k_mode == Modes.mOct: 
-                    #if self.current_channel == 1:
-                    if y < 7 and y > 0:
-                        self.current_track.octave[x] = y-3
-                        #print("grid_key = ", y, "octave = ", self.current_pattern.tracks[0].octave[x])
-                    #else:
-                    #    if y < 6 and y > 0:
-                    #        self.current_pattern.tracks[1].octave[x] = y-3
-                    #self.draw()
-                    self.frame_dirty = True 
-                # duration entry
-                if self.k_mode == Modes.mDur:
-                    # add loop setting code based on loop mod
-                    # add time setting code based on time mod
-                    # add probability setting based on prob mod - default to standard duration if prob comes up "false"?
-                    self.current_track.duration[x] = 7-y
-                    self.frame_dirty = True 
-                if self.k_mode == Modes.mVel:
-                    # add loop setting code based on loop mod
-                    # add time setting code based on time mod
-                    # add probability setting based on prob mod - default to standard velocity if prob comes up "false"?
-                    self.current_track.velocity[x] = y
-                    #print("entered velocity: ", self.current_track.velocity[x])
-                    self.frame_dirty = True 
-                if self.k_mode == Modes.mScale:
-                    if x < 3:
-                        if y < 7 and y > 0:
-                            self.cur_scale_id = y-1+x*6
-                            self.calc_scale(self.cur_scale_id)
-                            #print("selected scale: ", self.cur_scale_id)
-                    else:
-                        # transpose the scale up or down by semitones from the mid point (col 7)
-                        self.cur_trans = x-7
-                        self.calc_scale(self.cur_scale_id)
-                    self.frame_dirty = True 
-                # preset entry
-                if self.k_mode == Modes.mPattern:
-                    if y == 6:
-                        if self.k_mod_mode == ModModes.modTime:
-                            self.state.cue_div = x
-                        else:
-                            self.state.cue_steps = x
-                    if x < 3:
-                        if y < 6 and y > 1:
-                            self.state.current_preset_id = y-1+x*4
-                            self.current_preset = self.state.presets[self.state.current_preset_id]
-                            #print("selected preset: ", self.state.current_preset_id)
-                    #self.draw()
-                    self.frame_dirty = True 
-            elif self.k_mode == Modes.mPattern and y == 7:
+    def select_modifier(x):
+            if x == 10:
+                self.k_mod_mode = ModModes.modLoop
+                print("Selected:", self.k_mod_mode)
+            elif x == 11:
+                self.k_mod_mode = ModModes.modTime
+                print("Selected:", self.k_mod_mode)
+            elif x == 12:
+                self.k_mod_mode = ModModes.modProb
+                print("Selected:", self.k_mod_mode)
+
+    def set_global_time_multiplier(x,y):
+        if self.k_mode == Modes.mTr and self.k_mod_mode == ModModes.modTime:
+            # handle time multiplier setting
+            if y > 3 and y < 8:
+                if self.current_pattern.tracks[7-y].sync_mode == 0: # set the time multiplier for this parameter only
+                    self.current_pattern.tracks[7-y].tmul[self.k_mode.value] = x
+                elif self.current_pattern.tracks[7-y].sync_mode == 1: #set the time multiplier for all parameters of this track
+                    self.current_pattern.tracks[7-y].tmul[Modes.mTr.value] = x
+                    self.current_pattern.tracks[7-y].tmul[Modes.mNote.value] = x
+                    self.current_pattern.tracks[7-y].tmul[Modes.mOct.value] = x
+                    self.current_pattern.tracks[7-y].tmul[Modes.mDur.value] = x
+                    self.current_pattern.tracks[7-y].tmul[Modes.mVel.value] = x
+    def set_track_time_multiplier(x):
+        #if self.k_mode == Modes.mTr: # enable this in all modes
+        if self.k_mod_mode == ModModes.modTime:
+            if self.current_track.sync_mode == 0: # set the time multiplier for this parameter only
+                self.current_track.tmul[self.k_mode.value] = x 
+            elif self.current_track.sync_mode == 1: #set the time multiplier for all parameters of this track
+                self.current_track.tmul[Modes.mTr.value] = x
+                self.current_track.tmul[Modes.mNote.value] = x 
+                self.current_track.tmul[Modes.mOct.value] = x
+                self.current_track.tmul[Modes.mDur.value] = x
+                self.current_track.tmul[Modes.mVel.value] = x
+            else:
+                for track in self.current_preset.tracks: # change time for all tracks
+                    track.tmul[Modes.mTr.value] = x
+                    track.tmul[Modes.mNote.value] = x 
+                    track.tmul[Modes.mOct.value] = x
+                    track.tmul[Modes.mDur.value] = x
+                    track.tmul[Modes.mVel.value] = x
+            print("tmul: ", self.k_mode, self.current_track.tmul[Modes.mTr.value])
+
+    def set_track_settings(x,y):
+        if self.k_mode == Modes.mTr:
+            #print("Trigger page key:", x, y)
+            if y == 2 and x < 4:
+                self.current_pattern.tracks[x].scale_toggle ^= 1
+                print ("toggling scale for track: ", x)
+            if y == 1 and x < 4:
+                self.current_pattern.tracks[x].track_mute ^= 1
+                print ("toggling mute for track: ", x)
+            if y == 2 and x > 4 and x < 8: # set the sync mode for all tracks
+                self.current_pattern.tracks[0].sync_mode = x-5
+                self.current_pattern.tracks[1].sync_mode = x-5
+                self.current_pattern.tracks[2].sync_mode = x-5
+                self.current_pattern.tracks[3].sync_mode = x-5
+                print ("sync mode: ", x-5)
+
+    def note_entry(self, x, y):
+        if self.k_mode == Modes.mNote:
+            if self.current_track.track_id == 0:
+                self.current_pattern.step_ch1[7-y][x] ^= 1
+            elif self.current_track.track_id == 1:
+                self.current_pattern.step_ch2[7-y][x] ^= 1
+            elif self.current_track.track_id == 2:
+                self.current_pattern.step_ch3[7-y][x] ^= 1
+            else:
+                self.current_pattern.step_ch4[7-y][x] ^= 1
+            if y not in self.current_track.note[x]:
+                self.current_track.note[x].append(y)
+                #print("append: ", y, "at ", x)
+            else:
+                self.current_track.note[x].remove(y)
+                #print("remove: ", y, "at ", x)
+            if self.current_track.duration[x] == 0:
+                self.current_track.duration[x] = 1
+            # toggle the trigger if there are no notes
+            if len(self.current_track.note[x]) > 0:
+                self.current_track.tr[x] = 1
+                #print("note len: ", self.current_track.note[x])
+            else:
+                self.current_track.tr[x] = 0
+                #print("note len: ", self.current_track.note[x])
+
+            #if self.current_track.tr[x] == 0:
+            #    self.current_track.duration[x] = 0 # change this when param_sync is off
+            #else:
+            #    self.step_ch2[7-y][x] ^= 1
+            #    self.current_pattern.tracks[1].note[x] = y
+            #    self.current_pattern.tracks[1].duration[x] = 1
+            #    self.current_pattern.tracks[1].tr[x] ^= 1
+            #self.draw()
+            self.frame_dirty = True
+    def duration_entry(self, x, y):
+        if self.k_mode == Modes.mDur:
+            # add loop setting code based on loop mod
+            # add time setting code based on time mod
+            # add probability setting based on prob mod - default to standard duration if prob comes up "false"?
+            self.current_track.duration[x] = 7-y
+            self.frame_dirty = True 
+
+    def octave_entry(self, x, y):
+        if self.k_mode == Modes.mOct: 
+            #if self.current_channel == 1:
+            if y < 7 and y > 0:
+                self.current_track.octave[x] = y-3
+                #print("grid_key = ", y, "octave = ", self.current_pattern.tracks[0].octave[x])
+            #else:
+            #    if y < 6 and y > 0:
+            #        self.current_pattern.tracks[1].octave[x] = y-3
+            #self.draw()
+            self.frame_dirty = True 
+    def velocity_entry(self, x, y):
+        if self.k_mode == Modes.mVel:
+            # add loop setting code based on loop mod
+            # add time setting code based on time mod
+            # add probability setting based on prob mod - default to standard velocity if prob comes up "false"?
+            self.current_track.velocity[x] = y
+            #print("entered velocity: ", self.current_track.velocity[x])
+            self.frame_dirty = True 
+
+    def scale_entry(self, x, y):
+        if self.k_mode == Modes.mScale:
+            if x < 3:
+                if y < 7 and y > 0:
+                    self.cur_scale_id = y-1+x*6
+                    self.calc_scale(self.cur_scale_id)
+                    #print("selected scale: ", self.cur_scale_id)
+            else:
+                # transpose the scale up or down by semitones from the mid point (col 7)
+                self.cur_trans = x-7
+                self.calc_scale(self.cur_scale_id)
+            self.frame_dirty = True 
+
+    def preset_entry(self, x, y, s):
+        if self.k_mode == Modes.mPattern:
+            if y == 6:
+                if self.k_mod_mode == ModModes.modTime:
+                    self.state.cue_div = x
+                else:
+                    self.state.cue_steps = x
+            if x < 3:
+                if y < 6 and y > 1:
+                    self.state.current_preset_id = y-1+x*4
+                    self.current_preset = self.state.presets[self.state.current_preset_id]
+                    #print("selected preset: ", self.state.current_preset_id)
+            #self.draw()
+            self.frame_dirty = True 
+            elif y == 7:
                 self.keys_held = self.keys_held + (s * 2) - 1
                 self.key_last.append(x)
                 print("keys_held: ", self.keys_held, self.key_last, s)
@@ -791,6 +794,40 @@ class Runcible(monome.App):
                     self.keys_held = 0
                     del self.key_last[:]
                # print("selected pattern: ", self.current_preset.current_pattern)
+
+    def on_grid_key(self, x, y, s):
+        print(x,y)
+        # handle bottom row controls
+        if s ==1 and y == 0:
+            #select track
+            self.select_track(x)
+            #select mode
+            self.select_mode(x)
+            self.select_modifier(x)
+        elif s == 0 and y == 0 and (x == 10 or x == 11 or x == 12):
+                self.k_mod_mode = ModModes.modNone
+        elif s == 0 and y == 0:
+            self.ctrl_keys_held = 0
+            del self.ctrl_keys_last[:]
+        elif s == 1 and y > 0:
+            self.set_global_time_multiplier(x,y)
+            if y == 7: #handle top row interactions
+                self.set_track_time_multiplier(x,y)
+            if y < 7:
+                #handle various track settings (scale, mute)
+                self.set_track_settings(x,y)
+                # Note entry
+                self.note_entry(x,y)
+                # octave entry
+                self.octave_entry(x,y)
+                # duration entry
+                self.duration_entry(x,y)
+                # velocity entry
+                self.velocity_entry(x,y)
+                # scale entry
+                self.scale_entry(x,y)
+                # preset entry
+                self.preset_entry(x,y)
             elif y == 7: #switch to require modLoop? - shift to be inside each parameter
                 self.keys_held = self.keys_held + (s * 2) - 1
                 print("keys_held: ", self.keys_held)
