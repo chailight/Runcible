@@ -517,9 +517,9 @@ class Runcible(monome.App):
                         # capture top row ?
                         # blank the top row
                         for i in range(16):
-                            buffer.led_set(i,0,0)
+                            buffer.led_set(i,7,0)
                         # light up the current time multiplier
-                        buffer.led_set(self.current_track.tmul[self.k_mode.value], 0, 15)
+                        buffer.led_set(self.current_track.tmul[self.k_mode.value], 7, 15)
                     elif self.k_mod_mode == ModModes.modLoop:
                             for i in range(16):
                                 if i >= self.current_track.lstart[self.k_mode.value] and i <= self.current_track.lend[self.k_mode.value]:
@@ -815,7 +815,7 @@ class Runcible(monome.App):
             del self.ctrl_keys_last[:]
         elif s == 1 and y > 0:
             # preset entry
-            self.preset_entry(x,y)
+            self.preset_entry(x,y,s)
             self.set_global_time_multiplier(x,y)
             if y == 7: #handle top row interactions
                 self.set_track_time_multiplier(x,y)
