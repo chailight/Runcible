@@ -238,7 +238,7 @@ class Runcible(monome.App):
         asyncio.async(self.play())
 
     def next_step(self, track, parameter):
-       #print("track.pos_mul: ", parameter, track.pos_mul[parameter])
+       print("track.pos_mul: ", parameter, track.pos_mul[parameter])
        track.pos_mul[parameter] = int(track.pos_mul[parameter]) + 1
 
        if track.pos_mul[parameter] >= self.current_pattern.tracks[track.track_id].tmul[parameter]:
