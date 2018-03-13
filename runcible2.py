@@ -332,7 +332,7 @@ class Runcible(monome.App):
                     if x > 4 and x < 8: #clear the sync mode
                         buffer.led_set(x, 5, 0) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
                     for track in self.current_pattern.tracks:
-                        buffer.led_set(x, 0+track.track_id, track.tr[x] * 15)
+                        buffer.led_set(x, 7-track.track_id, track.tr[x] * 15)
                         # display scale toggle
                         if x < 4:
                             buffer.led_set(track.track_id, 5, track.scale_toggle * 15)
