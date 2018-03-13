@@ -335,17 +335,17 @@ class Runcible(monome.App):
                         elif self.current_track.track_id == 3:
                             buffer.led_set(x, y, self.current_pattern.step_ch4[y][x] * 15 )
                 #display play pcurrent_rowosition of current track & current parameter
-                blank_row=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+                #blank_row=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
                 buffer.led_row(0,0,blank_row)
-                buffer.led_set(self.current_track.pos[self.k_mode.value],7,15)
-                #previous_step = [0,0,0,0]
-                #if buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
-                #    buffer.led_set(self.current_track.pos[self.k_mode.value]-1, 7, previous_step[self.current_track.track_id])
-                #    buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 15)
-                #    previous_step[self.current_track.track_id] = 0
-                #else: #toggle an already lit led as we pass over it
-                #    previous_step[self.current_track.track_id] = 15
-                #    buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 0)
+                #buffer.led_set(self.current_track.pos[self.k_mode.value],7,15)
+                previous_step = [0,0,0,0]
+                if buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
+                    buffer.led_set(self.current_track.pos[self.k_mode.value]-1, 7, previous_step[self.current_track.track_id])
+                    buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 15)
+                    previous_step[self.current_track.track_id] = 0
+                else: #toggle an already lit led as we pass over it
+                    previous_step[self.current_track.track_id] = 15
+                    buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 0)
             else:
                 buffer.led_set(5,0,0)
                 buffer.led_set(6,0,0)
