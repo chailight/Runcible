@@ -309,6 +309,9 @@ class Runcible(monome.App):
                 buffer.led_set(14,0,0)
                 buffer.led_set(15,0,0)
 
+        self.grid.led_map(0,0,buffer.levels)
+        self.frame_dirty = False 
+
     def draw2(self):
         #print("drawing grid")
         if self.frame_dirty:
