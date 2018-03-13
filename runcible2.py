@@ -271,7 +271,7 @@ class Runcible(monome.App):
             #self.loop_length[t] = abs(self.loop_end[self.current_track] - self.loop_start[t])+1
             t.loop_length = abs(t.loop_end - t.loop_start)+1
             t.play_position = (self.current_pos//self.ticks)%t.loop_length + t.loop_start
-            t.tmul=[4,4,4,4,4] ### remove this after testing is done
+            t.tmul=[8,8,8,8,8] ### remove this after testing is done
 
         while True:
             self.frame_dirty = True #if nothing else has happend, at least the position has moved
@@ -287,6 +287,9 @@ class Runcible(monome.App):
                 if self.next_step(track, Modes.mNote.value):
                     if track.note[track.pos[Modes.mNote.value]]:
                         self.current_pitch = track.note[track.pos[Modes.mNote.value]][0] #need to adjust for polyphonic
+
+                if self.next_step(track, Modes.mOct.value):
+                    self.current_oct = track.octave[track.pos[Modes.mOct.value]]
 
             #yield from self.clock.sync(self.ticks//2)
             #self.current_pos = yield from self.clock.sync()
