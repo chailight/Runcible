@@ -500,7 +500,7 @@ class Runcible(monome.App):
         buffer.led_set(15,0,0)
         for x in range(self.grid.width):
             #show the triggers for that track on the top row
-            buffer.led_set(x, 0, self.current_track.tr[x] * 15)
+            buffer.led_set(x, 7, self.current_track.tr[x] * 15)
             #if self.current_channel == 1:
             #fill a column bottom up in the x position
             current_oct = self.current_track.octave[x]
