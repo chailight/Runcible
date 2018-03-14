@@ -464,7 +464,7 @@ class Runcible(monome.App):
             buffer.led_set(2,0,0)  #set the channel 3 indicator off
             buffer.led_set(3,0,15)  #set the channel 4 indicator off
             #buffer.led_set(render_pos[0], render_pos[1], self.step_ch4[y][x] * 11 + highlight)
-        draw_current_position(buffer)
+        self.draw_current_position(buffer)
 
     def draw_trigger_page(self,buffer):
         buffer.led_set(5,0,15) #set the channel 1 indicator on
@@ -489,7 +489,7 @@ class Runcible(monome.App):
         # display loop sync mode
         buffer.led_set(5+self.current_track.sync_mode, 5, 15) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
         #print(buffer.levels)
-        draw_current_position(buffer)
+        self.draw_current_position(buffer)
 
     def draw_octave_page(self,buffer):
         buffer.led_set(5,0,0)
@@ -514,7 +514,7 @@ class Runcible(monome.App):
                 for i in range (4,5-current_oct):
                     buffer.led_set(x, i, 15)
                     #print("current oct: ", current_oct, " drawing in row: ", i)
-        draw_current_position(buffer)
+        self.draw_current_position(buffer)
 
     def draw_duration_page(self,buffer):
         buffer.led_set(5,0,0)
@@ -543,7 +543,7 @@ class Runcible(monome.App):
                 #    buffer.led_set(x, i, 15)
                 #for i in range (self.current_pattern.tracks[1].duration[x]+1,7):
                 #    buffer.led_set(x, i, 0)
-        draw_current_position(buffer)
+        self.draw_current_position(buffer)
 
     def draw_velocity_page(self,buffer):
         buffer.led_set(5,0,0)
@@ -566,7 +566,7 @@ class Runcible(monome.App):
                 #    buffer.led_set(x, i, 15)
                 #for i in range (self.current_pattern.tracks[1].duration[x]+1,7):
                 #    buffer.led_set(x, i, 0)
-        draw_current_position(buffer)
+        self.draw_current_position(buffer)
 
     def draw_scale_page(self,buffer):
         buffer.led_set(5,0,0)
@@ -589,7 +589,7 @@ class Runcible(monome.App):
         for sd in range (1,8):
             buffer.led_set(7+self.cur_trans+self.current_preset.scale_data[self.cur_scale_id][sd],7-sd, 15)
             #print("sd: ", sd, "scale val: ", self.scale_data[self.cur_scale_id][sd], "pos: ", 4+self.scale_data[self.cur_scale_id][sd],7-sd-1)
-        draw_current_position(buffer)
+        self.draw_current_position(buffer)
 
     def draw_pattern_page(self,buffer):
         buffer.led_set(5,0,0)
@@ -602,7 +602,7 @@ class Runcible(monome.App):
         for i in range(16):
             buffer.led_set(i,7,0)
         buffer.led_set(self.current_pattern.pattern_id,7,15)
-        draw_current_position(buffer)
+        self.draw_current_position(buffer)
 
     def draw_mod_indicators(self,buffer):
         if self.k_mod_mode == ModModes.modLoop:
