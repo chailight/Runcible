@@ -621,7 +621,7 @@ class Runcible(monome.App):
     def draw(self):
         if self.frame_dirty:
             buffer = monome.GridBuffer(self.grid.width, self.grid.height)
-            self.draw_current_track_indicator()
+            self.draw_current_track_indicator(buffer)
             draw_mod_indicator(buffer)
             if self.k_mode == Modes.mTr:
                 self.draw_trigger_page(buffer)
