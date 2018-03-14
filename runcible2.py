@@ -477,16 +477,16 @@ class Runcible(monome.App):
         # display triggers for each track
         for x in range(self.grid.width):
             if x > 4 and x < 8: #clear the sync mode
-                buffer.led_set(x, 5, 0) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
+                buffer.led_set(x, 3, 0) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
             for track in self.current_pattern.tracks:
-                buffer.led_set(x, 7-track.track_id, track.tr[x] * 15)
+                #buffer.led_set(x, 7-track.track_id, track.tr[x] * 15)
                 # display scale toggle
                 if x < 4:
                     buffer.led_set(track.track_id, 2, track.scale_toggle * 15)
                     #print("track: ", track.track_id, "x: ", x, "scale toggle: ", track.scale_toggle)
                     buffer.led_set(track.track_id, 1, (1-track.track_mute) * 15) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
         # display loop sync mode
-        buffer.led_set(5+self.current_track.sync_mode, 5, 15) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
+        buffer.led_set(5+self.current_track.sync_mode, 3, 15) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
         #print(buffer.levels)
         self.draw_current_position(buffer)
 
@@ -500,7 +500,7 @@ class Runcible(monome.App):
         buffer.led_set(15,0,0)
         for x in range(self.grid.width):
             #show the triggers for that track on the top row
-            buffer.led_set(x, 7, self.current_track.tr[x] * 15)
+            #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
             #if self.current_channel == 1:
             #fill a column bottom up in the x position
             current_oct = self.current_track.octave[x]
@@ -525,7 +525,7 @@ class Runcible(monome.App):
         buffer.led_set(15,0,0)
         for x in range(self.grid.width):
             #show the triggers for that track on the top row
-            buffer.led_set(x, 7, self.current_track.tr[x] * 15)
+            #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
             #draw the accent toggles - this will move to a velocity page?
             #if self.current_track.velocity[x]:
             #    buffer.led_set(x, 7, 15)
@@ -553,7 +553,7 @@ class Runcible(monome.App):
         buffer.led_set(14,0,0)
         buffer.led_set(15,0,0)
         for x in range(self.grid.width):
-            buffer.led_set(x, 7, self.current_track.tr[x] * 15)
+            #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
             for i in range (7-self.current_track.velocity[x],1): #ignore bottom row
                 buffer.led_set(x, i, 15)
             for i in range (6,7-self.current_track.velocity[x]): #ignore top row
