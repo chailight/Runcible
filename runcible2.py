@@ -621,22 +621,22 @@ class Runcible(monome.App):
     def draw(self):
         if self.frame_dirty:
             buffer = monome.GridBuffer(self.grid.width, self.grid.height)
-            draw_current_track_indicator()
+            self.draw_current_track_indicator()
             draw_mod_indicators()
             if self.k_mode == Modes.mTr:
-                draw_trigger_page()
+                self.draw_trigger_page()
             elif self.k_mode == Modes.mNote:
-                draw_notes_page()
+                self.draw_notes_page()
             elif self.k_mode == Modes.mOct:
-                draw_octave_page()
+                self.draw_octave_page()
             elif self.k_mode == Modes.mDur:
-                draw_duration_page()
+                self.draw_duration_page()
             elif self.k_mode == Modes.mVel:
-                draw_velocity_page()
+                self.draw_velocity_page()
             elif self.k_mode == Modes.mScale:
-                draw_scale_page()
+                self.draw_scale_page()
             elif self.k_mode == Modes.mPattern:
-                draw_pattern_page()
+                self.draw_pattern_page()
 
         buffer.levels.reverse()
         self.grid.led_map(0,0,buffer.levels)
