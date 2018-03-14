@@ -339,7 +339,7 @@ class Runcible(monome.App):
                 track.loop_length = abs(track.loop_end - track.loop_start)+1
                 track.play_position = (self.current_pos//self.ticks)%track.loop_length + track.loop_start
 
-    def draw_current_position_test(self):
+    def draw_current_position_test(self,buffer):
         previous_step = [0,0,0,0]
         if buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
             buffer.led_set(self.current_track.pos[self.k_mode.value]-1, 7, previous_step[self.current_track.track_id])
