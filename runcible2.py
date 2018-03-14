@@ -439,7 +439,7 @@ class Runcible(monome.App):
                     buffer.led_set(x, y, self.current_pattern.step_ch4[y][x] * 15 )
         draw_current_position(buffer)
 
-    def draw_current_track_indicator(self,buffer):
+    def draw_current_track_indicator(self, buffer):
         if self.current_track.track_id == 0:
             buffer.led_set(0,0,15) #set the channel 1 indicator on
             buffer.led_set(1,0,0)  #set the channel 2 indicator off
