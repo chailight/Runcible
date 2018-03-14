@@ -246,7 +246,7 @@ class Runcible(monome.App):
         self.frame_dirty = False 
         asyncio.async(self.play())
 
-    def next_step_orig(self, track, parameter):
+    def next_step(self, track, parameter):
        print("track.pos_mul: ", parameter, track.pos_mul[parameter])
        print("track.tmul: ", parameter, self.current_pattern.tracks[track.track_id].tmul[parameter])
        track.pos_mul[parameter] = int(track.pos_mul[parameter]) + 1
@@ -264,7 +264,7 @@ class Runcible(monome.App):
        else:
             return False
 
-    def next_step(self, track, parameter):
+    def next_step_new(self, track, parameter):
        print("track.pos_mul: ", parameter, track.pos_mul[parameter])
        print("track.tmul: ", parameter, self.current_pattern.tracks[track.track_id].tmul[parameter])
        #track.pos_mul[parameter] = int(track.pos_mul[parameter]) + 1
