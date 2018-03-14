@@ -63,6 +63,15 @@ LOCAL_CONTROL = LOCAL_CONTROL_ONOFF = 0x7A
 ALL_NOTES_OFF = 0x7B
 # controller value byte should be 0, also causes ANO
 
+TICKS_32ND = 96 // 32
+TICKS_SEXTUPLET = 96 // 24
+TICKS_16TH = 96 // 16
+TICKS_TRIPLET = 96 // 12
+TICKS_8TH = 96 // 8
+TICKS_QUARTER = 96 // 4
+TICKS_HALF = 96 // 2
+TICKS_WHOLE = 96 // 1
+
 def cancel_task(task):
     if task:
         task.cancel()
@@ -258,7 +267,7 @@ class Runcible(monome.App):
     @asyncio.coroutine
     def play(self):
         print("playing")
-        self.current_pos = yield from self.clock.sync()
+        self.current_pos = yield from self.clock.sync(TICKS_32ND)
 
         self.cue_sub_pos = self.cue_sub_pos + 1
         if self.cue_sub_pos >= self.state.cue_div + 1:
@@ -271,7 +280,7 @@ class Runcible(monome.App):
             #self.loop_length[t] = abs(self.loop_end[self.current_track] - self.loop_start[t])+1
             t.loop_length = abs(t.loop_end - t.loop_start)+1
             t.play_position = (self.current_pos//self.ticks)%t.loop_length + t.loop_start
-            t.tmul=[8,8,8,8,8] ### remove this after testing is done
+            #t.tmul=[8,8,8,8,8] ### remove this after testing is done
 
         while True:
             self.frame_dirty = True #if nothing else has happend, at least the position has moved
@@ -295,8 +304,8 @@ class Runcible(monome.App):
             #self.current_pos = yield from self.clock.sync()
 
 
-            yield from self.clock.sync(self.ticks//2)
-            self.current_pos = yield from self.clock.sync()
+            self.current_pos = yield from self.clock.sync(TICKS_32ND)
+            #self.current_pos = yield from self.clock.sync()
 
             self.cue_sub_pos = self.cue_sub_pos + 1
             if self.cue_sub_pos > self.state.cue_div:
@@ -994,7 +1003,7 @@ if __name__ == '__main__':
     #clock = clocks.InaccurateTempoClock(120)
 
     clock = clocks.RtMidiClock()
-    runcible_app  = Runcible(clock,6,midi_out,channel_out,clock_out,None)
+    runcible_app  = Runcible(clock,TICKS_32ND,midi_out,channel_out,clock_out,None)
 
     try: 
         asyncio.async(virtualgrid.SpanningSerialOsc.create(loop=loop, autoconnect_app=runcible_app))
