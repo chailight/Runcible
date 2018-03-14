@@ -437,7 +437,7 @@ class Runcible(monome.App):
                     buffer.led_set(x, y, self.current_pattern.step_ch3[y][x] * 15 )
                 elif self.current_track.track_id == 3:
                     buffer.led_set(x, y, self.current_pattern.step_ch4[y][x] * 15 )
-        draw_current_position(buffer)
+        self.draw_current_position(buffer)
 
     def draw_current_track_indicator(self, buffer):
         if self.current_track.track_id == 0:
