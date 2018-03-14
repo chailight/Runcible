@@ -647,7 +647,7 @@ class Runcible(monome.App):
         if self.frame_dirty:
             buffer = monome.GridBuffer(self.grid.width, self.grid.height)
 
-            elif self.k_mode == Modes.mNote:
+            if self.k_mode == Modes.mNote:
                 buffer.led_set(5,7,0)
                 buffer.led_set(6,7,15)
                 buffer.led_set(7,7,0)
