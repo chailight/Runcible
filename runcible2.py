@@ -482,9 +482,9 @@ class Runcible(monome.App):
                 buffer.led_set(x, 7-track.track_id, track.tr[x] * 15)
                 # display scale toggle
                 if x < 4:
-                    buffer.led_set(track.track_id, 5, track.scale_toggle * 15)
+                    buffer.led_set(track.track_id, 2, track.scale_toggle * 15)
                     #print("track: ", track.track_id, "x: ", x, "scale toggle: ", track.scale_toggle)
-                    buffer.led_set(track.track_id, 6, (1-track.track_mute) * 15) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
+                    buffer.led_set(track.track_id, 1, (1-track.track_mute) * 15) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
         # display loop sync mode
         buffer.led_set(5+self.current_track.sync_mode, 5, 15) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
         #print(buffer.levels)
