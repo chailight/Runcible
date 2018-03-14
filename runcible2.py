@@ -464,7 +464,6 @@ class Runcible(monome.App):
             buffer.led_set(2,0,0)  #set the channel 3 indicator off
             buffer.led_set(3,0,15)  #set the channel 4 indicator off
             #buffer.led_set(render_pos[0], render_pos[1], self.step_ch4[y][x] * 11 + highlight)
-        self.draw_current_position(buffer)
 
     def draw_trigger_page(self,buffer):
         buffer.led_set(5,0,15) #set the channel 1 indicator on
@@ -536,7 +535,7 @@ class Runcible(monome.App):
                 #fill a column top down in the x position
             for i in range (1,self.current_track.duration[x]+1): #ignore top row
                 buffer.led_set(x, i, 15)
-            for i in range (self.current_track.duration[x]+1,7): #ignore bottom row
+            for i in range (self.current_track.duration[x]+1,6): #ignore bottom row
                 buffer.led_set(x, i, 0)
             #elif self.current_channel == 2:
                 #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
@@ -555,7 +554,7 @@ class Runcible(monome.App):
         buffer.led_set(15,0,0)
         for x in range(self.grid.width):
             buffer.led_set(x, 0, self.current_track.tr[x] * 15)
-            for i in range (7-self.current_track.velocity[x],7): #ignore bottom row
+            for i in range (7-self.current_track.velocity[x],6): #ignore bottom row
                 buffer.led_set(x, i, 15)
             for i in range (0,7-self.current_track.velocity[x]): #ignore top row
                 buffer.led_set(x, i, 0)
