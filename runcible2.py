@@ -525,7 +525,7 @@ class Runcible(monome.App):
         buffer.led_set(15,0,0)
         for x in range(self.grid.width):
             #show the triggers for that track on the top row
-            buffer.led_set(x, 0, self.current_track.tr[x] * 15)
+            buffer.led_set(x, 7, self.current_track.tr[x] * 15)
             #draw the accent toggles - this will move to a velocity page?
             #if self.current_track.velocity[x]:
             #    buffer.led_set(x, 7, 15)
@@ -533,9 +533,9 @@ class Runcible(monome.App):
             #    buffer.led_set(x, 7, 0)
             #if self.current_channel == 1:
                 #fill a column top down in the x position
-            for i in range (1,self.current_track.duration[x]+1): #ignore top row
+            for i in range (6,self.current_track.duration[x]+1): #ignore top row
                 buffer.led_set(x, i, 15)
-            for i in range (self.current_track.duration[x]+1,6): #ignore bottom row
+            for i in range (self.current_track.duration[x]+1,1): #ignore bottom row
                 buffer.led_set(x, i, 0)
             #elif self.current_channel == 2:
                 #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
@@ -553,13 +553,13 @@ class Runcible(monome.App):
         buffer.led_set(14,0,0)
         buffer.led_set(15,0,0)
         for x in range(self.grid.width):
-            buffer.led_set(x, 0, self.current_track.tr[x] * 15)
-            for i in range (7-self.current_track.velocity[x],6): #ignore bottom row
+            buffer.led_set(x, 7, self.current_track.tr[x] * 15)
+            for i in range (7-self.current_track.velocity[x],1): #ignore bottom row
                 buffer.led_set(x, i, 15)
-            for i in range (0,7-self.current_track.velocity[x]): #ignore top row
+            for i in range (6,7-self.current_track.velocity[x]): #ignore top row
                 buffer.led_set(x, i, 0)
             #show the triggers for that track on the top row
-            buffer.led_set(x, 0, self.current_track.tr[x] * 15)
+            buffer.led_set(x, 7, self.current_track.tr[x] * 15)
             #elif self.current_channel == 2:
                 #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
                 #    buffer.led_set(x, i, 15)
