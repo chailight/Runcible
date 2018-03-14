@@ -339,7 +339,7 @@ class Runcible(monome.App):
                 track.loop_length = abs(track.loop_end - track.loop_start)+1
                 track.play_position = (self.current_pos//self.ticks)%track.loop_length + track.loop_start
 
-    def draw_current_position_test():
+    def draw_current_position_test(self):
         previous_step = [0,0,0,0]
         if buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
             buffer.led_set(self.current_track.pos[self.k_mode.value]-1, 7, previous_step[self.current_track.track_id])
@@ -349,7 +349,7 @@ class Runcible(monome.App):
             previous_step[self.current_track.track_id] = 15
             buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 0)
 
-    def draw_current_position():
+    def draw_current_position(self):
             if self.k_mode == Modes.mTr:
                 if self.k_mod_mode == ModModes.modTime:
                     for track in self.current_pattern.tracks:
@@ -418,7 +418,7 @@ class Runcible(monome.App):
 
 
 
-    def draw_notes_page():
+    def draw_notes_page(self):
         buffer.led_set(5,0,0)
         buffer.led_set(6,0,15)
         buffer.led_set(7,0,0)
@@ -439,7 +439,7 @@ class Runcible(monome.App):
                     buffer.led_set(x, y, self.current_pattern.step_ch4[y][x] * 15 )
         draw_current_position()
 
-    def draw_current_track_indicator():
+    def draw_current_track_indicator(self):
         if self.current_track.track_id == 0:
             buffer.led_set(0,0,15) #set the channel 1 indicator on
             buffer.led_set(1,0,0)  #set the channel 2 indicator off
@@ -466,7 +466,7 @@ class Runcible(monome.App):
             #buffer.led_set(render_pos[0], render_pos[1], self.step_ch4[y][x] * 11 + highlight)
         draw_current_position()
 
-    def draw_trigger_page():
+    def draw_trigger_page(self):
         buffer.led_set(5,0,15) #set the channel 1 indicator on
         buffer.led_set(6,0,0)  #set the channel 2 indicator off
         buffer.led_set(7,0,0)  #set the channel 3 indicator off
@@ -491,7 +491,7 @@ class Runcible(monome.App):
         #print(buffer.levels)
         draw_current_position()
 
-    def draw_octave_page():
+    def draw_octave_page(self):
         buffer.led_set(5,0,0)
         buffer.led_set(6,0,0)
         buffer.led_set(7,0,15)
@@ -516,7 +516,7 @@ class Runcible(monome.App):
                     #print("current oct: ", current_oct, " drawing in row: ", i)
         draw_current_position()
 
-    def draw_duration_page():
+    def draw_duration_page(self):
         buffer.led_set(5,0,0)
         buffer.led_set(6,0,0)
         buffer.led_set(7,0,0)
@@ -545,7 +545,7 @@ class Runcible(monome.App):
                 #    buffer.led_set(x, i, 0)
         draw_current_position()
 
-    def draw_velocity_page():
+    def draw_velocity_page(self):
         buffer.led_set(5,0,0)
         buffer.led_set(6,0,0)
         buffer.led_set(7,0,0)
@@ -568,7 +568,7 @@ class Runcible(monome.App):
                 #    buffer.led_set(x, i, 0)
         draw_current_position()
 
-    def draw_scale_page():
+    def draw_scale_page(self):
         buffer.led_set(5,0,0)
         buffer.led_set(6,0,0)
         buffer.led_set(7,0,0)
@@ -591,7 +591,7 @@ class Runcible(monome.App):
             #print("sd: ", sd, "scale val: ", self.scale_data[self.cur_scale_id][sd], "pos: ", 4+self.scale_data[self.cur_scale_id][sd],7-sd-1)
         draw_current_position()
 
-    def draw_pattern_page():
+    def draw_pattern_page(self):
         buffer.led_set(5,0,0)
         buffer.led_set(6,0,0)
         buffer.led_set(7,0,0)
@@ -604,7 +604,7 @@ class Runcible(monome.App):
         buffer.led_set(self.current_pattern.pattern_id,7,15)
         draw_current_position()
 
-    def draw_mod_indicators():
+    def draw_mod_indicators(self):
         if self.k_mod_mode == ModModes.modLoop:
             buffer.led_set(10,0,15)
             buffer.led_set(11,0,0)
