@@ -246,12 +246,31 @@ class Runcible(monome.App):
         self.frame_dirty = False 
         asyncio.async(self.play())
 
-    def next_step(self, track, parameter):
+    def next_step_orig(self, track, parameter):
        print("track.pos_mul: ", parameter, track.pos_mul[parameter])
        print("track.tmul: ", parameter, self.current_pattern.tracks[track.track_id].tmul[parameter])
        track.pos_mul[parameter] = int(track.pos_mul[parameter]) + 1
 
        if track.pos_mul[parameter] >= self.current_pattern.tracks[track.track_id].tmul[parameter]:
+            if track.pos[parameter] == self.current_pattern.tracks[track.track_id].lend[parameter]:
+                track.pos[parameter] = self.current_pattern.tracks[track.track_id].lstart[parameter]
+            else:
+                track.pos[parameter] = int(track.pos[parameter]) + 1
+                if track.pos[parameter] > 15:
+                    track.pos[parameter] = 0
+            track.pos_mul[parameter] = 0
+            # add probabilities
+            return True
+       else:
+            return False
+
+    def next_step(self, track, parameter):
+       print("track.pos_mul: ", parameter, track.pos_mul[parameter])
+       print("track.tmul: ", parameter, self.current_pattern.tracks[track.track_id].tmul[parameter])
+       #track.pos_mul[parameter] = int(track.pos_mul[parameter]) + 1
+
+       #advance the parameter position if the current position falls on an even division of the time multiplier
+       if (self.current_pos % self.current_pattern.tracks[track.track_id].tmul[parameter]) == 0:
             if track.pos[parameter] == self.current_pattern.tracks[track.track_id].lend[parameter]:
                 track.pos[parameter] = self.current_pattern.tracks[track.track_id].lstart[parameter]
             else:
@@ -280,7 +299,7 @@ class Runcible(monome.App):
             #self.loop_length[t] = abs(self.loop_end[self.current_track] - self.loop_start[t])+1
             t.loop_length = abs(t.loop_end - t.loop_start)+1
             t.play_position = (self.current_pos//self.ticks)%t.loop_length + t.loop_start
-            #t.tmul=[8,8,8,8,8] ### remove this after testing is done
+            t.tmul=[1,1,1,1,1] ### remove this after testing is done
 
         while True:
             self.frame_dirty = True #if nothing else has happend, at least the position has moved
