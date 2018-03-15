@@ -369,8 +369,8 @@ class Runcible(monome.App):
                             #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
                             if not track.track_mute:
                                 #self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
-                                self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
-                                #print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
+                                #self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
+                                print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
 
             self.current_pos = yield from self.clock.sync(TICKS_32ND)
 
