@@ -244,6 +244,7 @@ class Runcible(monome.App):
         self.current_track_id = self.current_pattern.tracks[0].track_id
         #self.calc_scale(self.cur_scale_id)
         self.buffer = monome.GridBuffer(self.grid.width, self.grid.height)
+        self.buffer.levels.reverse() #flip the buffer - for some reason it is upsidedown compared to the grid
         self.frame_dirty = False 
         asyncio.async(self.play())
 
@@ -637,9 +638,9 @@ class Runcible(monome.App):
             elif self.k_mode == Modes.mPattern:
                 self.draw_pattern_page()
 
-        self.buffer.levels.reverse()
+        #self.buffer.levels.reverse()
         self.grid.led_map(0,0,self.buffer.levels)
-        self.buffer.levels.reverse()
+        #self.buffer.levels.reverse()
         self.buffer.led_level_all(0)
         self.frame_dirty = False 
 
