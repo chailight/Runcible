@@ -353,6 +353,8 @@ class Runcible(monome.App):
 
     def draw_current_position(self):
             if self.k_mode == Modes.mTr:
+                print("Trigger Mode")
+                print(self.current_track.pos)
                 previous_step = [0,0,0,0]
                 if self.buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
                     self.buffer.led_set(self.current_track.pos[self.k_mode.value]-1, 7, previous_step[self.current_track.track_id])
