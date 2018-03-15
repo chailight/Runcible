@@ -639,6 +639,8 @@ class Runcible(monome.App):
 
         self.buffer.levels.reverse()
         self.grid.led_map(0,0,self.buffer.levels)
+        self.buffer.levels.reverse()
+        self.buffer.led_level_all(0)
         self.frame_dirty = False 
 
     def draw2(self):
