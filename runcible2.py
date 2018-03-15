@@ -321,6 +321,56 @@ class Runcible(monome.App):
                 if self.next_step(track, Modes.mOct.value):
                     self.current_oct = track.octave[track.pos[Modes.mOct.value]]
 
+                if self.next_step(track, Modes.mDur.value):
+                    self.current_dur = track.duration[track.pos[Modes.mDur.value]]
+                    #print("current_dur: ", self.current_dur)
+                if self.next_step(track, Modes.mVel.value):
+                    self.current_vel = track.velocity[track.pos[Modes.mVel.value]]
+                    #print("current_vel: ", self.current_vel)
+                if self.next_step(track, Modes.mTr.value):
+                    #if track.tr[track.play_position] == 1:
+                    if track.tr[track.pos[Modes.mTr.value]] == 1:
+                        #for i in range(len(track.note[track.play_position])):
+                        for i in range(len(track.note[track.pos[Modes.mTr.value]])): #this needs to be fixed so that polyphonic mode forces track sync
+                            # add toggles here for loop sync - if track then set position to mTr.value, else set to parameter 
+                            if track.scale_toggle:
+                                #current_note = self.cur_scale[track.note[track.play_position][i]-1]+track.octave[track.play_position]*12
+                                #print("track.pos: ", track.pos[note_pos], "i: ", i, "current_note: ", track.note[track.pos[note_pos]])
+                                current_note = self.cur_scale[self.current_pitch-1] + self.current_oct*12 #may have to introduce a check for self.current_pitch not being zero
+                                #print("input note: ", self.current_pitch, "current note: ", current_note)
+                            else:
+                                #set the note to an increment from some convenient base
+                                #current_note = track.note[track.play_position][i]+35+track.octave[track.play_position]*12
+                                #current_note = track.note[track.pos[note_pos]][i]+35+track.octave[track.pos[oct_pos]]*12
+                                current_note = self.current_pitch+35 + self.current_oct*12
+                                #print("input note: ", self.current_pitch, "current note: ", current_note)
+
+                            #print("input note: ", track.note[track.playposition[i], "scaled_note: ", current_note)
+                            scaled_duration = 0
+                            #entered_duration = track.duration[track.play_position]
+                            entered_duration = self.current_dur
+                            if entered_duration == 1:
+                                scaled_duration = 2
+                            if entered_duration == 3:
+                                scaled_duration = 4
+                            if entered_duration == 3:
+                                scaled_duration =  6
+                            if entered_duration == 4:
+                                scaled_duration = 8
+                            elif entered_duration == 5:
+                                scaled_duration = 10
+                            elif entered_duration == 6:
+                                scaled_duration = 12
+                            #velocity = track.velocity[track.play_position]*20
+                            #velocity = track.velocity[track.pos[Modes.mTr.value]]*20
+                            velocity = self.current_vel*20
+                            #print("velocity: ", velocity)
+                            #velocity = 65
+                            #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
+                            if not track.track_mute:
+                                #self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
+                                self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
+                                #print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
 
             self.current_pos = yield from self.clock.sync(TICKS_32ND)
 
