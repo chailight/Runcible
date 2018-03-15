@@ -354,34 +354,57 @@ class Runcible(monome.App):
     def draw_current_position(self):
             if self.k_mode == Modes.mTr:
                 if self.k_mod_mode == ModModes.modTime:
-                    for track in self.current_pattern.tracks:
-                        for i in range(16):
-                            self.buffer.led_set(i,7-track.track_id,0)
-                        # light up the current time multiplier
-                        self.buffer.led_set(track.tmul[self.k_mode.value], 7-track.track_id, 15)
+                    # capture top row ?
+                    # blank the top row
+                    for i in range(16):
+                        self.buffer.led_set(i,7,0)
+                    # light up the current time multiplier
+                    self.buffer.led_set(self.current_track.tmul[self.k_mode.value], 7, 15)
                 elif self.k_mod_mode == ModModes.modLoop:
-                    for track in self.current_pattern.tracks:
                         for i in range(16):
-                            if i >= track.lstart[Modes.mTr.value] and i <= track.lend[Modes.mTr.value]:
-                                self.buffer.led_set(i,7-track.track_id,15)
+                            if i >= self.current_track.lstart[self.k_mode.value] and i <= self.current_track.lend[self.k_mode.value]:
+                                self.buffer.led_set(i,7,15)
                             else:
-                                self.buffer.led_set(i,7-track.track_id,0)
+                                self.buffer.led_set(i,7,0)
                 else:
+                    #display play pcurrent_rowosition of current track & current parameter
                     previous_step = [0,0,0,0]
-                    for track in self.current_pattern.tracks:
-                        #track 1
-                        if track.pos[Modes.mTr.value] >= track.lstart[Modes.mTr.value] and track.pos[Modes.mTr.value] <= track.lend[Modes.mTr.value]:
-                        #if ((self.current_pos//self.ticks)%16) < 16:
-                            if self.buffer.levels[0+track.track_id][track.pos[Modes.mTr.value]] == 0:
-                                self.buffer.led_set(track.pos[Modes.mTr.value]-1, 7-track.track_id, previous_step[track.track_id])
-                                self.buffer.led_set(track.pos[Modes.mTr.value], 7-track.track_id, 15)
-                                previous_step[track.track_id] = 0
-                            else: #toggle an already lit led as we pass over it
-                                previous_step[track.track_id] = 15
-                                self.buffer.led_set(track.pos[Modes.mTr.value], 7-track.track_id, 0)
-                                #buffer.led_set(track.play_position, 0+track.track_id, 15)
-                        else:
-                            self.buffer.led_set(self.current_track.pos[Modes.mTr.value], 7, 0)
+                    if self.buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
+                        self.buffer.led_set(self.current_track.pos[self.k_mode.value]-1, 7, previous_step[self.current_track.track_id])
+                        self.buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 15)
+                        previous_step[self.current_track.track_id] = 0
+                    else: #toggle an already lit led as we pass over it
+                        previous_step[self.current_track.track_id] = 15
+                        self.buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 0)
+                #if self.k_mod_mode == ModModes.modTime:
+                #    for track in self.current_pattern.tracks:
+                #        for i in range(16):
+                #            self.buffer.led_set(i,7-track.track_id,0)
+                #        # light up the current time multiplier
+                #        self.buffer.led_set(track.tmul[self.k_mode.value], 7-track.track_id, 15)
+                #elif self.k_mod_mode == ModModes.modLoop:
+                #    for track in self.current_pattern.tracks:
+                #        for i in range(16):
+                #            if i >= track.lstart[Modes.mTr.value] and i <= track.lend[Modes.mTr.value]:
+                #                self.buffer.led_set(i,7-track.track_id,15)
+                #            else:
+                #                self.buffer.led_set(i,7-track.track_id,0)
+                #else:
+                #    previous_step = [0,0,0,0]
+                #    for track in self.current_pattern.tracks:
+                #        #track 1
+                #        if track.pos[Modes.mTr.value] >= track.lstart[Modes.mTr.value] and track.pos[Modes.mTr.value] <= track.lend[Modes.mTr.value]:
+                #        #if ((self.current_pos//self.ticks)%16) < 16:
+                #            if self.buffer.levels[0+track.track_id][track.pos[Modes.mTr.value]] == 0:
+                #                self.buffer.led_set(track.pos[Modes.mTr.value]-1, 7-track.track_id, previous_step[track.track_id])
+                #                self.buffer.led_set(track.pos[Modes.mTr.value], 7-track.track_id, 15)
+                #                previous_step[track.track_id] = 0
+                #            else: #toggle an already lit led as we pass over it
+                #                previous_step[track.track_id] = 15
+                #                self.buffer.led_set(track.pos[Modes.mTr.value], 7-track.track_id, 0)
+                #                #buffer.led_set(track.play_position, 0+track.track_id, 15)
+                #        else:
+                #            self.buffer.led_set(self.current_track.pos[Modes.mTr.value], 7, 0)
 
             else:
                 if self.k_mode.value < Modes.mScale.value : # all other modes except scale or pattern
