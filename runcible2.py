@@ -402,7 +402,7 @@ class Runcible(monome.App):
             self.buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 0)
 
     def draw_current_position(self):
-            if self.k_mod_mode == ModModes.mTr:
+            if self.k_mode == Modes.mTr:
                 if self.k_mod_mode == ModModes.modTime:
                     for track in self.current_pattern.tracks:
                         for i in range(16):
