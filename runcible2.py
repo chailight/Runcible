@@ -491,27 +491,27 @@ class Runcible(monome.App):
             #buffer.led_set(render_pos[0], render_pos[1], self.step_ch4[y][x] * 11 + highlight)
 
     def draw_trigger_page(self):
-        self.buffer.led_set(5,0,15) #set the channel 1 indicator on
-        self.buffer.led_set(6,0,0)  #set the channel 2 indicator off
-        self.buffer.led_set(7,0,0)  #set the channel 3 indicator off
-        self.buffer.led_set(8,0,0)  #set the channel 4 indicator off
-        self.buffer.led_set(9,0,0)
-        self.buffer.led_set(14,0,0)
-        self.buffer.led_set(15,0,0)
+        #self.buffer.led_set(5,0,15) #set the channel 1 indicator on
+        #self.buffer.led_set(6,0,0)  #set the channel 2 indicator off
+        #self.buffer.led_set(7,0,0)  #set the channel 3 indicator off
+        #self.buffer.led_set(8,0,0)  #set the channel 4 indicator off
+        #self.buffer.led_set(9,0,0)
+        #self.buffer.led_set(14,0,0)
+        #self.buffer.led_set(15,0,0)
 
         # display triggers for each track
-        for x in range(self.grid.width):
-            if x > 4 and x < 8: #clear the sync mode
-                self.buffer.led_set(x, 3, 0) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
-            for track in self.current_pattern.tracks:
+        #for x in range(self.grid.width):
+        #    if x > 4 and x < 8: #clear the sync mode
+        #        self.buffer.led_set(x, 3, 0) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
+        #    for track in self.current_pattern.tracks:
                 #buffer.led_set(x, 7-track.track_id, track.tr[x] * 15)
                 # display scale toggle
-                if x < 4:
-                    self.buffer.led_set(track.track_id, 2, track.scale_toggle * 15)
+        #        if x < 4:
+        #            self.buffer.led_set(track.track_id, 2, track.scale_toggle * 15)
                     #print("track: ", track.track_id, "x: ", x, "scale toggle: ", track.scale_toggle)
-                    self.buffer.led_set(track.track_id, 1, (1-track.track_mute) * 15) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
+        #            self.buffer.led_set(track.track_id, 1, (1-track.track_mute) * 15) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
         # display loop sync mode
-        self.buffer.led_set(5+self.current_track.sync_mode, 3, 15) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
+        #self.buffer.led_set(5+self.current_track.sync_mode, 3, 15) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
         #print(buffer.levels)
         self.draw_current_position()
 
