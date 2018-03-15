@@ -353,29 +353,14 @@ class Runcible(monome.App):
 
     def draw_current_position(self):
             if self.k_mode == Modes.mTr:
-                if self.k_mod_mode == ModModes.modTime:
-                    # capture top row ?
-                    # blank the top row
-                    for i in range(16):
-                        self.buffer.led_set(i,7,0)
-                    # light up the current time multiplier
-                    self.buffer.led_set(self.current_track.tmul[self.k_mode.value], 7, 15)
-                elif self.k_mod_mode == ModModes.modLoop:
-                        for i in range(16):
-                            if i >= self.current_track.lstart[self.k_mode.value] and i <= self.current_track.lend[self.k_mode.value]:
-                                self.buffer.led_set(i,7,15)
-                            else:
-                                self.buffer.led_set(i,7,0)
-                else:
-                    #display play pcurrent_rowosition of current track & current parameter
-                    previous_step = [0,0,0,0]
-                    if self.buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
-                        self.buffer.led_set(self.current_track.pos[self.k_mode.value]-1, 7, previous_step[self.current_track.track_id])
-                        self.buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 15)
-                        previous_step[self.current_track.track_id] = 0
-                    else: #toggle an already lit led as we pass over it
-                        previous_step[self.current_track.track_id] = 15
-                        self.buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 0)
+                previous_step = [0,0,0,0]
+                if self.buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
+                    self.buffer.led_set(self.current_track.pos[self.k_mode.value]-1, 7, previous_step[self.current_track.track_id])
+                    self.buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 15)
+                    previous_step[self.current_track.track_id] = 0
+                else: #toggle an already lit led as we pass over it
+                    previous_step[self.current_track.track_id] = 15
+                    self.buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 0)
                 #if self.k_mod_mode == ModModes.modTime:
                 #    for track in self.current_pattern.tracks:
                 #        for i in range(16):
@@ -491,13 +476,13 @@ class Runcible(monome.App):
             #buffer.led_set(render_pos[0], render_pos[1], self.step_ch4[y][x] * 11 + highlight)
 
     def draw_trigger_page(self):
-        #self.buffer.led_set(5,0,15) #set the channel 1 indicator on
-        #self.buffer.led_set(6,0,0)  #set the channel 2 indicator off
-        #self.buffer.led_set(7,0,0)  #set the channel 3 indicator off
-        #self.buffer.led_set(8,0,0)  #set the channel 4 indicator off
-        #self.buffer.led_set(9,0,0)
-        #self.buffer.led_set(14,0,0)
-        #self.buffer.led_set(15,0,0)
+        self.buffer.led_set(5,0,15) #set the channel 1 indicator on
+        self.buffer.led_set(6,0,0)  #set the channel 2 indicator off
+        self.buffer.led_set(7,0,0)  #set the channel 3 indicator off
+        self.buffer.led_set(8,0,0)  #set the channel 4 indicator off
+        self.buffer.led_set(9,0,0)
+        self.buffer.led_set(14,0,0)
+        self.buffer.led_set(15,0,0)
 
         # display triggers for each track
         #for x in range(self.grid.width):
