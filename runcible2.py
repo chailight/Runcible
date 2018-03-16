@@ -474,8 +474,8 @@ class Runcible(monome.App):
             note.decrement_duration()
             #print("decreasing duration for note:", note.pitch, "at: ", self.current_pos%32, "to: ", note.duration )
             if note.duration == 0:
-                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
-            #    print("ending note", self.channel + note.channel_inc, note.pitch, " at: ", self.current_pos%32)
+                #self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
+                print("ending note", self.channel + note.channel_inc, note.pitch, " at: ", self.current_pos%32)
                 finished_notes.append(i) # mark this note for removal from the timer list
             else:
                 new_duration_timers.append(note)
