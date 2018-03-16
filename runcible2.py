@@ -441,7 +441,7 @@ class Runcible(monome.App):
     @asyncio.coroutine
     def set_note_off_timer(self,track,duration,pitch):
         pos = yield from self.clock.sync(duration*4)
-        self.midi_out.send_noteon(self.channel + track, pitch,0)
+        #self.midi_out.send_noteon(self.channel + track, pitch,0)
         #print("note off timer", self.channel + track, pitch, "at: ", pos%16)
 
     def calc_scale(self, s):
@@ -462,7 +462,7 @@ class Runcible(monome.App):
 
             #for note in self.note_on[t.play_position]:
             for note in self.note_on[t.pos[Modes.mTr.value]]:
-                #self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,note.velocity)
+                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,note.velocity)
                 print("playing note", self.channel + note.channel_inc, note.pitch, " at: ",self.current_pos%32)
             del self.note_on[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
 
@@ -474,7 +474,7 @@ class Runcible(monome.App):
             note.decrement_duration()
             #print("decreasing duration for note:", note.pitch, "at: ", self.current_pos%32, "to: ", note.duration )
             if note.duration == 0:
-                #self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
+                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
                 print("ending note", self.channel + note.channel_inc, note.pitch, " at: ", self.current_pos%32)
                 finished_notes.append(i) # mark this note for removal from the timer list
             else:
