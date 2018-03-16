@@ -369,9 +369,10 @@ class Runcible(monome.App):
                             #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
                             if not track.track_mute:
                                 #self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
-                                #self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
+                                self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
                                 print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
 
+            asyncio.async(self.trigger())
             self.current_pos = yield from self.clock.sync(TICKS_32ND)
 
             self.cue_sub_pos = self.cue_sub_pos + 1
@@ -391,6 +392,103 @@ class Runcible(monome.App):
                 track.loop_length = abs(track.loop_end - track.loop_start)+1
                 track.play_position = (self.current_pos//self.ticks)%track.loop_length + track.loop_start
 
+    def insert_note(self,track,position,pitch,velocity,duration):
+        asyncio.async(self.set_note_on(track,position,pitch,velocity,duration))
+        #self.insert_note_off(track,(position+duration)%16,pitch)
+        #print("setting note on at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
+        #print("setting note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
+        #asyncio.async(self.set_note_off_timer(track,duration,pitch))
+
+    def insert_note_on(self,track,position,pitch,velocity):
+        already_exists = False
+        for n in self.note_on[position]:
+            if n.pitch == pitch:
+                already_exists = True
+                #print("note on exists", self.channel + track, pitch, "at position: ", position)
+        if not already_exists:
+            new_note = Note(track,pitch,velocity)
+            self.note_on[position].append(new_note)
+            #pos = yield from self.clock.sync()
+            #print("setting note on ", self.channel + track, pitch, "at pos: ", position)
+
+    def insert_note_off(self,track,position,pitch):
+        already_exists = False
+        for n in self.note_off[position]:
+            if n.pitch == pitch:
+                already_exists = True
+                #print("note off exists", self.channel + track, pitch, "at position: ", position)
+        if not already_exists:
+            new_note = Note(track,pitch,0)
+            self.note_off[position].append(new_note)
+            #pos = yield from self.clock.sync()
+            #print("setting note off ", self.channel + track, pitch, "at pos: ", position)
+
+    @asyncio.coroutine
+    def set_note_on(self,track,position,pitch,velocity,duration):
+        already_exists = False
+        for n in self.note_on[position]:
+            if n.pitch == pitch:
+                already_exists = True
+            #    print("note on exists", self.channel + track, pitch, "at position: ", position)
+        if not already_exists:
+            new_note = Note(track,pitch,velocity,duration)
+            self.note_on[position].append(new_note)
+            #pos = yield from self.clock.sync()
+            #self.midi_out.send_noteon(self.channel + track, pitch, velocity)
+            self.duration_timers.append(new_note) # add this to the list of notes to track for when they end
+            #print("set note on: ", self.channel + track, pitch, "at: ", position)
+
+    @asyncio.coroutine
+    def set_note_off_timer(self,track,duration,pitch):
+        pos = yield from self.clock.sync(duration*4)
+        self.midi_out.send_noteon(self.channel + track, pitch,0)
+        #print("note off timer", self.channel + track, pitch, "at: ", pos%16)
+
+    def calc_scale(self, s):
+        self.cur_scale[0] = self.current_preset.scale_data[s][0] + self.cur_trans
+        for i1 in range(1,8):
+            self.cur_scale[i1] = self.cur_scale[i1-1] + self.current_preset.scale_data[s][i1]
+
+
+    @asyncio.coroutine
+    def trigger(self):
+        #print("trigger called")
+        # play all notes in this position
+        for t in self.current_pattern.tracks:
+            #for note in self.note_off[t.play_position]:
+            #for note in self.note_off[t.pos[Modes.mTr.value]]:
+            #del self.note_off[t.play_position][:] #clear the current midi output once it's been sent
+            #del self.note_off[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
+
+            #for note in self.note_on[t.play_position]:
+            for note in self.note_on[t.pos[Modes.mTr.value]]:
+                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,note.velocity)
+            #    print("playing note", self.channel + note.channel_inc, note.pitch, " at: ",self.current_pos%32)
+            del self.note_on[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
+
+        #end all notes that have expired
+        i = 0
+        finished_notes = list()
+        new_duration_timers = [Note()]
+        for note in self.duration_timers:
+            note.decrement_duration()
+            #print("decreasing duration for note:", note.pitch, "at: ", self.current_pos%32, "to: ", note.duration )
+            if note.duration == 0:
+                self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
+            #    print("ending note", self.channel + note.channel_inc, note.pitch, " at: ", self.current_pos%32)
+                finished_notes.append(i) # mark this note for removal from the timer list
+            else:
+                new_duration_timers.append(note)
+            i = i + 1
+        del self.duration_timers[:]
+        self.duration_timers = new_duration_timers # set the duration timers list to the be non-zero items
+        #for n in finished_notes:
+        #    del self.duration_timers[n] #clear the timer once it's exhausted 
+
+
+    @asyncio.coroutine
+    def clock_out(self):
+        yield from self.clock.sync(self.ticks)
     def draw_current_position_test(self):
         previous_step = [0,0,0,0]
         if self.buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
