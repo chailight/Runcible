@@ -674,6 +674,14 @@ class Runcible(monome.App):
         self.buffer.led_set(14,0,0)
         self.buffer.led_set(15,0,0)
         for x in range(self.grid.width):
+            #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
+            for i in range (1,self.current_track.duration[x]+1): #ignore bottom row
+                self.buffer.led_set(x, i, 15)
+            for i in range (self.current_track.duration[x]+1,6): #ignore top row
+                self.buffer.led_set(x, i, 0)
+            #show the triggers for that track on the top row
+            self.buffer.led_set(x, 7, self.current_track.tr[x] * 15)
+        #for x in range(self.grid.width):
             #show the triggers for that track on the top row
             #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
             #draw the accent toggles - this will move to a velocity page?
@@ -683,11 +691,11 @@ class Runcible(monome.App):
             #    buffer.led_set(x, 7, 0)
             #if self.current_channel == 1:
                 #fill a column top down in the x position
-            for i in range (6,7-self.current_track.duration[x]-1): #ignore top row
-                self.buffer.led_set(x, i, 15)
-            for i in range (7-self.current_track.duration[x]-1,1): #ignore bottom row
-                self.buffer.led_set(x, i, 0)
-            self.buffer.led_set(x, 7, self.current_track.tr[x] * 15)
+            #for i in range (6,7-self.current_track.duration[x]-1): #ignore top row
+            #    self.buffer.led_set(x, i, 15)
+            #for i in range (7-self.current_track.duration[x]-1,1): #ignore bottom row
+            #    self.buffer.led_set(x, i, 0)
+            #self.buffer.led_set(x, 7, self.current_track.tr[x] * 15)
             #elif self.current_channel == 2:
                 #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
                 #    buffer.led_set(x, i, 15)
