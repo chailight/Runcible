@@ -1155,7 +1155,7 @@ class Runcible(monome.App):
     def note_entry(self, x, y):
         if self.k_mode == Modes.mNote:
             if self.current_track.track_id == 0:
-                self.current_pattern.step_ch1[7-y][x] ^= 1
+                self.current_pattern.step_ch1[y][x] ^= 1
             elif self.current_track.track_id == 1:
                 self.current_pattern.step_ch2[7-y][x] ^= 1
             elif self.current_track.track_id == 2:
