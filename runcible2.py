@@ -660,7 +660,7 @@ class Runcible(monome.App):
                     self.buffer.led_set(x, i, 15)
                     #print("current oct: ", current_oct, " drawing in row: ", i)
             if current_oct < 0:
-                for i in range (4-current_oct,5):
+                for i in range (4+current_oct,5):
                     self.buffer.led_set(x, i, 15)
                     #print("current oct: ", current_oct, " drawing in row: ", i)
         self.draw_current_position()
