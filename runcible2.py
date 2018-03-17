@@ -1191,7 +1191,7 @@ class Runcible(monome.App):
             #if self.current_channel == 1:
             if y < 7 and y > 0:
                 self.current_track.octave[x] = y-3
-                #print("grid_key = ", y, "octave = ", self.current_pattern.tracks[0].octave[x])
+               #print("grid_key = ", y, "octave = ", self.current_pattern.tracks[0].octave[x])
             #else:
             #    if y < 6 and y > 0:
             #        self.current_pattern.tracks[1].octave[x] = y-3
@@ -1204,7 +1204,7 @@ class Runcible(monome.App):
             # add time setting code based on time mod
             # add probability setting based on prob mod - default to standard velocity if prob comes up "false"?
             self.current_track.velocity[x] = y
-            #print("entered velocity: ", self.current_track.velocity[x])
+            print("entered velocity: ", self.current_track.velocity[x])
             self.frame_dirty = True 
 
     def scale_entry(self, x, y):
