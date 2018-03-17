@@ -683,9 +683,9 @@ class Runcible(monome.App):
             #    buffer.led_set(x, 7, 0)
             #if self.current_channel == 1:
                 #fill a column top down in the x position
-            for i in range (6,self.current_track.duration[x]+1): #ignore top row
+            for i in range (6,7-self.current_track.duration[x]+1): #ignore top row
                 self.buffer.led_set(x, i, 15)
-            for i in range (self.current_track.duration[x]+1,1): #ignore bottom row
+            for i in range (7-self.current_track.duration[x]+1,1): #ignore bottom row
                 self.buffer.led_set(x, i, 0)
             self.buffer.led_set(x, 7, self.current_track.tr[x] * 15)
             #elif self.current_channel == 2:
