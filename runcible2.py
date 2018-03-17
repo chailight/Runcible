@@ -1082,7 +1082,7 @@ class Runcible(monome.App):
                 else:
                     del self.ctrl_keys_last[:]
 
-    def select_modifier(x):
+    def select_modifier(self,x):
         if x == 10:
             self.k_mod_mode = ModModes.modLoop
             print("Selected:", self.k_mod_mode)
@@ -1106,7 +1106,7 @@ class Runcible(monome.App):
                     self.current_pattern.tracks[7-y].tmul[Modes.mDur.value] = x
                     self.current_pattern.tracks[7-y].tmul[Modes.mVel.value] = x
 
-    def set_track_time_multiplier(x):
+    def set_track_time_multiplier(self,x):
         #if self.k_mode == Modes.mTr: # enable this in all modes
         if self.k_mod_mode == ModModes.modTime:
             if self.current_track.sync_mode == 0: # set the time multiplier for this parameter only
@@ -1126,7 +1126,7 @@ class Runcible(monome.App):
                     track.tmul[Modes.mVel.value] = x
             print("tmul: ", self.k_mode, self.current_track.tmul[Modes.mTr.value])
 
-    def set_track_settings(x,y):
+    def set_track_settings(self,x,y):
         if self.k_mode == Modes.mTr:
             #print("Trigger page key:", x, y)
             if y == 2 and x < 4:
