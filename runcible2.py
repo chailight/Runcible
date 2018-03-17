@@ -370,7 +370,7 @@ class Runcible(monome.App):
                             if not track.track_mute:
                                 #self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
                                 self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
-                                print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
+                                #print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
 
             asyncio.async(self.trigger())
             self.current_pos = yield from self.clock.sync(TICKS_32ND)
@@ -1093,7 +1093,7 @@ class Runcible(monome.App):
             self.k_mod_mode = ModModes.modProb
             print("Selected:", self.k_mod_mode)
 
-    def set_global_time_multiplier(x,y):
+    def set_global_time_multiplier(self,x,y):
         if self.k_mode == Modes.mTr and self.k_mod_mode == ModModes.modTime:
             # handle time multiplier setting
             if y > 3 and y < 8:
