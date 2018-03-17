@@ -1184,14 +1184,15 @@ class Runcible(monome.App):
             # add time setting code based on time mod
             # add probability setting based on prob mod - default to standard duration if prob comes up "false"?
             self.current_track.duration[x] = 7-y
+            print("grid_key = ", y, "duration = ", self.current_pattern.tracks[0].duration[x])
             self.frame_dirty = True 
 
     def octave_entry(self, x, y):
         if self.k_mode == Modes.mOct: 
             #if self.current_channel == 1:
             if y < 7 and y > 0:
-                self.current_track.octave[x] = y-3
-               #print("grid_key = ", y, "octave = ", self.current_pattern.tracks[0].octave[x])
+                self.current_track.octave[x] = -y+3
+               print("grid_key = ", y, "octave = ", self.current_pattern.tracks[0].octave[x])
             #else:
             #    if y < 6 and y > 0:
             #        self.current_pattern.tracks[1].octave[x] = y-3
