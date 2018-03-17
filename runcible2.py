@@ -676,6 +676,7 @@ class Runcible(monome.App):
         for x in range(self.grid.width):
             #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
             for i in range (1,self.current_track.duration[x]+1): #ignore bottom row
+                print(x,i)
                 self.buffer.led_set(x, i, 15)
             for i in range (self.current_track.duration[x]+1,6): #ignore top row
                 self.buffer.led_set(x, i, 0)
@@ -1200,7 +1201,7 @@ class Runcible(monome.App):
         if self.k_mode == Modes.mOct: 
             #if self.current_channel == 1:
             if y < 7 and y > 0:
-                self.current_track.octave[x] = -y+4
+                self.current_track.octave[x] = -y+3
                 print("grid_key = ", y, "octave = ", self.current_track.octave[x])
             #else:
             #    if y < 6 and y > 0:
