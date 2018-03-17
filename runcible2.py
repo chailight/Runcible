@@ -577,7 +577,7 @@ class Runcible(monome.App):
         self.buffer.led_set(14,0,0)
         self.buffer.led_set(15,0,0)
         for x in range(self.grid.width):
-            for y in range(1,self.grid.height-2): #ignore bottom row
+            for y in range(1,self.grid.height): #ignore bottom row
                 #render_pos = self.spanToGrid(x,y)
                 if self.current_track.track_id == 0:
                     self.buffer.led_set(x, y, self.current_pattern.step_ch1[y][x] * 15 )
@@ -1157,11 +1157,11 @@ class Runcible(monome.App):
             if self.current_track.track_id == 0:
                 self.current_pattern.step_ch1[y][x] ^= 1
             elif self.current_track.track_id == 1:
-                self.current_pattern.step_ch2[7-y][x] ^= 1
+                self.current_pattern.step_ch2[y][x] ^= 1
             elif self.current_track.track_id == 2:
-                self.current_pattern.step_ch3[7-y][x] ^= 1
+                self.current_pattern.step_ch3[y][x] ^= 1
             else:
-                self.current_pattern.step_ch4[7-y][x] ^= 1
+                self.current_pattern.step_ch4[y][x] ^= 1
             if y not in self.current_track.note[x]:
                 self.current_track.note[x].append(y)
                 #print("append: ", y, "at ", x)
