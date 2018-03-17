@@ -463,7 +463,7 @@ class Runcible(monome.App):
             #for note in self.note_on[t.play_position]:
             for note in self.note_on[t.pos[Modes.mTr.value]]:
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,note.velocity)
-                print("playing note", self.channel + note.channel_inc, note.pitch, " at: ",self.current_pos%32)
+                #print("playing note", self.channel + note.channel_inc, note.pitch, " at: ",self.current_pos%32)
             del self.note_on[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
 
         #end all notes that have expired
@@ -475,7 +475,7 @@ class Runcible(monome.App):
             #print("decreasing duration for note:", note.pitch, "at: ", self.current_pos%32, "to: ", note.duration )
             if note.duration == 0:
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,0)
-                print("ending note", self.channel + note.channel_inc, note.pitch, " at: ", self.current_pos%32)
+                #print("ending note", self.channel + note.channel_inc, note.pitch, " at: ", self.current_pos%32)
                 finished_notes.append(i) # mark this note for removal from the timer list
             else:
                 new_duration_timers.append(note)
