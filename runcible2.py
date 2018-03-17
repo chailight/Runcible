@@ -675,10 +675,10 @@ class Runcible(monome.App):
         self.buffer.led_set(15,0,0)
         for x in range(self.grid.width):
             #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
-            for i in range (6,7-(self.current_track.duration[x]+1)): #ignore bottom row
+            for i in range (7-(self.current_track.duration[x]+1),6): #ignore bottom row
                 #print(x,i)
                 self.buffer.led_set(x, i, 15)
-            for i in range (7-(self.current_track.duration[x]+1),1): #ignore top row
+            for i in range (1,7-(self.current_track.duration[x]+1)): #ignore top row
                 self.buffer.led_set(x, i, 0)
             #show the triggers for that track on the top row
             self.buffer.led_set(x, 7, self.current_track.tr[x] * 15)
