@@ -656,11 +656,11 @@ class Runcible(monome.App):
             current_oct = self.current_track.octave[x]
             if current_oct >= 0:
                 #print("start = ", 1, "end = ", 4-current_oct)
-                for i in range (4-current_oct,5):
+                for i in range (4,4+current_oct+1):
                     self.buffer.led_set(x, i, 15)
                     #print("current oct: ", current_oct, " drawing in row: ", i)
             if current_oct < 0:
-                for i in range (4,5-current_oct):
+                for i in range (4-current_oct,5):
                     self.buffer.led_set(x, i, 15)
                     #print("current oct: ", current_oct, " drawing in row: ", i)
         self.draw_current_position()
@@ -1201,7 +1201,7 @@ class Runcible(monome.App):
         if self.k_mode == Modes.mOct: 
             #if self.current_channel == 1:
             if y < 7 and y > 0:
-                self.current_track.octave[x] = -y+3
+                self.current_track.octave[x] = y-4
                 print("grid_key = ", y, "octave = ", self.current_track.octave[x])
             #else:
             #    if y < 6 and y > 0:
