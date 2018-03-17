@@ -687,6 +687,7 @@ class Runcible(monome.App):
                 self.buffer.led_set(x, i, 15)
             for i in range (self.current_track.duration[x]+1,1): #ignore bottom row
                 self.buffer.led_set(x, i, 0)
+            self.buffer.led_set(x, 7, self.current_track.tr[x] * 15)
             #elif self.current_channel == 2:
                 #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
                 #    buffer.led_set(x, i, 15)
@@ -704,9 +705,9 @@ class Runcible(monome.App):
         self.buffer.led_set(15,0,0)
         for x in range(self.grid.width):
             #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
-            for i in range (7-self.current_track.velocity[x],1): #ignore bottom row
+            for i in range (1,self.current_track.velocity[x]+1): #ignore bottom row
                 self.buffer.led_set(x, i, 15)
-            for i in range (6,7-self.current_track.velocity[x]): #ignore top row
+            for i in range (self.current_track.velocity[x]+1,6): #ignore top row
                 self.buffer.led_set(x, i, 0)
             #show the triggers for that track on the top row
             self.buffer.led_set(x, 7, self.current_track.tr[x] * 15)
@@ -1184,15 +1185,15 @@ class Runcible(monome.App):
             # add time setting code based on time mod
             # add probability setting based on prob mod - default to standard duration if prob comes up "false"?
             self.current_track.duration[x] = 7-y
-            print("grid_key = ", y, "duration = ", self.current_pattern.tracks[0].duration[x])
+            print("grid_key = ", y, "duration = ", self.current_track.duration[x])
             self.frame_dirty = True 
 
     def octave_entry(self, x, y):
         if self.k_mode == Modes.mOct: 
             #if self.current_channel == 1:
             if y < 7 and y > 0:
-                self.current_track.octave[x] = -y+3
-                print("grid_key = ", y, "octave = ", self.current_pattern.tracks[0].octave[x])
+                self.current_track.octave[x] = -y+4
+                print("grid_key = ", y, "octave = ", self.current_track.octave[x])
             #else:
             #    if y < 6 and y > 0:
             #        self.current_pattern.tracks[1].octave[x] = y-3
