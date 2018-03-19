@@ -243,7 +243,7 @@ class Runcible(monome.App):
         self.current_track = self.current_pattern.tracks[0]
         self.current_track_id = self.current_pattern.tracks[0].track_id
         #self.calc_scale(self.cur_scale_id)
-        self.buffer = monome.GridBuffer(self.grid.width, self.grid.height)
+        self.buffer = virtualgrid.GridBuffer(self.grid.width, self.grid.height)
         #self.buffer.levels.reverse() #flip the buffer - for some reason it is upsidedown compared to the grid
         self.frame_dirty = False 
         asyncio.async(self.play())
