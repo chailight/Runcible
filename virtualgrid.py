@@ -160,7 +160,7 @@ class PhysicalGridWrapper_1(monome.GridWrapper):
         #print("rotated 2")
         #print(rotated2)
         #adjusted_data = rotated2
-        self.grid.led_map(x_offset, y_offset, np.fliplr(data))
+        self.grid.led_map(x_offset, y_offset, np.fliplr(data).tolist())
 
     def led_level_map(self, x_offset, y_offset, data):
         #rotated1 = zip(*data[::-1])
@@ -171,7 +171,7 @@ class PhysicalGridWrapper_1(monome.GridWrapper):
         #print("rotated 2")
         #print(rotated2)
         #adjusted_data = rotated2
-        self.grid.led_level_map(x_offset, y_offset, np.fliplr(data))
+        self.grid.led_level_map(x_offset, y_offset, np.fliplr(data).tolist())
 
     def led_col(self, x, y_offset, data):
         #print("Grid 1: col data")
