@@ -702,6 +702,7 @@ class Runcible(monome.App):
                 #    buffer.led_set(x, i, 15)
                 #for i in range (self.current_pattern.tracks[1].duration[x]+1,7):
                 #    buffer.led_set(x, i, 0)
+        print("octave page level")
         print(self.buffer.levels)
         self.draw_current_position()
 
