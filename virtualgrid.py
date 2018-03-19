@@ -111,7 +111,7 @@ class VirtualGridWrapper(monome.GridWrapper):
         if len(data[0]) == 16:
             #need to split each row of data in half and then re-assemble into list of lists
             for i in range(8):
-                grid1_data[i]=data[i][0:7]
+                grid1_data[i]=data[i][0:8]
                 grid2_data[i]=data[i][8:]
             #print(grid1_data)
             #print(grid2_data)
