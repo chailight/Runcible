@@ -6,6 +6,7 @@ import monome
 import aiosc
 import itertools
 import re
+import numpy as np
 
 DISCONNECTED, CONNECTED, READY = range(3)
 
@@ -162,15 +163,15 @@ class PhysicalGridWrapper_1(monome.GridWrapper):
         self.grid.led_map(x_offset, y_offset, adjusted_data)
 
     def led_level_map(self, x_offset, y_offset, data):
-        rotated1 = zip(*data[::-1])
-        rotated2 = zip(*rotated1[::-1])
+        #rotated1 = zip(*data[::-1])
+        #rotated2 = zip(*rotated1[::-1])
         #print("rotated 1")
         #for i in range(8):
         #    print (rotated1[i])
         #print("rotated 2")
         #print(rotated2)
         #adjusted_data = rotated2
-        self.grid.led_level_map(x_offset, y_offset, rotated2)
+        self.grid.led_level_map(x_offset, y_offset, np.fliplr(data))
 
     def led_col(self, x, y_offset, data):
         #print("Grid 1: col data")
