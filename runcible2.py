@@ -799,7 +799,7 @@ class Runcible(monome.App):
                 self.draw_pattern_page()
 
         self.buffer.levels.reverse()
-        self.grid.led_map(0,0,self.buffer.levels)
+        self.grid.led_level_map(0,0,self.buffer.levels)
         self.buffer.levels.reverse()
         self.buffer.led_level_all(0)
         self.frame_dirty = False 
@@ -1020,7 +1020,7 @@ class Runcible(monome.App):
 
             # update grid
             #buffer.render(self.grid)
-            self.grid.led_map(0,0,buffer.levels)
+            self.grid.led_level_map(0,0,buffer.levels)
             self.frame_dirty = False 
 
     def select_track(self, x, s):
