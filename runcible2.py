@@ -580,13 +580,13 @@ class Runcible(monome.App):
             for y in range(1,self.grid.height): #ignore bottom row
                 #render_pos = self.spanToGrid(x,y)
                 if self.current_track.track_id == 0:
-                    self.buffer.led_set(x, y, self.current_pattern.step_ch1[y][x] * 15 )
+                    self.buffer.led_set(x, y, self.current_pattern.step_ch1[y][x])
                 elif self.current_track.track_id == 1:
-                    self.buffer.led_set(x, y, self.current_pattern.step_ch2[y][x] * 15 )
+                    self.buffer.led_set(x, y, self.current_pattern.step_ch2[y][x])
                 elif self.current_track.track_id == 2:
-                    self.buffer.led_set(x, y, self.current_pattern.step_ch3[y][x] * 15 )
+                    self.buffer.led_set(x, y, self.current_pattern.step_ch3[y][x])
                 elif self.current_track.track_id == 3:
-                    self.buffer.led_set(x, y, self.current_pattern.step_ch4[y][x] * 15 )
+                    self.buffer.led_set(x, y, self.current_pattern.step_ch4[y][x])
         self.draw_current_position()
 
     def draw_current_track_indicator(self):
@@ -681,7 +681,7 @@ class Runcible(monome.App):
             for i in range (1,7-(self.current_track.duration[x])): #ignore top row
                 self.buffer.led_set(x, i, 0)
             #show the triggers for that track on the top row
-            self.buffer.led_set(x, 7, self.current_track.tr[x] * 15)
+            self.buffer.led_set(x, 7, self.current_track.tr[x])
         #for x in range(self.grid.width):
             #show the triggers for that track on the top row
             #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
@@ -721,7 +721,7 @@ class Runcible(monome.App):
             for i in range (self.current_track.velocity[x]+1,6): #ignore top row
                 self.buffer.led_set(x, i, 0)
             #show the triggers for that track on the top row
-            self.buffer.led_set(x, 7, self.current_track.tr[x] * 15)
+            self.buffer.led_set(x, 7, self.current_track.tr[x])
             #elif self.current_channel == 2:
                 #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
                 #    buffer.led_set(x, i, 15)
@@ -821,13 +821,13 @@ class Runcible(monome.App):
                     for y in range(1,self.grid.height-1): #ignore bottom row
                         #render_pos = self.spanToGrid(x,y)
                         if self.current_track.track_id == 0:
-                            buffer.led_set(x, y, self.current_pattern.step_ch1[y][x] * 15 )
+                            buffer.led_set(x, y, self.current_pattern.step_ch1[y][x])
                         elif self.current_track.track_id == 1:
-                            buffer.led_set(x, y, self.current_pattern.step_ch2[y][x] * 15 )
+                            buffer.led_set(x, y, self.current_pattern.step_ch2[y][x])
                         elif self.current_track.track_id == 2:
-                            buffer.led_set(x, y, self.current_pattern.step_ch3[y][x] * 15 )
+                            buffer.led_set(x, y, self.current_pattern.step_ch3[y][x])
                         elif self.current_track.track_id == 3:
-                            buffer.led_set(x, y, self.current_pattern.step_ch4[y][x] * 15 )
+                            buffer.led_set(x, y, self.current_pattern.step_ch4[y][x])
             elif self.k_mode == Modes.mOct:
                 buffer.led_set(5,7,0)
                 buffer.led_set(6,7,0)
@@ -838,7 +838,7 @@ class Runcible(monome.App):
                 buffer.led_set(15,7,0)
                 for x in range(self.grid.width):
                     #show the triggers for that track on the top row
-                    buffer.led_set(x, 0, self.current_track.tr[x] * 15)
+                    buffer.led_set(x, 0, self.current_track.tr[x])
                     #if self.current_channel == 1:
                     #fill a column bottom up in the x position
                     current_oct = self.current_track.octave[x]
@@ -861,7 +861,7 @@ class Runcible(monome.App):
                 buffer.led_set(15,7,0)
                 for x in range(self.grid.width):
                     #show the triggers for that track on the top row
-                    buffer.led_set(x, 0, self.current_track.tr[x] * 15)
+                    buffer.led_set(x, 0, self.current_track.tr[x])
                     #draw the accent toggles - this will move to a velocity page?
                     #if self.current_track.velocity[x]:
                     #    buffer.led_set(x, 7, 15)
@@ -887,13 +887,13 @@ class Runcible(monome.App):
                 buffer.led_set(14,7,0)
                 buffer.led_set(15,7,0)
                 for x in range(self.grid.width):
-                    buffer.led_set(x, 0, self.current_track.tr[x] * 15)
+                    buffer.led_set(x, 0, self.current_track.tr[x])
                     for i in range (7-self.current_track.velocity[x],7): #ignore bottom row
                         buffer.led_set(x, i, 15)
                     for i in range (0,7-self.current_track.velocity[x]): #ignore top row
                         buffer.led_set(x, i, 0)
                     #show the triggers for that track on the top row
-                    buffer.led_set(x, 0, self.current_track.tr[x] * 15)
+                    buffer.led_set(x, 0, self.current_track.tr[x])
                     #elif self.current_channel == 2:
                         #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
                         #    buffer.led_set(x, i, 15)
