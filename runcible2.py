@@ -804,7 +804,7 @@ class Runcible(monome.App):
         #print(self.buffer.levels)
         for y in range(8):
             for x in range(16):
-                self.grid.led_level_set(x,y,self.buffer.levels[y][x])
+                self.grid.led_set(x,y,self.buffer.levels[y][x])
         self.buffer.levels.reverse()
         self.buffer.led_level_all(0)
         self.frame_dirty = False 
