@@ -103,7 +103,7 @@ class VirtualGridWrapper(monome.GridWrapper):
         else:
             r = x
             x = abs(y+7)
-            y = r
+            y = r+1
             self.grid2.led_level_set(x, y, l)
 
     def led_level_all(self, l):
@@ -200,7 +200,7 @@ class PhysicalGridWrapper_2(monome.GridWrapper):
         self.event_handler = None
 
     def on_grid_key(self, x, y, s):
-        self.event_handler.on_grid_key(y+7, x, s) #rotate 90 and offset
+        self.event_handler.on_grid_key(y+8, x, s) #rotate 90 and offset
 
     #rotates data 90
     def led_map(self, x_offset, y_offset, data):
