@@ -17,11 +17,13 @@ class Hello(monome.App):
     @asyncio.coroutine
     def stop_chaser(self):
         self.chaser = 0
+        print ("chaser",self.chaser)
 
     @asyncio.coroutine
     def start_chaser(self):
         self.chaser = 1
-        asyncio.async(self.run_chaser())
+        print ("chaser",self.chaser)
+        #asyncio.async(self.run_chaser())
 
     @asyncio.coroutine
     def run_chaser(self):
