@@ -164,7 +164,9 @@ class PhysicalGridWrapper_1(monome.GridWrapper):
         #    print (rotated1[i])
         #print("rotated 2")
         #print(rotated2)
-        #adjusted_data = rotated2
+        #adjusted_data = rotated2##
+        print(np.fliplr(np.flipud(np.asarray(data))).shape)
+        print(np.fliplr(np.flipud(np.asarray(data))).tolist())
         self.grid.led_map(x_offset, y_offset, np.fliplr(np.flipud(np.asarray(data))).tolist())
 
     def led_level_map(self, x_offset, y_offset, data):
@@ -340,22 +342,22 @@ class SpanningSerialOsc(monome.SerialOsc):
         print("connecting grid 1")
         self.physical_grid1 = PhysicalGridWrapper_1(physical_grid)
         self.physical_grid1.connect()
-        print("setting rotation")
-        self.physical_grid1.grid.send('/sys/rotation 180')
-        self.physical_grid1.grid.rotation = 180
-        print("checking rotation")
-        self.physical_grid1.grid.send('/sys/info')
+        #print("setting rotation")
+        #self.physical_grid1.grid.send('/sys/rotation 180')
+        #self.physical_grid1.grid.rotation = 180
+        #print("checking rotation")
+        #self.physical_grid1.grid.send('/sys/info')
 
     async def connect_physical_grid2(self, grid_port):
         transport, physical_grid = await self.loop.create_datagram_endpoint(monome.Grid, local_addr=('127.0.0.1', 0), remote_addr=('127.0.0.1', grid_port))
         print("connecting grid 2")
         self.physical_grid2 = PhysicalGridWrapper_2(physical_grid)
         self.physical_grid2.connect()
-        self.physical_grid2.grid.send('/sys/rotation 270')
-        self.physical_grid2.grid.rotation = 270
-        print("checking rotation")
-        self.physical_grid2.grid.send('/sys/info')
-        print("creating spanning grid")
+        #self.physical_grid2.grid.send('/sys/rotation 270')
+        #self.physical_grid2.grid.rotation = 270
+        #print("checking rotation")
+        #self.physical_grid2.grid.send('/sys/info')
+        #print("creating spanning grid")
         self.grid = VirtualGridWrapper(self.physical_grid1, self.physical_grid2)
         print("attaching app to grid")
         self.autoconnect_app.attach(self.grid)
