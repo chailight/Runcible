@@ -10,6 +10,7 @@ class Hello(monome.App):
         #pass
 
     def on_grid_key(self, x, y, s):
+        print(x,y)
         self.grid.led_set(x, y, s)
 
 if __name__ == '__main__':
