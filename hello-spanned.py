@@ -21,7 +21,7 @@ class Hello(monome.App):
     @asyncio.coroutine
     def start_chaser(self):
         self.chaser = 1
-        while (chaser == 1) :
+        while (self.chaser == 1) :
             print(self.current_pos)
             self.current_pos = (self.current_pos + 1)%16
 
