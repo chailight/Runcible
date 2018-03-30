@@ -311,6 +311,7 @@ class myGridBuffer:
         for x_offset in [i * 8 for i in range(self.width // 8)]:
             for y_offset in [i * 8 for i in range(self.height // 8)]:
                 grid.led_level_map(x_offset, y_offset, self.get_level_map(x_offset, y_offset))
+
 class SpanningSerialOsc(monome.SerialOsc):
     def __init__(self, loop=None, autoconnect_app=None):
         super().__init__(loop, autoconnect_app)
