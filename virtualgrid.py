@@ -352,7 +352,7 @@ class SpanningSerialOsc(monome.SerialOsc):
         self.physical_grid2 = PhysicalGridWrapper_2(physical_grid)
         self.physical_grid2.connect()
         self.physical_grid2.grid.send('/sys/rotation 270')
-        self.physical.grid2.grid.rotation = 270
+        self.physical_grid2.grid.rotation = 270
         print("checking rotation")
         self.physical_grid2.grid.send('/sys/info')
         print("creating spanning grid")
