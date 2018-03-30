@@ -32,13 +32,17 @@ class VirtualGridWrapper(monome.GridWrapper):
 
     def on_grid_ready(self):
         #self.width = self.grid1.width + self.grid2.width
-        self.width = 16 
+        self.width = 16
         #self.height = self.grid1.height #this assumes spanning only horizontally 
-        self.height = 8 
+        self.height = 8
+        print("setting rotation")
         self.grid1.grid.send('/sys/rotation 180')
         self.grid1.grid.rotation = 180
         self.grid2.grid.send('/sys/rotation 270')
         self.grid2.grid.rotation = 180
+        print("checking rotation")
+        self.grid1.grid.send('/sys/info')
+        self.grid2.grid.send('/sys/info')
         self.event_handler.on_grid_ready()
 
     def on_grid_key(self, x, y, s):
@@ -51,11 +55,11 @@ class VirtualGridWrapper(monome.GridWrapper):
         if x < 8:
             self.grid1.led_set(x, y, s)
         else:
-            print("received",x,y)
+            #print("received",x,y)
             r = x
             x = abs(y+8)
             y = r-8
-            print("setting grid2",x,y)
+            #print("setting grid2",x,y)
             self.grid2.led_set(x, y, s)
 
     def led_all(self, s):
