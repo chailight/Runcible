@@ -799,7 +799,10 @@ class Runcible(monome.App):
                 self.draw_pattern_page()
 
         self.buffer.levels.reverse()
-        self.grid.led_level_map(0,0,self.buffer.levels)
+        #self.grid.led_level_map(0,0,self.buffer.levels)
+        for x in range(16):
+            for y in range(8):
+                self.grid.led_level_set(x,y,self.buffer.levels[x][y])
         self.buffer.levels.reverse()
         self.buffer.led_level_all(0)
         self.frame_dirty = False 
