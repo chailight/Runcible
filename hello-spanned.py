@@ -120,7 +120,6 @@ class Hello(monome.App):
 
         if x==1 and y==0:
             asyncio.async(self.start_chaser())
-           )
 
         if x==2 and y==0:
             asyncio.async(self.stop_chaser())
