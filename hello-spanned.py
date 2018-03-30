@@ -23,14 +23,14 @@ class Hello(monome.App):
     def start_chaser(self):
         self.chaser = 1
         print ("chaser",self.chaser)
-        #asyncio.async(self.run_chaser())
+        asyncio.async(self.run_chaser())
 
     @asyncio.coroutine
     def run_chaser(self):
         while (self.chaser == 1) :
             print(self.current_pos)
             self.current_pos = (self.current_pos + 1)%16
-            asyncio.sleep(1)
+            await asyncio.sleep(10)
 
 
     def on_grid_key(self, x, y, s):
@@ -120,10 +120,10 @@ class Hello(monome.App):
         if x==0 and y==6:
             self.grid.led_map(0,0,data5)
 
-        if x==1 and y==0:
+        if x==1 and y==0 and s == 1:
             asyncio.async(self.start_chaser())
 
-        if x==2 and y==0:
+        if x==2 and y==0 and s == 1:
             asyncio.async(self.stop_chaser())
 
 
