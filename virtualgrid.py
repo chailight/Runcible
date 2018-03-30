@@ -341,20 +341,20 @@ class SpanningSerialOsc(monome.SerialOsc):
         self.physical_grid1 = PhysicalGridWrapper_1(physical_grid)
         self.physical_grid1.connect()
         print("setting rotation")
-        self.physical_grid1.send('/sys/rotation 180')
-        self.physical_grid2.rotation = 180
+        self.physical_grid1.grid.send('/sys/rotation 180')
+        self.physical_grid2.grid.rotation = 180
         print("checking rotation")
-        self.physical_grid1.send('/sys/info')
+        self.physical_grid1.grid.send('/sys/info')
 
     async def connect_physical_grid2(self, grid_port):
         transport, physical_grid = await self.loop.create_datagram_endpoint(monome.Grid, local_addr=('127.0.0.1', 0), remote_addr=('127.0.0.1', grid_port))
         print("connecting grid 2")
         self.physical_grid2 = PhysicalGridWrapper_2(physical_grid)
         self.physical_grid2.connect()
-        self.physical_grid2.send('/sys/rotation 270')
-        self.physical.grid2.rotation = 270
+        self.physical_grid2.grid.send('/sys/rotation 270')
+        self.physical.grid2.grid.rotation = 270
         print("checking rotation")
-        self.physical_grid2.send('/sys/info')
+        self.physical_grid2.grid.send('/sys/info')
         print("creating spanning grid")
         self.grid = VirtualGridWrapper(self.physical_grid1, self.physical_grid2)
         print("attaching app to grid")
