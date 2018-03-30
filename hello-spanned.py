@@ -14,9 +14,11 @@ class Hello(monome.App):
         #print("connected to ", self.grid.id)
         #pass
 
+    @asyncio.coroutine
     def stop_chaser(self):
         self.chaser = 0
 
+    @asyncio.coroutine
     def start_chaser(self):
         self.chaser = 1
         asyncio.async(self.run_chaser())
@@ -26,7 +28,7 @@ class Hello(monome.App):
         while (self.chaser == 1) :
             print(self.current_pos)
             self.current_pos = (self.current_pos + 1)%16
-            await asyncio.sleep(1)
+            asyncio.sleep(1)
 
 
     def on_grid_key(self, x, y, s):
@@ -117,10 +119,11 @@ class Hello(monome.App):
             self.grid.led_map(0,0,data5)
 
         if x==1 and y==0:
-            self.start_chaser()
+            asyncio.async(self.start_chaser())
+           )
 
         if x==2 and y==0:
-            self.stop_chaser()
+            asyncio.async(self.stop_chaser())
 
 
 
