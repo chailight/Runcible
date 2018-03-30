@@ -14,11 +14,11 @@ class Hello(monome.App):
         #print("connected to ", self.grid.id)
         #pass
 
-    @asincio.coroutine
+    @asyncio.coroutine
     def stop_chaser(self):
         self.chaser = 0
 
-    @asincio.coroutine
+    @asyncio.coroutine
     def start_chaser(self):
         self.chaser = 1
         while (chaser == 1) :
