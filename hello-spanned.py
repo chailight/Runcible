@@ -5,9 +5,25 @@ import monome
 import virtualgrid
 
 class Hello(monome.App):
+    def __init__(self):
+        super().__init__()
+        self.chaser = 0
+        self.current_pos = 0
+
     #def on_grid_ready(self):
         #print("connected to ", self.grid.id)
         #pass
+
+    @asincio.coroutine
+    def stop_chaser(self):
+        self.chaser = 0
+
+    @asincio.coroutine
+    def start_chaser(self):
+        self.chaser = 1
+        while (chaser == 1) :
+            print(self.current_pos)
+            self.current_pos = (self.current_pos + 1)%16
 
     def on_grid_key(self, x, y, s):
         print(x,y)
@@ -95,6 +111,14 @@ class Hello(monome.App):
 
         if x==0 and y==6:
             self.grid.led_map(0,0,data5)
+
+        if x==1 and y==0:
+            asyncio.async(self.start_chaser())
+
+        if x==2 and y==0:
+            asyncio.async(self.stop_chaser())
+
+
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
