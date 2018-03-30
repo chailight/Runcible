@@ -49,10 +49,11 @@ class VirtualGridWrapper(monome.GridWrapper):
         if x < 8:
             self.grid1.led_set(x, y, s)
         else:
+            print("received",x,y)
             r = x
-            x = abs(y+7)
-            y = r
-            print("setting grid 2",x,y)
+            x = abs(y+8)
+            y = r-8
+            print("setting grid2",x,y)
             self.grid2.led_set(x, y, s)
 
     def led_all(self, s):
