@@ -800,7 +800,7 @@ class Runcible(monome.App):
 
         self.buffer.levels.reverse()
         #self.grid.led_level_map(0,0,self.buffer.levels)
-        print len(self.buffer.levels.[0])
+        print(len(self.buffer.levels.[0]))
         print self.buffer.levels
         #for x in range(16):
         #    for y in range(8):
