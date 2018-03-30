@@ -19,10 +19,10 @@ class VirtualGridWrapper(monome.GridWrapper):
         self.event_handler = None
         #self.grid1_data = [0,0,0,0,0,0,0,0]
         #self.grid2_data = [0,0,0,0,0,0,0,0]
-        self.grid1_data = np.zeros(8,8)
-        self.grid2_data = np.zeros(8,8)
-        self.grid1_row_data = np.zeros(8,1)
-        self.grid2_row_data = np.zeros(8,1)
+        self.grid1_data = np.zeros((8,8))
+        self.grid2_data = np.zeros((8,8))
+        self.grid1_row_data = np.zeros((8,1))
+        self.grid2_row_data = np.zeros((8,1))
 
 
     def connect(self):
