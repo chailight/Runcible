@@ -67,7 +67,7 @@ class VirtualGridWrapper(monome.GridWrapper):
             #    self.grid2_data[i]=data[i][8:]
             #print(grid1_data)
             #print(grid2_data)
-            self.grid1_data, self.grid2_data = np.hsplit(data,2)
+            self.grid1_data, self.grid2_data = np.hsplit(np.asarray(data),2)
             self.grid1.led_map(x_offset, y_offset, self.grid1_data.tolist())
             self.grid2.led_map(x_offset, y_offset, self.grid2_data.tolist())
         if len(data[0]) == 8:
@@ -77,7 +77,7 @@ class VirtualGridWrapper(monome.GridWrapper):
     #todo: split the data according to position
     def led_row(self, x_offset, y, data):
         if len(data) == 16:
-            self.grid1_row_data, self.grid2_row_data = np.hsplit(data,2)
+            self.grid1_row_data, self.grid2_row_data = np.hsplit(np.asarray(data),2)
             #self.grid2_row_data=data[8:]
             #print(grid1_data)
             #print(grid2_data)
