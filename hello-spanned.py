@@ -14,19 +14,16 @@ class Hello(monome.App):
         #print("connected to ", self.grid.id)
         #pass
 
-    @asyncio.coroutine
-    def stop_chaser(self):
+    async def stop_chaser(self):
         self.chaser = 0
         print ("chaser",self.chaser)
 
-    @asyncio.coroutine
-    def start_chaser(self):
+    async def start_chaser(self):
         self.chaser = 1
         print ("chaser",self.chaser)
         asyncio.async(self.run_chaser())
 
-    @asyncio.coroutine
-    def run_chaser(self):
+    async def run_chaser(self):
         while (self.chaser == 1) :
             print(self.current_pos)
             self.current_pos = (self.current_pos + 1)%16
