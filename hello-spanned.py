@@ -21,7 +21,7 @@ class Hello(monome.App):
     async def start_chaser(self):
         self.chaser = 1
         print ("chaser",self.chaser)
-        asyncio.async(self.run_chaser())
+        await self.run_chaser()
 
     async def run_chaser(self):
         while (self.chaser == 1) :
