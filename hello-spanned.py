@@ -27,9 +27,9 @@ class Hello(monome.App):
         while (self.chaser == 1) :
             print(self.current_pos)
             self.current_pos = (self.current_pos + 1)%16
-            self.grid.led_set(7,self.current_pos-1,0)
-            self.grid.led_set(7,self.current_pos,1)
-            await asyncio.sleep(2)
+            self.grid.led_set(self.current_pos-1,7,0)
+            self.grid.led_set(self.current_pos,7,1)
+            await asyncio.sleep(1)
 
 
     def on_grid_key(self, x, y, s):
