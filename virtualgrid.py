@@ -77,7 +77,7 @@ class VirtualGridWrapper(monome.GridWrapper):
     #todo: split the data according to position
     def led_row(self, x_offset, y, data):
         if len(data) == 16:
-            self.grid1_row_data, self.grid2_row_data = np.split(data,2)
+            self.grid1_row_data, self.grid2_row_data = np.hsplit(data,2)
             #self.grid2_row_data=data[8:]
             #print(grid1_data)
             #print(grid2_data)
@@ -165,8 +165,8 @@ class PhysicalGridWrapper_1(monome.GridWrapper):
         #print("rotated 2")
         #print(rotated2)
         #adjusted_data = rotated2##
-        print(np.fliplr(np.flipud(np.asarray(data))).shape)
-        print(np.fliplr(np.flipud(np.asarray(data))).tolist())
+        #print(np.fliplr(np.flipud(np.asarray(data))).shape)
+        #print(np.fliplr(np.flipud(np.asarray(data))).tolist())
         self.grid.led_map(x_offset, y_offset, np.fliplr(np.flipud(np.asarray(data))).tolist())
 
     def led_level_map(self, x_offset, y_offset, data):
