@@ -35,8 +35,10 @@ class VirtualGridWrapper(monome.GridWrapper):
         self.width = 16 
         #self.height = self.grid1.height #this assumes spanning only horizontally 
         self.height = 8 
-        #self.grid1.grid.send('/sys/rotation 180')
-        #self.grid2.grid.send('/sys/rotation 270')
+        self.grid1.grid.send('/sys/rotation 180')
+        self.grid1.grid.rotation = 180
+        self.grid2.grid.send('/sys/rotation 270')
+        self.grid2.grid.rotation = 180
         self.event_handler.on_grid_ready()
 
     def on_grid_key(self, x, y, s):
