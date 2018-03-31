@@ -70,7 +70,8 @@ class VirtualGridWrapper(monome.GridWrapper):
             #    self.grid2_data[i]=data[i][8:]
             #print(grid1_data)
             #print(grid2_data)
-            self.grid1_data, self.grid2_data = np.vsplit(data,2)
+            local_data = np.copy(data)
+            self.grid1_data, self.grid2_data = np.vsplit(local_data,2)
             self.grid1.led_map(x_offset, y_offset, self.grid1_data)
             self.grid2.led_map(x_offset, y_offset, self.grid2_data)
         if data.shape[0] == 8:
