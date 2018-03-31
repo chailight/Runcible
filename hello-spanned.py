@@ -12,7 +12,7 @@ class Hello(monome.App):
 
     def on_grid_ready(self):
         self.my_buffer = virtualgrid.myGridBuffer(self.grid.width,self.grid.height)
-        await self.draw()
+        asyncio.async(self.draw())
 
 
     async def stop_chaser(self):
