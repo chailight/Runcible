@@ -550,7 +550,7 @@ class Runcible(monome.App):
                         #display play pcurrent_rowosition of current track & current parameter
                         previous_step = [0,0,0,0]
                         print(0+self.current_track.track_id,self.current_track.pos[self.k_mode.value])
-                        if self.buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
+                        if self.buffer.levels[0+self.current_track.track_id,self.current_track.pos[self.k_mode.value]] == 0:
                             self.buffer.led_set(self.current_track.pos[self.k_mode.value]-1, 7, previous_step[self.current_track.track_id])
                             self.buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 15)
                             previous_step[self.current_track.track_id] = 0
@@ -704,7 +704,7 @@ class Runcible(monome.App):
                 #for i in range (self.current_pattern.tracks[1].duration[x]+1,7):
                 #    buffer.led_set(x, i, 0)
         print("octave page level")
-        print(self.buffer.levels)
+        #print(self.buffer.levels)
         self.draw_current_position()
 
     def draw_velocity_page(self):
@@ -799,14 +799,14 @@ class Runcible(monome.App):
             elif self.k_mode == Modes.mPattern:
                 self.draw_pattern_page()
 
-        self.buffer.levels.reverse()
+        #self.buffer.levels.reverse()
         self.grid.led_map(0,0,self.buffer.levels)
         #print(len(self.buffer.levels[0]))
         #print(self.buffer.levels)
         #for y in range(8):
         #    for x in range(16):
         #        self.grid.led_set(x,y,self.buffer.levels[y][x])
-        self.buffer.levels.reverse()
+        #self.buffer.levels.reverse()
         self.buffer.led_level_all(0)
         self.frame_dirty = False 
 
