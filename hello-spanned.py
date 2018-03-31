@@ -90,7 +90,7 @@ class Hello(monome.App):
         self.my_buffer.led_set(x, y, s)
 
         if x==0 and y==0:
-            self.my_buffer..led_set(0,0,s)
+            self.my_buffer.led_set(0,0,s)
             self.my_buffer.led_set(1,0,s)
             self.my_buffer.led_set(2,0,s)
             self.my_buffer.led_set(3,0,s)
