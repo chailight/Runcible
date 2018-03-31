@@ -10,9 +10,10 @@ class Hello(monome.App):
         self.chaser = 0
         self.current_pos = 0
 
-    #def on_grid_ready(self):
-        #print("connected to ", self.grid.id)
-        #pass
+    def on_grid_ready(self):
+        self.my_buffer = virtualgrid.myGridBuffer(self.grid.width,self.grid.height)
+        await self.draw()
+
 
     async def stop_chaser(self):
         self.chaser = 0
@@ -23,12 +24,17 @@ class Hello(monome.App):
         print ("chaser",self.chaser)
         await self.run_chaser()
 
+    async def draw(self):
+        #print(self.current_pos)
+        self.grid.led_map(0,0,self.my_buffer.levels)
+        await asyncio.sleep(0.5)
+
     async def run_chaser(self):
         while (self.chaser == 1) :
             print(self.current_pos)
             self.current_pos = (self.current_pos + 1)%16
-            self.grid.led_set(self.current_pos-1,7,0)
-            self.grid.led_set(self.current_pos,7,1)
+            self.my_buffer.led_set(self.current_pos-1,7,0)
+            self.my_buffer.led_set(self.current_pos,7,1)
             await asyncio.sleep(1)
 
 
@@ -81,43 +87,43 @@ class Hello(monome.App):
                 [0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0]]
 
-        self.grid.led_set(x, y, s)
+        self.my_buffer.led_set(x, y, s)
 
         if x==0 and y==0:
-            self.grid.led_set(0,0,s)
-            self.grid.led_set(1,0,s)
-            self.grid.led_set(2,0,s)
-            self.grid.led_set(3,0,s)
-            self.grid.led_set(4,0,s)
-            self.grid.led_set(5,0,s)
-            self.grid.led_set(6,0,s)
-            self.grid.led_set(7,0,s)
-            self.grid.led_set(8,0,s)
-            self.grid.led_set(9,0,s)
-            self.grid.led_set(10,0,s)
-            self.grid.led_set(11,0,s)
-            self.grid.led_set(12,0,s)
-            self.grid.led_set(13,0,s)
-            self.grid.led_set(14,0,s)
-            self.grid.led_set(15,0,s)
+            self.my_buffer..led_set(0,0,s)
+            self.my_buffer.led_set(1,0,s)
+            self.my_buffer.led_set(2,0,s)
+            self.my_buffer.led_set(3,0,s)
+            self.my_buffer.led_set(4,0,s)
+            self.my_buffer.led_set(5,0,s)
+            self.my_buffer.led_set(6,0,s)
+            self.my_buffer.led_set(7,0,s)
+            self.my_buffer.led_set(8,0,s)
+            self.my_buffer.led_set(9,0,s)
+            self.my_buffer.led_set(10,0,s)
+            self.my_buffer.led_set(11,0,s)
+            self.my_buffer.led_set(12,0,s)
+            self.my_buffer.led_set(13,0,s)
+            self.my_buffer.led_set(14,0,s)
+            self.my_buffer.led_set(15,0,s)
 
         if x==0 and y==1:
-            self.grid.led_map(0,0,data1)
+            self.my_buffer.led_map(0,0,data1)
 
         if x==0 and y==2:
-            self.grid.led_map(0,0,data2)
+            self.my_buffer.led_map(0,0,data2)
 
         if x==0 and y==3:
-            self.grid.led_map(0,0,clear_all)
+            self.my_buffer.led_map(0,0,clear_all)
 
         if x==0 and y==4:
-            self.grid.led_map(0,0,data3)
+            self.my_buffer.led_map(0,0,data3)
 
         if x==0 and y==5:
-            self.grid.led_row(0,0,data4)
+            self.my_buffer.led_row(0,0,data4)
 
         if x==0 and y==6:
-            self.grid.led_map(0,0,data5)
+            self.my_buffer.led_map(0,0,data5)
 
         if x==1 and y==0 and s == 1:
             asyncio.async(self.start_chaser())
