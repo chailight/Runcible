@@ -44,6 +44,7 @@ import monome
 import virtualgrid
 import clocks
 import rtmidi2
+import numpy as np
 from enum import Enum
 
 # see Channel Mode Messages for Controller Numbers
