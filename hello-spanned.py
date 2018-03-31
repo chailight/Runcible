@@ -27,8 +27,9 @@ class Hello(monome.App):
 
     async def draw(self):
         #print(self.current_pos)
-        self.grid.led_map(0,0,self.my_buffer.levels)
-        await asyncio.sleep(0.5)
+        while (True):
+            self.grid.led_map(0,0,self.my_buffer.levels)
+            await asyncio.sleep(0.5)
 
     async def run_chaser(self):
         while (self.chaser == 1) :
@@ -118,12 +119,15 @@ class Hello(monome.App):
             self.my_buffer.led_map(0,0,np.asarray(clear_all).T)
 
         if x==0 and y==4:
+            print("data 3")
             self.my_buffer.led_map(0,0,np.asarray(data3).T)
 
         if x==0 and y==5:
+            print("data 4")
             self.my_buffer.led_row(0,0,np.asarray(data4).T)
 
         if x==0 and y==6:
+            print("data 5")
             self.my_buffer.led_map(0,0,np.asarray(data5).T)
 
         if x==1 and y==0 and s == 1:
