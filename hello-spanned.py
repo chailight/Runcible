@@ -79,14 +79,14 @@ class Hello(monome.App):
                 [15, 15, 15, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
-        clear_all = [[0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0]]
+        clear_all = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
 
         self.my_buffer.led_set(x, y, s)
 
@@ -108,23 +108,23 @@ class Hello(monome.App):
             self.my_buffer.led_set(14,0,s)
             self.my_buffer.led_set(15,0,s)
 
-        if x==0 and y==1:
-            self.my_buffer.led_map(0,0,np.asarray(data1))
+        #if x==0 and y==1:
+            #self.my_buffer.led_map(0,0,np.asarray(data1))
 
-        if x==0 and y==2:
-            self.my_buffer.led_map(0,0,np.asarray(data2))
+        #if x==0 and y==2:
+        #    self.my_buffer.led_map(0,0,np.asarray(data2))
 
         if x==0 and y==3:
-            self.my_buffer.led_map(0,0,np.asarray(clear_all))
+            self.my_buffer.led_map(0,0,np.asarray(clear_all).T)
 
         if x==0 and y==4:
-            self.my_buffer.led_map(0,0,np.asarray(data3))
+            self.my_buffer.led_map(0,0,np.asarray(data3).T)
 
         if x==0 and y==5:
-            self.my_buffer.led_row(0,0,np.asarray(data4))
+            self.my_buffer.led_row(0,0,np.asarray(data4).T)
 
         if x==0 and y==6:
-            self.my_buffer.led_map(0,0,np.asarray(data5))
+            self.my_buffer.led_map(0,0,np.asarray(data5).T)
 
         if x==1 and y==0 and s == 1:
             asyncio.async(self.start_chaser())
