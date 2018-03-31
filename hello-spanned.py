@@ -36,14 +36,14 @@ class Hello(monome.App):
 
     async def run_chaser(self):
         while (self.chaser == 1) :
-            print(self.current_pos)
+            #print(self.current_pos)
             #print("pos_buffer",np.roll((self.my_pos_buffer).astype(int),self.current_pos,axis=1))
             #print("buffer",(self.my_buffer.levels/15).astype(int))
             #self.my_pos_buffer = np.roll((self.my_pos_buffer).astype(int),1,axis=1)
-            print(self.my_pos_buffer)
-            print(self.my_pos_buffer.shape)
-            print(np.split(self.my_buffer.levels,[7],axis=1)[0])
-            print(np.split(self.my_buffer.levels,[7],axis=1)[0].shape)
+            #print(self.my_pos_buffer)
+            #print(self.my_pos_buffer.shape)
+            #print(np.split(self.my_buffer.levels,[7],axis=1)[0])
+            #print(np.split(self.my_buffer.levels,[7],axis=1)[0].shape)
             self.my_buffer.led_map(0,0,(np.concatenate((np.asarray(np.split(self.my_buffer.levels,[7],axis=1)[0]),np.roll((self.my_pos_buffer).astype(int),self.current_pos,axis=1).T,),axis=1)))
             #np.roll(self.my_pos_buffer,1)
             self.current_pos = (self.current_pos + 1)%16
