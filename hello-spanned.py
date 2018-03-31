@@ -36,7 +36,8 @@ class Hello(monome.App):
     async def run_chaser(self):
         while (self.chaser == 1) :
             print(self.current_pos)
-            print(self.my_pos_buffer)
+            print("pos_buffer",self.my_pos_buffer.levels)
+            print("buffer",self.my_buffer.levels)
             self.my_buffer.led_map(0,0,(np.bitwise_or(self.my_pos_buffer.levels,(self.my_buffer.levels/15))*15))
             np.roll(self.my_pos_buffer,1)
             self.current_pos = (self.current_pos + 1)%16
