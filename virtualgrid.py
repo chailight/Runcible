@@ -249,6 +249,7 @@ class myGridBuffer:
     def __init__(self, width, height):
         #self.levels = [[0 for col in range(width)] for row in range(height)]
         self.levels = np.zeros((width,height), dtype=int)
+        print("init buffer levels", self.levels.shape)
         self.width = width
         self.height = height
 
