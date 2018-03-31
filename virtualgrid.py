@@ -280,9 +280,9 @@ class myGridBuffer:
     #    for y, s in enumerate(data):
     #        self.led_set(x, y_offset + y, s)
 
-    #def led_level_set(self, x, y, l):
-    #    if x < self.width and y < self.height:
-    #        self.levels[y][x] = l
+    def led_level_set(self, x, y, l):
+        if x < self.width and y < self.height:
+            self.levels[y][x] = l
 
     #def led_level_all(self, l):
     #    for x in range(self.width):
