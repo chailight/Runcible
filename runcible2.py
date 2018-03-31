@@ -549,7 +549,7 @@ class Runcible(monome.App):
                                 else:
                                     self.my_buffer.led_set(i,7,0)
                     else:
-                        self.my_buffer.led_map(0,0,(np.concatenate((np.asarray(np.split(self.my_buffer.levels,[7],axis=1)[0]),np.roll((self.my_pos_buffer).astype(int),self.current_track_pos[self.k_mode.value],axis=1).T,),axis=1)))
+                        self.my_buffer.led_map(0,0,(np.concatenate((np.asarray(np.split(self.my_buffer.levels,[7],axis=1)[0]),np.roll((self.my_pos_buffer).astype(int),self.current_track.pos[self.k_mode.value],axis=1).T,),axis=1)))
                         #display play pcurrent_rowosition of current track & current parameter
                         #previous_step = [0,0,0,0]
                         #print(0+self.current_track.track_id,self.current_track.pos[self.k_mode.value])
