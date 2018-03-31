@@ -549,6 +549,7 @@ class Runcible(monome.App):
                     else:
                         #display play pcurrent_rowosition of current track & current parameter
                         previous_step = [0,0,0,0]
+                        print(0+self.current_track.track_id,self.current_track.pos[self.k_mode.value])
                         if self.buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
                             self.buffer.led_set(self.current_track.pos[self.k_mode.value]-1, 7, previous_step[self.current_track.track_id])
                             self.buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 15)
