@@ -233,7 +233,8 @@ class PhysicalGridWrapper_2(monome.GridWrapper):
 
 class myGridBuffer:
     def __init__(self, width, height):
-        self.levels = [[0 for col in range(width)] for row in range(height)]
+        #self.levels = [[0 for col in range(width)] for row in range(height)]
+        self.levels = np.zeros((width,height)
         self.width = width
         self.height = height
 
@@ -282,12 +283,10 @@ class myGridBuffer:
 
     def led_level_set(self, x, y, l):
         if x < self.width and y < self.height:
-            self.levels[y][x] = l
+            self.levels[x,y] = l
 
     def led_level_all(self, l):
-        for x in range(self.width):
-            for y in range(self.height):
-                self.levels[y][x] = l
+        self.levels = np.full((width,height),l)
 
     #def led_level_map(self, x_offset, y_offset, data):
     #    for r, row in enumerate(data):
