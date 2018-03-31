@@ -26,7 +26,7 @@ class Hello(monome.App):
 
     async def draw(self):
         #print(self.current_pos)
-        self.grid.led_map(0,0,self.my_buffer.levels)
+        self.grid.led_map(0,0,self.my_buffer.levels.tolist())
         await asyncio.sleep(0.5)
 
     async def run_chaser(self):
