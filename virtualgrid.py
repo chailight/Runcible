@@ -264,21 +264,21 @@ class myGridBuffer:
         self.height = height
 
     def __and__(self, other):
-        result = GridBuffer(self.width, self.height)
+        result = myGridBuffer(self.width, self.height)
         for row in range(self.height):
             for col in range(self.width):
                 result.levels[row][col] = self.levels[row][col] & other.levels[row][col]
         return result
 
     def __xor__(self, other):
-        result = GridBuffer(self.width, self.height)
+        result = myGridBuffer(self.width, self.height)
         for row in range(self.height):
             for col in range(self.width):
                 result.levels[row][col] = self.levels[row][col] ^ other.levels[row][col]
         return result
 
     def __or__(self, other):
-        result = GridBuffer(self.width, self.height)
+        result = myGridBuffer(self.width, self.height)
         for row in range(self.height):
             for col in range(self.width):
                 result.levels[row][col] = self.levels[row][col] | other.levels[row][col]
