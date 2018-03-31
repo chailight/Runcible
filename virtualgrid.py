@@ -284,10 +284,10 @@ class myGridBuffer:
         if x < self.width and y < self.height:
             self.levels[y][x] = l
 
-    #def led_level_all(self, l):
-    #    for x in range(self.width):
-    #        for y in range(self.height):
-    #            self.levels[y][x] = l
+    def led_level_all(self, l):
+        for x in range(self.width):
+            for y in range(self.height):
+                self.levels[y][x] = l
 
     #def led_level_map(self, x_offset, y_offset, data):
     #    for r, row in enumerate(data):
