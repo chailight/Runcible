@@ -61,6 +61,8 @@ class VirtualGridWrapper(monome.GridWrapper):
     #todo: split the data according to position
     def led_map(self, x_offset, y_offset, data):
         print("VGW led map data shape: ", data.shape)
+        print("x: ", data.shape[0])
+        print("y: ", data.shape[1])
         if len(data[0]) == 16:
             #need to split each row of data in half and then re-assemble into list of lists
             #for i in range(8):
