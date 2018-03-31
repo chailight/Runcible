@@ -283,7 +283,8 @@ class myGridBuffer:
     #def led_all(self, s):
     #    self.led_level_all(s * 15)
 
-    #def led_map(self, x_offset, y_offset, data):
+    def led_map(self, x_offset, y_offset, data):
+        self.levels = data
     #    for r, row in enumerate(data):
     #        self.led_row(x_offset, y_offset + r, row)
 
