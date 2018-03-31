@@ -29,7 +29,7 @@ class Hello(monome.App):
         #print(self.current_pos)
         while (True):
             self.grid.led_map(0,0,self.my_buffer.levels)
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(0.1)
 
     async def run_chaser(self):
         while (self.chaser == 1) :
