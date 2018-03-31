@@ -681,11 +681,11 @@ class Runcible(monome.App):
             #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
             for i in range (7-(self.current_track.duration[x]),7): #ignore bottom row
                 #print(x,i)
-                self.buffer.led_set(x, i, 15)
+                self.my_buffer.led_set(x, i, 15)
             for i in range (1,7-(self.current_track.duration[x])): #ignore top row
-                self.buffer.led_set(x, i, 0)
+                self.my_buffer.led_set(x, i, 0)
             #show the triggers for that track on the top row
-            self.buffer.led_set(x, 7, self.current_track.tr[x])
+            self.my_buffer.led_set(x, 7, self.current_track.tr[x])
         #for x in range(self.grid.width):
             #show the triggers for that track on the top row
             #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
