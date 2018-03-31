@@ -73,21 +73,22 @@ class VirtualGridWrapper(monome.GridWrapper):
             self.grid1_data, self.grid2_data = np.hsplit(data,2)
             self.grid1.led_map(x_offset, y_offset, self.grid1_data)
             self.grid2.led_map(x_offset, y_offset, self.grid2_data)
-        if data.shape[0]) == 8:
+        if data.shape[0] == 8:
             print("warning: sending duplicated grid data")
             self.grid1.led_map(x_offset, y_offset, data)
             self.grid2.led_map(x_offset, y_offset, data)
 
     #todo: split the data according to position
     def led_row(self, x_offset, y, data):
-        if len(data) == 16:
+        if data.shape[0] == 16:
             self.grid1_row_data, self.grid2_row_data = np.hsplit(data,2)
             #self.grid2_row_data=data[8:]
             #print(grid1_data)
             #print(grid2_data)
             self.grid1.led_row(x_offset, y, self.grid1_row_data.tolist())
             self.grid2.led_row(x_offset, y, self.grid2_row_data.tolist())
-        if len(data) == 8:
+        if data.shape[0] == 8:
+            print("warning: sending duplicated grid data")
             self.grid1.led_row(x_offset, y, data)
             self.grid2.led_row(x_offset, y, data)
 
@@ -118,7 +119,7 @@ class VirtualGridWrapper(monome.GridWrapper):
         #grid1_data = [0,0,0,0,0,0,0,0]
         #grid2_data = [0,0,0,0,0,0,0,0]
         print("VGW led map data shape: ", data.shape)
-        if len(data[0]) == 16:
+        if data.shape[0] == 16:
             #need to split each row of data in half and then re-assemble into list of lists
             #for i in range(8):
             #    self.grid1_data[i]=data[i][0:8]
@@ -128,19 +129,21 @@ class VirtualGridWrapper(monome.GridWrapper):
             self.grid1_data, self.grid2_data = np.hsplit(data,2)
             self.grid1.led_map(x_offset, y_offset, self.grid1_data.tolist())
             self.grid2.led_map(x_offset, y_offset, self.grid2_data.tolist())
-        if len(data[0]) == 8:
+        if data.shape[0] == 8:
+            print("Warning: sending duplicated grid data")
             self.grid1.led_map(x_offset, y_offset, data.tolist())
             self.grid2.led_map(x_offset, y_offset, data.tolist())
 
     def led_level_row(self, x_offset, y, data):
-        if len(data) == 16:
+        if data.shape[0] == 16:
             self.grid1_row_data, self.grid2_row_data = np.hsplit(data,2)
             #self.grid2_row_data=data[8:]
             #print(grid1_data)
             #print(grid2_data)
             self.grid1.led_row(x_offset, y, self.grid1_row_data.tolist())
             self.grid2.led_row(x_offset, y, self.grid2_row_data.tolist())
-        if len(data) == 8:
+        if data.shape[0] == 8:
+            print("Warning: sending duplicated grid data")
             self.grid1.led_row(x_offset, y, data)
             self.grid2.led_row(x_offset, y, data)
 
