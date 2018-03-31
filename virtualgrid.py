@@ -60,9 +60,9 @@ class VirtualGridWrapper(monome.GridWrapper):
 
     #todo: split the data according to position
     def led_map(self, x_offset, y_offset, data):
-        print("VGW led map data shape: ", data.shape)
-        print("x: ", data.shape[0])
-        print("y: ", data.shape[1])
+        #print("VGW led map data shape: ", data.shape)
+        #print("x: ", data.shape[0])
+        #print("y: ", data.shape[1])
         if data.shape[0] == 16:
             #need to split each row of data in half and then re-assemble into list of lists
             #for i in range(8):
@@ -118,7 +118,7 @@ class VirtualGridWrapper(monome.GridWrapper):
     def led_level_map(self, x_offset, y_offset, data):
         #grid1_data = [0,0,0,0,0,0,0,0]
         #grid2_data = [0,0,0,0,0,0,0,0]
-        print("VGW led map data shape: ", data.shape)
+        #print("VGW led map data shape: ", data.shape)
         if data.shape[0] == 16:
             #need to split each row of data in half and then re-assemble into list of lists
             #for i in range(8):
@@ -285,7 +285,10 @@ class myGridBuffer:
     #    self.led_level_all(s * 15)
 
     def led_map(self, x_offset, y_offset, data):
-        self.levels = data
+        if data.shape == self.levels.shape:
+            np.copyto(self.levels, data)
+        else:
+            print("Error - wrong data shape for map")
     #    for r, row in enumerate(data):
     #        self.led_row(x_offset, y_offset + r, row)
 
