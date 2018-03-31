@@ -15,7 +15,7 @@ class Hello(monome.App):
         self.my_buffer = virtualgrid.myGridBuffer(self.grid.width,self.grid.height)
         #self.my_pos_buffer = virtualgrid.myGridBuffer(self.grid.width,self.grid.height)
         #self.my_pos_buffer.led_set(0,7,1)
-        self.my_pos_buffer = np.array(([[1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0]])
+        self.my_pos_buffer = np.array([[1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0]])
         asyncio.async(self.draw())
 
 
