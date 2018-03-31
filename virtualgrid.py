@@ -63,7 +63,7 @@ class VirtualGridWrapper(monome.GridWrapper):
         print("VGW led map data shape: ", data.shape)
         print("x: ", data.shape[0])
         print("y: ", data.shape[1])
-        if len(data[0]) == 16:
+        if data.shape[0] == 16:
             #need to split each row of data in half and then re-assemble into list of lists
             #for i in range(8):
             #    self.grid1_data[i]=data[i][0:8]
@@ -71,11 +71,12 @@ class VirtualGridWrapper(monome.GridWrapper):
             #print(grid1_data)
             #print(grid2_data)
             self.grid1_data, self.grid2_data = np.hsplit(data,2)
-            self.grid1.led_map(x_offset, y_offset, self.grid1_data.tolist())
-            self.grid2.led_map(x_offset, y_offset, self.grid2_data.tolist())
-        if len(data[0]) == 8:
-            self.grid1.led_map(x_offset, y_offset, data.tolist())
-            self.grid2.led_map(x_offset, y_offset, data.tolist())
+            self.grid1.led_map(x_offset, y_offset, self.grid1_data)
+            self.grid2.led_map(x_offset, y_offset, self.grid2_data)
+        if data.shape[0]) == 8:
+            print("warning: sending duplicated grid data")
+            self.grid1.led_map(x_offset, y_offset, data)
+            self.grid2.led_map(x_offset, y_offset, data)
 
     #todo: split the data according to position
     def led_row(self, x_offset, y, data):
@@ -177,8 +178,8 @@ class PhysicalGridWrapper_1(monome.GridWrapper):
         #print("rotated 2")
         #print(rotated2)
         #adjusted_data = rotated2##
-        #print(np.fliplr(np.flipud(np.asarray(data))).shape)
-        #print(np.fliplr(np.flipud(np.asarray(data))).tolist())
+        print(np.fliplr(np.flipud(np.asarray(data))).shape)
+        print(np.fliplr(np.flipud(np.asarray(data))).tolist())
         self.grid.led_map(x_offset, y_offset, np.fliplr(np.flipud(data)).tolist())
 
     def led_level_map(self, x_offset, y_offset, data):
