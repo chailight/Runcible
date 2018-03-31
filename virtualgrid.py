@@ -85,8 +85,8 @@ class VirtualGridWrapper(monome.GridWrapper):
             #self.grid2_row_data=data[8:]
             #print(grid1_data)
             #print(grid2_data)
-            self.grid1.led_row(x_offset, y, self.grid1_row_data.tolist())
-            self.grid2.led_row(x_offset, y, self.grid2_row_data.tolist())
+            self.grid1.led_row(x_offset, y, self.grid1_row_data.astype(int).tolist())
+            self.grid2.led_row(x_offset, y, self.grid2_row_data.astype(int).tolist())
         if data.shape[0] == 8:
             print("warning: sending duplicated grid data")
             self.grid1.led_row(x_offset, y, data)
@@ -127,8 +127,8 @@ class VirtualGridWrapper(monome.GridWrapper):
             #print(grid1_data)
             #print(grid2_data)
             self.grid1_data, self.grid2_data = np.vsplit(data,2)
-            self.grid1.led_map(x_offset, y_offset, self.grid1_data.tolist())
-            self.grid2.led_map(x_offset, y_offset, self.grid2_data.tolist())
+            self.grid1.led_map(x_offset, y_offset, self.grid1_data.astype(int).tolist())
+            self.grid2.led_map(x_offset, y_offset, self.grid2_data.astype(int).tolist())
         if data.shape[0] == 8:
             print("Warning: sending duplicated grid data")
             self.grid1.led_map(x_offset, y_offset, data.tolist())
@@ -140,8 +140,8 @@ class VirtualGridWrapper(monome.GridWrapper):
             #self.grid2_row_data=data[8:]
             #print(grid1_data)
             #print(grid2_data)
-            self.grid1.led_row(x_offset, y, self.grid1_row_data.tolist())
-            self.grid2.led_row(x_offset, y, self.grid2_row_data.tolist())
+            self.grid1.led_row(x_offset, y, self.grid1_row_data.astype(int).tolist())
+            self.grid2.led_row(x_offset, y, self.grid2_row_data.astype(int).tolist())
         if data.shape[0] == 8:
             print("Warning: sending duplicated grid data")
             self.grid1.led_row(x_offset, y, data)
@@ -183,7 +183,7 @@ class PhysicalGridWrapper_1(monome.GridWrapper):
         #adjusted_data = rotated2##
         print(np.fliplr(np.flipud(np.asarray(data))).shape)
         print(np.fliplr(np.flipud(np.asarray(data))).tolist())
-        self.grid.led_map(x_offset, y_offset, np.fliplr(np.flipud(data)).tolist())
+        self.grid.led_map(x_offset, y_offset, np.fliplr(np.flipud(data)).astype(int).tolist())
 
     def led_level_map(self, x_offset, y_offset, data):
         #rotated1 = zip(*data[::-1])
@@ -194,7 +194,7 @@ class PhysicalGridWrapper_1(monome.GridWrapper):
         #print("rotated 2")
         #print(rotated2)
         #adjusted_data = rotated2
-        self.grid.led_level_map(x_offset, y_offset, np.fliplr(np.flipud(data)).tolist())
+        self.grid.led_level_map(x_offset, y_offset, np.fliplr(np.flipud(data)).astype(int).tolist())
 
     def led_col(self, x, y_offset, data):
         #print("Grid 1: col data")
@@ -242,7 +242,7 @@ class PhysicalGridWrapper_2(monome.GridWrapper):
 class myGridBuffer:
     def __init__(self, width, height):
         #self.levels = [[0 for col in range(width)] for row in range(height)]
-        self.levels = np.zeros((width,height), dtype=intc)
+        self.levels = np.zeros((width,height), dtype=int)
         self.width = width
         self.height = height
 
