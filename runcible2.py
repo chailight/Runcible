@@ -288,7 +288,7 @@ class Runcible(monome.App):
     @asyncio.coroutine
     def play(self):
         print("playing")
-        self.current_pos = yield from self.clock.sync(TICKS_32ND)
+        self.current_pos = yield from self.clock.sync(TICKS_16TH)
 
         self.cue_sub_pos = self.cue_sub_pos + 1
         if self.cue_sub_pos >= self.state.cue_div + 1:
@@ -373,7 +373,7 @@ class Runcible(monome.App):
                                 #print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
 
             asyncio.async(self.trigger())
-            self.current_pos = yield from self.clock.sync(TICKS_32ND)
+            self.current_pos = yield from self.clock.sync(TICKS_16TH)
 
             self.cue_sub_pos = self.cue_sub_pos + 1
             if self.cue_sub_pos > self.state.cue_div:
@@ -1387,7 +1387,7 @@ if __name__ == '__main__':
     #clock = clocks.InaccurateTempoClock(120)
 
     clock = clocks.RtMidiClock()
-    runcible_app  = Runcible(clock,TICKS_32ND,midi_out,channel_out,clock_out,None)
+    runcible_app  = Runcible(clock,TICKS_16TH,midi_out,channel_out,clock_out,None)
 
     try: 
         asyncio.async(virtualgrid.SpanningSerialOsc.create(loop=loop, autoconnect_app=runcible_app))
