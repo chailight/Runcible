@@ -3,6 +3,7 @@
 import asyncio
 import monome
 import virtualgrid
+import numpy as np
 
 class Hello(monome.App):
     def __init__(self):
