@@ -316,7 +316,7 @@ class myGridBuffer:
             self.levels[x][y] = l
 
     def led_level_all(self, l):
-        self.levels = np.full((width,height),l)
+        self.levels = np.full((self.width,self.height),l)
 
     #def led_level_map(self, x_offset, y_offset, data):
     #    for r, row in enumerate(data):
