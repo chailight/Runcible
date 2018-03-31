@@ -15,7 +15,7 @@ class Hello(monome.App):
         self.my_buffer = virtualgrid.myGridBuffer(self.grid.width,self.grid.height)
         #self.my_pos_buffer = virtualgrid.myGridBuffer(self.grid.width,self.grid.height)
         #self.my_pos_buffer.led_set(0,7,1)
-        self.my_pos_buffer = np.array([[1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0]])
+        self.my_pos_buffer = np.array([[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]])
         asyncio.async(self.draw())
 
 
@@ -42,9 +42,9 @@ class Hello(monome.App):
             self.my_pos_buffer = np.roll((self.my_pos_buffer).astype(int),self.current_pos,axis=1)
             print(self.my_pos_buffer)
             print(self.my_pos_buffer.shape)
-            print(np.split(self.my_buffer.levels,[1],axis=1)[1])
-            print(np.split(self.my_buffer.levels,[1],axis=1)[1].shape)
-            self.my_buffer.led_map(0,0,(np.concatenate((self.my_pos_buffer.T,np.asarray(np.split(self.my_buffer.levels,[1],axis=1)[1])),axis=1)))
+            print(np.split(self.my_buffer.levels,[7],axis=1)[0])
+            print(np.split(self.my_buffer.levels,[7],axis=1)[0].shape)
+            self.my_buffer.led_map(0,0,(np.concatenate((np.asarray(np.split(self.my_buffer.levels,[7],axis=1)[0]),self.my_pos_buffer.T,),axis=1)))
             np.roll(self.my_pos_buffer,self.current_pos)
             self.current_pos = (self.current_pos + 1)%16
             #self.my_buffer.led_set(self.current_pos-1,7,0)
