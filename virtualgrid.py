@@ -81,8 +81,8 @@ class VirtualGridWrapper(monome.GridWrapper):
             #self.grid2_row_data=data[8:]
             #print(grid1_data)
             #print(grid2_data)
-            self.grid1.led_row(x_offset, y, self.grid1_data.tolist())
-            self.grid2.led_row(x_offset, y, self.grid2_data.tolist())
+            self.grid1.led_row(x_offset, y, self.grid1_row_data.tolist())
+            self.grid2.led_row(x_offset, y, self.grid2_row_data.tolist())
         if len(data) == 8:
             self.grid1.led_row(x_offset, y, data)
             self.grid2.led_row(x_offset, y, data)
@@ -128,8 +128,16 @@ class VirtualGridWrapper(monome.GridWrapper):
             self.grid2.led_map(x_offset, y_offset, data)
 
     def led_level_row(self, x_offset, y, data):
-        self.grid1.led_level_row(x_offset, y, data)
-        self.grid2.led_level_row(x_offset, y, data)
+        if len(data) == 16:
+            self.grid1_row_data, self.grid2_row_data = np.hsplit(np.asarray(data),2)
+            #self.grid2_row_data=data[8:]
+            #print(grid1_data)
+            #print(grid2_data)
+            self.grid1.led_row(x_offset, y, self.grid1_row_data.tolist())
+            self.grid2.led_row(x_offset, y, self.grid2_row_data.tolist())
+        if len(data) == 8:
+            self.grid1.led_row(x_offset, y, data)
+            self.grid2.led_row(x_offset, y, data)
 
     def led_level_col(self, x, y_offset, data):
         if x < 8:
