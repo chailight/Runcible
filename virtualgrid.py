@@ -48,11 +48,11 @@ class VirtualGridWrapper(monome.GridWrapper):
             self.grid1.led_set(x, y, s)
         else:
             #print("received",x,y)
-            r = x
-            x = abs(y+8)
-            y = r-8
+            #r = x
+            #x = abs(y+8)
+            #y = r-8
             #print("setting grid2",x,y)
-            self.grid2.led_set(x, y, s)
+            self.grid2.led_set(x-8, y, s)
 
     def led_all(self, s):
         self.grid1.led_all(s)
@@ -107,10 +107,10 @@ class VirtualGridWrapper(monome.GridWrapper):
         if x < 8:
             self.grid1.led_level_set(x, y, l)
         else:
-            r = x
-            x = abs(y+7)
-            y = r+1
-            self.grid2.led_level_set(x, y, l)
+            #r = x
+            #x = abs(y+7)
+            #y = r+1
+            self.grid2.led_level_set(x-8, y, l)
 
     def led_level_all(self, l):
         self.grid1.led_level_all(l)
