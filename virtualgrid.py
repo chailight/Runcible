@@ -312,7 +312,7 @@ class myGridBuffer:
 
     def led_level_set(self, x, y, l):
         if x < self.width and y < self.height:
-            print("buffer led_level_set",x,y,self.levels.shape)
+            #print("buffer led_level_set",x,y,self.levels.shape)
             self.levels[x][y] = l
 
     def led_level_all(self, l):
