@@ -44,7 +44,7 @@ class Hello(monome.App):
             print(self.my_pos_buffer.shape)
             print(np.split(self.my_buffer.levels,[1],axis=1)[1])
             print(np.split(self.my_buffer.levels,[1],axis=1)[1].shape)
-            self.my_buffer.led_map(0,0,(np.concatenate((self.my_pos_buffer.T,np.asarray(np.split(self.my_buffer.levels,[1],axis=1)[1])),axis=0)))
+            self.my_buffer.led_map(0,0,(np.concatenate((self.my_pos_buffer.T,np.asarray(np.split(self.my_buffer.levels,[1],axis=1)[1])),axis=1)))
             np.roll(self.my_pos_buffer,self.current_pos)
             self.current_pos = (self.current_pos + 1)%16
             #self.my_buffer.led_set(self.current_pos-1,7,0)
