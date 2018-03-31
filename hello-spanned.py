@@ -39,7 +39,7 @@ class Hello(monome.App):
             print("pos_buffer",(self.my_pos_buffer.levels/15).astype(int))
             print("buffer",(self.my_buffer.levels/15).astype(int))
             self.my_buffer.led_map(0,0,(np.bitwise_or((self.my_pos_buffer.levels/15).astype(int),(self.my_buffer.levels/15).astype(int))*15))
-            np.roll(self.my_pos_buffer,1)
+            np.roll(self.my_pos_buffer,self.current_pos)
             self.current_pos = (self.current_pos + 1)%16
             #self.my_buffer.led_set(self.current_pos-1,7,0)
             #self.my_buffer.led_set(self.current_pos,7,1)
