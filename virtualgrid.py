@@ -289,7 +289,7 @@ class myGridBuffer:
         if data.shape == self.levels.shape:
             np.copyto(self.levels, data)
         else:
-            print("Error - wrong data shape for map")
+            print("Error - wrong data shape for map: ", data.shape, self.levels.shape)
     #    for r, row in enumerate(data):
     #        self.led_row(x_offset, y_offset + r, row)
 
