@@ -40,14 +40,15 @@ class Hello(monome.App):
             blank_top_section = np.zeros((1,8-y))
             blank_bottom_section = np.zeros((1,4))
             octave_col = np.block([blank_top_section,positive,blank_bottom_section])
+            print(octave_col)
             self.my_buffer.led_col(x,0,octave_col[0])
         if y < 4:
             negative = np.ones((1,4-y))
             blank_top_section = np.zeros((1,4))
             blank_bottom_section = np.zeros((1,y))
             octave_col = np.block([blank_top_section,negative,blank_bottom_section])
+            print(octave_col)
             self.my_buffer.led_col(x,0,octave_col[0])
-        print(octave_col)
 
     async def run_chaser(self):
         while (self.chaser == 1) :
