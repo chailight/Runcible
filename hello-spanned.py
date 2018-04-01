@@ -34,6 +34,13 @@ class Hello(monome.App):
             self.grid.led_map(0,0,self.my_buffer.levels)
             await asyncio.sleep(0.1)
 
+    def set_octave(self,x,y):
+        indicator_bar = np.ones((1,y-4))
+        blank_top_section = np.zeros((1,7-y))
+        blank_bottom_section = np.zeros((1,3))
+        octave_col = np.block(blank_top_section,indicator_bar,blank_bottom_section)
+        print(octave_col)
+
     async def run_chaser(self):
         while (self.chaser == 1) :
             #print(self.current_pos)
@@ -147,6 +154,8 @@ class Hello(monome.App):
 
         if x==2 and y==0 and s == 1:
             asyncio.async(self.stop_chaser())
+        if x>0 and y>0 and s == 1:
+            self.set_octave(x,y)
 
 
 
