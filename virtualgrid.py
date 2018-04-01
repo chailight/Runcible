@@ -306,9 +306,10 @@ class myGridBuffer:
     #    for x, s in enumerate(data):
     #        self.led_set(x_offset + x, y, s)
 
-    #def led_col(self, x, y_offset, data):
-    #    for y, s in enumerate(data):
-    #        self.led_set(x, y_offset + y, s)
+    def led_col(self, x, y_offset, data):
+        np.copyto(self.levels[x], data)
+        #for y, s in enumerate(data):
+        #    self.led_set(x, y_offset + y, s)
 
     def led_level_set(self, x, y, l):
         if x < self.width and y < self.height:

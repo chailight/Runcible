@@ -37,12 +37,12 @@ class Hello(monome.App):
     def set_octave(self,x,y):
         if y >= 4:
             positive = np.ones((1,y-4))
-            blank_top_section = np.zeros((1,7-y))
-            blank_bottom_section = np.zeros((1,3))
+            blank_top_section = np.zeros((1,8-y))
+            blank_bottom_section = np.zeros((1,4))
             octave_col = np.block([blank_top_section,positive,blank_bottom_section])
         if y < 4:
-            negative = np.ones((1,4-y))
-            blank_top_section = np.zeros((1,3))
+            negative = np.ones((1,5-y))
+            blank_top_section = np.zeros((1,4))
             blank_bottom_section = np.zeros((1,y))
             octave_col = np.block([blank_top_section,negative,blank_bottom_section])
         print(octave_col)
