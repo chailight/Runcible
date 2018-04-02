@@ -646,6 +646,7 @@ class Runcible(monome.App):
 
     def set_octave(self,x,octave):
         y = octave + 4
+        print("y",y)
         if y >= 4:
             positive = np.ones((1,y-2),int)
             blank_top_section = np.zeros((1,7-y),int)
