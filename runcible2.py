@@ -648,8 +648,8 @@ class Runcible(monome.App):
         y = octave + 4
         #print("y",y)
         if y >= 4:
-            positive = np.ones((1,y-1),int)
-            blank_top_section = np.zeros((1,6-y),int)
+            positive = np.ones((1,y-2),int)
+            blank_top_section = np.zeros((1,7-y),int)
             blank_bottom_section = np.zeros((1,3),int)
             octave_col = np.block([blank_bottom_section,positive,blank_top_section])
             print(octave_col)
