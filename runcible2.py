@@ -644,7 +644,8 @@ class Runcible(monome.App):
         #print(buffer.levels)
         self.draw_current_position()
 
-    def set_octave(self,x,y):
+    def set_octave(self,x,octave):
+        y = octave + 4
         if y >= 4:
             positive = np.ones((1,y-2),int)
             blank_top_section = np.zeros((1,7-y),int)
@@ -652,7 +653,7 @@ class Runcible(monome.App):
             octave_col = np.block([blank_bottom_section,positive,blank_top_section])
             print(octave_col)
             self.my_buffer.led_col(x,0,octave_col[0])
-        if y < 4:
+        if octave < 4:
             negative = np.ones((1,4-y),int)
             blank_top_section = np.zeros((1,4),int)
             blank_bottom_section = np.zeros((1,y),int)
