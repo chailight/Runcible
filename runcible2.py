@@ -646,20 +646,20 @@ class Runcible(monome.App):
 
     def set_octave(self,x,octave):
         y = octave + 4
-        print("y",y)
+        #print("y",y)
         if y >= 4:
-            positive = np.ones((1,y-2),int)
-            blank_top_section = np.zeros((1,7-y),int)
-            blank_bottom_section = np.zeros((1,3),int)
+            positive = np.ones((1,y-1),int)
+            blank_top_section = np.zeros((1,6-y),int)
+            blank_bottom_section = np.zeros((1,4),int)
             octave_col = np.block([blank_bottom_section,positive,blank_top_section])
-            print(octave_col)
+            #print(octave_col)
             self.my_buffer.led_col(x,0,octave_col[0])
         if y < 4:
-            negative = np.ones((1,4-y),int)
-            blank_top_section = np.zeros((1,4),int)
-            blank_bottom_section = np.zeros((1,y),int)
+            negative = np.ones((1,5-y),int)
+            blank_top_section = np.zeros((1,3),int)
+            blank_bottom_section = np.zeros((1,y-1),int)
             octave_col = np.block([blank_bottom_section,negative,blank_top_section])
-            print(octave_col)
+            #print(octave_col)
             self.my_buffer.led_col(x,0,octave_col[0])
 
     def draw_octave_page(self):
