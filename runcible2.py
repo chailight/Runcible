@@ -644,6 +644,22 @@ class Runcible(monome.App):
         #print(buffer.levels)
         self.draw_current_position()
 
+    def set_octave(self,x,y):
+        if y >= 4:
+            positive = np.ones((1,y-2),int)
+            blank_top_section = np.zeros((1,7-y),int)
+            blank_bottom_section = np.zeros((1,3),int)
+            octave_col = np.block([blank_bottom_section,positive,blank_top_section])
+            print(octave_col)
+            self.my_buffer.led_col(x,0,octave_col[0])
+        if y < 4:
+            negative = np.ones((1,4-y),int)
+            blank_top_section = np.zeros((1,4),int)
+            blank_bottom_section = np.zeros((1,y),int)
+            octave_col = np.block([blank_bottom_section,negative,blank_top_section])
+            print(octave_col)
+            self.my_buffer.led_col(x,0,octave_col[0])
+
     def draw_octave_page(self):
         self.my_buffer.led_set(5,0,0)
         self.my_buffer.led_set(6,0,0)
@@ -657,16 +673,17 @@ class Runcible(monome.App):
             #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
             #if self.current_channel == 1:
             #fill a column bottom up in the x position
-            current_oct = self.current_track.octave[x]
-            if current_oct >= 0:
-                #print("start = ", 1, "end = ", 4-current_oct)
-                for i in range (4,4+current_oct+1):
-                    self.my_buffer.led_set(x, i, 15)
-                    #print("current oct: ", current_oct, " drawing in row: ", i)
-            if current_oct < 0:
-                for i in range (4+current_oct,5):
-                    self.my_buffer.led_set(x, i, 15)
-                    #print("current oct: ", current_oct, " drawing in row: ", i)
+            #current_oct = self.current_track.octave[x]
+            self.set_octave(x,self.current_track.octave[x])
+            #if current_oct >= 0:
+            #    #print("start = ", 1, "end = ", 4-current_oct)
+            #    for i in range (4,4+current_oct+1):
+            #        self.my_buffer.led_set(x, i, 15)
+            #        #print("current oct: ", current_oct, " drawing in row: ", i)
+            #if current_oct < 0:
+            #    for i in range (4+current_oct,5):
+            #        self.my_buffer.led_set(x, i, 15)
+            #        #print("current oct: ", current_oct, " drawing in row: ", i)
         self.draw_current_position()
 
     def draw_duration_page(self):
