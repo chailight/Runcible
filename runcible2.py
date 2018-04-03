@@ -691,9 +691,9 @@ class Runcible(monome.App):
     def set_duration(self,x,duration):
         y = duration
         #print("y",y)
-        positive = np.ones((1,y),int)
+        positive = np.ones((1,y+1),int)
         #blank_top_section = np.zeros((1,7-y),int)
-        blank_bottom_section = np.zeros((1,8-y),int)
+        blank_bottom_section = np.zeros((1,7-y),int)
         duration_col = np.block([blank_bottom_section,positive])
         print(duration_col)
         self.my_buffer.led_col(x,0,duration_col[0])
