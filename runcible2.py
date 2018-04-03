@@ -707,7 +707,7 @@ class Runcible(monome.App):
         self.my_buffer.led_set(14,0,0)
         self.my_buffer.led_set(15,0,0)
         for x in range(self.grid.width):
-            self.set_octave(x,self.current_track.duration[x])
+            self.set_duration(x,self.current_track.duration[x])
             #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
             #for i in range (7-(self.current_track.duration[x]),7): #ignore bottom row
             #    #print(x,i)
