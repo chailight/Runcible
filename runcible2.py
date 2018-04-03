@@ -873,7 +873,7 @@ class Runcible(monome.App):
                 self.draw_pattern_page()
 
             #assemble indicator row
-            indicator_row = np.block([self.track_indicator,self.mode_indicator])
+            indicator_row = np.block([self.track_buffer,self.mode_buffer])
             self.my_buffer.led_map(0,0,(np.concatenate((np.asarray(np.split(indicator_row.T,self.my_buffer.levels,[1],axis=1)[0])),axis=1)))
         #self.buffer.levels.reverse()
         self.grid.led_map(0,0,self.my_buffer.levels)
