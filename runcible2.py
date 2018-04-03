@@ -743,11 +743,11 @@ class Runcible(monome.App):
     def set_velocity(self,x,velocity):
         y = velocity
         #print("y",y)
-        positive = np.ones((1,y+1),int)
-        #blank_top_section = np.zeros((1,7-y),int)
+        positive = np.ones((1,y),int)
+        blank_bottom_section = np.zeros((1,1),int)
         blank_top_section = np.zeros((1,7-y),int)
-        velocity_col = np.block([positive,blank_top_section])
-        print(velocity_col)
+        velocity_col = np.block([blank_bottom_section,positive,blank_top_section])
+        #print(velocity_col)
         self.my_buffer.led_col(x,0,velocity_col[0])
 
     def draw_velocity_page(self):
