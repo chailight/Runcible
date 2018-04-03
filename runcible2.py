@@ -246,8 +246,10 @@ class Runcible(monome.App):
         #self.calc_scale(self.cur_scale_id)
         self.my_buffer = virtualgrid.myGridBuffer(self.grid.width, self.grid.height)
         self.my_pos_buffer = np.array([[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]])
+        self.track_buffer = np.array([[1,0,0,0,0]])
+        self.mode_buffer = np.array([[1,0,0,0,0,0,0,0,0,0,0]])
         #self.buffer.levels.reverse() #flip the buffer - for some reason it is upsidedown compared to the grid
-        self.frame_dirty = False 
+        self.frame_dirty = False
         asyncio.async(self.play())
 
     def next_step(self, track, parameter):
@@ -491,6 +493,7 @@ class Runcible(monome.App):
     @asyncio.coroutine
     def clock_out(self):
         yield from self.clock.sync(self.ticks)
+
     def draw_current_position_test(self):
         previous_step = [0,0,0,0]
         if self.my_buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
@@ -643,6 +646,32 @@ class Runcible(monome.App):
         #self.buffer.led_set(5+self.current_track.sync_mode, 3, 15) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
         #print(buffer.levels)
         self.draw_current_position()
+
+    def set_track_display(self):
+        if self.current_track.track_id == 0:
+            self.track_buffer = np.array([[1,0,0,0,0]])
+        elif self.current_track.track_id == 1:
+            self.track_buffer = np.array([[0,1,0,0,0]])
+        elif self.current_track.track_id == 2:
+            self.track_buffer = np.array([[0,0,1,0,0]])
+        elif self.current_track.track_id == 3:
+            self.track_buffer = np.array([[0,0,0,1,0]])
+
+    def set_mode_display(self):
+        if self.k_mode == Modes.mTr:
+            self.mode_buffer = np.array([[1,0,0,0,0,0,0,0,0,0,0]])
+        elif self.k_mode == Modes.mNote:
+            self.mode_buffer = np.array([[0,1,0,0,0,0,0,0,0,0,0]])
+        elif self.k_mode == Modes.mOct:
+            self.mode_buffer = np.array([[0,0,1,0,0,0,0,0,0,0,0]])
+        elif self.k_mode == Modes.mDur:
+            self.mode_buffer = np.array([[0,0,0,1,0,0,0,0,0,0,0]])
+        elif self.k_mode == Modes.mVel:
+            self.mode_buffer = np.array([[0,0,0,0,1,0,0,0,0,0,0]])
+        elif self.k_mode == Modes.mScale:
+            self.mode_buffer = np.array([[0,0,0,0,0,0,0,0,0,1,0]])
+        elif self.k_mode == Modes.mPattern:
+            self.mode_buffer = np.array([[0,0,0,0,0,0,0,0,0,0,1]])
 
     def set_octave(self,x,octave):
         y = octave + 4
@@ -826,8 +855,8 @@ class Runcible(monome.App):
 
     def draw(self):
         if self.frame_dirty:
-            self.draw_current_track_indicator()
-            self.draw_mod_indicators()
+            #self.draw_current_track_indicator()
+            #self.draw_mod_indicators()
             if self.k_mode == Modes.mTr:
                 self.draw_trigger_page()
             elif self.k_mode == Modes.mNote:
@@ -843,6 +872,9 @@ class Runcible(monome.App):
             elif self.k_mode == Modes.mPattern:
                 self.draw_pattern_page()
 
+            #assemble indicator row
+            indicator_row = np.block(self.track_indicator,self.mode_indicator])
+            self.my_buffer.led_map(0,0,(np.concatenate((np.asarray(np.split(indicator_row.T,self.my_buffer.levels,[1],axis=1)[0]),,axis=1)))
         #self.buffer.levels.reverse()
         self.grid.led_map(0,0,self.my_buffer.levels)
         #print(len(self.buffer.levels[0]))
