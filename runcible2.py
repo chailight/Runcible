@@ -688,6 +688,16 @@ class Runcible(monome.App):
             #        #print("current oct: ", current_oct, " drawing in row: ", i)
         self.draw_current_position()
 
+    def set_duration(self,x,duration):
+        y = duration
+        #print("y",y)
+        positive = np.ones((1,y),int)
+        #blank_top_section = np.zeros((1,7-y),int)
+        blank_bottom_section = np.zeros((1,7-y),int)
+        duration_col = np.block([blank_bottom_section,positive)
+        print(duration_col)
+        self.my_buffer.led_col(x,0,duration_col[0])
+
     def draw_duration_page(self):
         self.my_buffer.led_set(5,0,0)
         self.my_buffer.led_set(6,0,0)
@@ -697,14 +707,15 @@ class Runcible(monome.App):
         self.my_buffer.led_set(14,0,0)
         self.my_buffer.led_set(15,0,0)
         for x in range(self.grid.width):
+            self.set_octave(x,self.current_track.duration[x])
             #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
-            for i in range (7-(self.current_track.duration[x]),7): #ignore bottom row
-                #print(x,i)
-                self.my_buffer.led_set(x, i, 15)
-            for i in range (1,7-(self.current_track.duration[x])): #ignore top row
-                self.my_buffer.led_set(x, i, 0)
+            #for i in range (7-(self.current_track.duration[x]),7): #ignore bottom row
+            #    #print(x,i)
+            #    self.my_buffer.led_set(x, i, 15)
+            #for i in range (1,7-(self.current_track.duration[x])): #ignore top row
+            #    self.my_buffer.led_set(x, i, 0)
             #show the triggers for that track on the top row
-            self.my_buffer.led_set(x, 7, self.current_track.tr[x])
+            #self.my_buffer.led_set(x, 7, self.current_track.tr[x])
         #for x in range(self.grid.width):
             #show the triggers for that track on the top row
             #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
@@ -725,7 +736,7 @@ class Runcible(monome.App):
                 #    buffer.led_set(x, i, 15)
                 #for i in range (self.current_pattern.tracks[1].duration[x]+1,7):
                 #    buffer.led_set(x, i, 0)
-        print("octave page level")
+        #print("octave page level")
         #print(self.buffer.levels)
         self.draw_current_position()
 
