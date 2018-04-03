@@ -1468,7 +1468,7 @@ if __name__ == '__main__':
     #clock = clocks.InaccurateTempoClock(120)
 
     clock = clocks.RtMidiClock()
-    runcible_app  = Runcible(clock,TICKS_32ND,midi_out,channel_out,clock_out,None)
+    runcible_app  = Runcible(clock,1,midi_out,channel_out,clock_out,None)
 
     try: 
         asyncio.async(virtualgrid.SpanningSerialOsc.create(loop=loop, autoconnect_app=runcible_app))
