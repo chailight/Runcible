@@ -100,7 +100,7 @@ class Note:
         self.duration = duration
 
     def decrement_duration(self):
-        if self.duration > 0: 
+        if self.duration > 0:
             self.duration = self.duration - 1
 
 class Track:
@@ -378,7 +378,7 @@ class Runcible(monome.App):
                             if not track.track_mute:
                                 #self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
                                 self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
-                                #print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
+                                print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
 
             asyncio.async(self.trigger())
             self.current_pos = yield from self.clock.sync(self.ticks)
@@ -407,29 +407,31 @@ class Runcible(monome.App):
         #print("setting note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
         #asyncio.async(self.set_note_off_timer(track,duration,pitch))
 
+    ####### deprecated !!!
     def insert_note_on(self,track,position,pitch,velocity):
         already_exists = False
         for n in self.note_on[position]:
             if n.pitch == pitch:
                 already_exists = True
-                #print("note on exists", self.channel + track, pitch, "at position: ", position)
+                print("note on exists", self.channel + track, pitch, "at position: ", position)
         if not already_exists:
             new_note = Note(track,pitch,velocity)
             self.note_on[position].append(new_note)
             #pos = yield from self.clock.sync()
             #print("setting note on ", self.channel + track, pitch, "at pos: ", position)
 
+    ####### deprecated !!!
     def insert_note_off(self,track,position,pitch):
         already_exists = False
         for n in self.note_off[position]:
             if n.pitch == pitch:
                 already_exists = True
-                #print("note off exists", self.channel + track, pitch, "at position: ", position)
+                print("note off exists", self.channel + track, pitch, "at position: ", position)
         if not already_exists:
             new_note = Note(track,pitch,0)
             self.note_off[position].append(new_note)
             #pos = yield from self.clock.sync()
-            #print("setting note off ", self.channel + track, pitch, "at pos: ", position)
+            print("setting note off ", self.channel + track, pitch, "at pos: ", position)
 
     @asyncio.coroutine
     def set_note_on(self,track,position,pitch,velocity,duration):
@@ -437,14 +439,14 @@ class Runcible(monome.App):
         for n in self.note_on[position]:
             if n.pitch == pitch:
                 already_exists = True
-            #    print("note on exists", self.channel + track, pitch, "at position: ", position)
+                print("note on exists", self.channel + track, pitch, "at position: ", position)
         if not already_exists:
             new_note = Note(track,pitch,velocity,duration)
             self.note_on[position].append(new_note)
             #pos = yield from self.clock.sync()
             #self.midi_out.send_noteon(self.channel + track, pitch, velocity)
             self.duration_timers.append(new_note) # add this to the list of notes to track for when they end
-            #print("set note on: ", self.channel + track, pitch, "at: ", position)
+            print("set note on: ", self.channel + track, pitch, "at: ", position)
 
     @asyncio.coroutine
     def set_note_off_timer(self,track,duration,pitch):
@@ -471,7 +473,7 @@ class Runcible(monome.App):
             #for note in self.note_on[t.play_position]:
             for note in self.note_on[t.pos[Modes.mTr.value]]:
                 self.midi_out.send_noteon(self.channel + note.channel_inc, note.pitch,note.velocity)
-                #print("playing note", self.channel + note.channel_inc, note.pitch, " at: ",self.current_pos%32)
+                print("playing note", self.channel + note.channel_inc, note.pitch, " at: ",self.current_pos%32)
             del self.note_on[t.pos[Modes.mTr.value]][:] #clear the current midi output once it's been sent
 
         #end all notes that have expired
