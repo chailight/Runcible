@@ -292,7 +292,8 @@ class Runcible(monome.App):
     @asyncio.coroutine
     def play(self):
         print("playing")
-        self.current_pos = yield from self.clock.sync(TICKS_32ND)
+        #self.current_pos = yield from self.clock.sync(TICKS_32ND)
+        self.current_pos = yield from self.clock.sync(self.ticks)
 
         self.cue_sub_pos = self.cue_sub_pos + 1
         if self.cue_sub_pos >= self.state.cue_div + 1:
@@ -305,7 +306,7 @@ class Runcible(monome.App):
             #self.loop_length[t] = abs(self.loop_end[self.current_track] - self.loop_start[t])+1
             t.loop_length = abs(t.loop_end - t.loop_start)+1
             t.play_position = (self.current_pos//self.ticks)%t.loop_length + t.loop_start
-            t.tmul=[TICKS_8TH,TICKS_8TH,TICKS_8TH,TICKS_8TH,TICKS_8TH] ### remove this after testing is done
+            t.tmul=[TICKS_16TH,TICKS_16TH,TICKS_16TH,TICKS_16TH,TICKS_16TH] ### remove this after testing is done
 
         while True:
             self.frame_dirty = True #if nothing else has happend, at least the position has moved
@@ -328,9 +329,11 @@ class Runcible(monome.App):
                 if self.next_step(track, Modes.mDur.value):
                     self.current_dur = track.duration[track.pos[Modes.mDur.value]]
                     #print("current_dur: ", self.current_dur)
+
                 if self.next_step(track, Modes.mVel.value):
                     self.current_vel = track.velocity[track.pos[Modes.mVel.value]]
                     #print("current_vel: ", self.current_vel)
+
                 if self.next_step(track, Modes.mTr.value):
                     #if track.tr[track.play_position] == 1:
                     if track.tr[track.pos[Modes.mTr.value]] == 1:
@@ -354,17 +357,17 @@ class Runcible(monome.App):
                             #entered_duration = track.duration[track.play_position]
                             entered_duration = self.current_dur
                             if entered_duration == 1:
-                                scaled_duration = 2
+                                scaled_duration = TICKS_32ND
+                            if entered_duration == 2:
+                                scaled_duration = TICKS_16TH
                             if entered_duration == 3:
-                                scaled_duration = 4
-                            if entered_duration == 3:
-                                scaled_duration =  6
+                                scaled_duration =  TICKS_8TH
                             if entered_duration == 4:
-                                scaled_duration = 8
+                                scaled_duration = TICKS_QUARTER
                             elif entered_duration == 5:
-                                scaled_duration = 10
+                                scaled_duration = TICKS_HALF
                             elif entered_duration == 6:
-                                scaled_duration = 12
+                                scaled_duration = TICKS_WHOLE
                             #velocity = track.velocity[track.play_position]*20
                             #velocity = track.velocity[track.pos[Modes.mTr.value]]*20
                             velocity = self.current_vel*20
@@ -377,7 +380,7 @@ class Runcible(monome.App):
                                 #print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
 
             asyncio.async(self.trigger())
-            self.current_pos = yield from self.clock.sync(TICKS_32ND)
+            self.current_pos = yield from self.clock.sync(self.ticks)
 
             self.cue_sub_pos = self.cue_sub_pos + 1
             if self.cue_sub_pos > self.state.cue_div:
