@@ -243,7 +243,7 @@ class Runcible(monome.App):
         self.current_pattern = self.current_preset.patterns[self.current_preset.current_pattern]
         self.current_track = self.current_pattern.tracks[0]
         self.current_track_id = self.current_pattern.tracks[0].track_id
-        #self.calc_scale(self.cur_scale_id)
+        self.calc_scale(self.cur_scale_id)
         self.my_buffer = virtualgrid.myGridBuffer(self.grid.width, self.grid.height)
         self.my_pos_buffer = np.array([[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]])
         self.track_buffer = np.array([[1,0,0,0,0]])
