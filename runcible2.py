@@ -520,21 +520,27 @@ class Runcible(monome.App):
                             else:
                                 self.my_buffer.led_set(i,7-track.track_id,0)
                 else:
-                    previous_step = [0,0,0,0]
-                    for track in self.current_pattern.tracks:
-                        #track 1
-                        if track.pos[Modes.mTr.value] >= track.lstart[Modes.mTr.value] and track.pos[Modes.mTr.value] <= track.lend[Modes.mTr.value]:
-                        #if ((self.current_pos//self.ticks)%16) < 16:
-                            if self.my_buffer.levels[track.pos[Modes.mTr.value],0+track.track_id] == 0:
-                                self.my_buffer.led_set(track.pos[Modes.mTr.value]-1, 7-track.track_id, previous_step[track.track_id])
-                                self.my_buffer.led_set(track.pos[Modes.mTr.value], 7-track.track_id, 15)
-                                previous_step[track.track_id] = 0
-                            else: #toggle an already lit led as we pass over it
-                                previous_step[track.track_id] = 15
-                                self.my_buffer.led_set(track.pos[Modes.mTr.value], 7-track.track_id, 0)
-                                #buffer.led_set(track.play_position, 0+track.track_id, 15)
-                        else:
-                            self.my_buffer.led_set(self.current_track.pos[Modes.mTr.value], 7, 0)
+                    track_1_pos = np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[0].pos[self.k_mode.value],axis=1)
+                    track_2_pos = np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[1].pos[self.k_mode.value],axis=1)
+                    track_3_pos = np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[2].pos[self.k_mode.value],axis=1)
+                    track_4_pos = np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[3].pos[self.k_mode.value],axis=1)
+                    remaining_screen = np.split(self.my_buffer.levels,[5],axis=1)[0]
+                    self.my_buffer.led_map(0,0,(np.block([remaining_screen,track_4_pos.T,track_3_pos.T,track_2_pos.T,track_1_pos.T],axis=1)
+                    #self.my_buffer.led_map(0,0,(np.concatenate((np.asarray(np.split(self.my_buffer.levels,[5],axis=1)[0]),np.roll((self.my_pos_buffer).astype(int),self.current_track.pos[self.k_mode.value],axis=1).T,),axis=1)))
+                    #previous_step = [0,0,0,0]
+                    #track 1
+                    #if track.pos[Modes.mTr.value] >= track.lstart[Modes.mTr.value] and track.pos[Modes.mTr.value] <= track.lend[Modes.mTr.value]:
+                    #if ((self.current_pos//self.ticks)%16) < 16:
+                        #if self.my_buffer.levels[track.pos[Modes.mTr.value],0+track.track_id] == 0:
+                        #    self.my_buffer.led_set(track.pos[Modes.mTr.value]-1, 7-track.track_id, previous_step[track.track_id])
+                        #    self.my_buffer.led_set(track.pos[Modes.mTr.value], 7-track.track_id, 15)
+                        #    previous_step[track.track_id] = 0
+                        #else: #toggle an already lit led as we pass over it
+                        #    previous_step[track.track_id] = 15
+                        #    self.my_buffer.led_set(track.pos[Modes.mTr.value], 7-track.track_id, 0)
+                            #buffer.led_set(track.play_position, 0+track.track_id, 15)
+                    #else:
+                    #    self.my_buffer.led_set(self.current_track.pos[Modes.mTr.value], 7, 0)
 
             else:
                 if self.k_mode.value < Modes.mScale.value : # all other modes except scale or pattern
@@ -553,16 +559,6 @@ class Runcible(monome.App):
                                     self.my_buffer.led_set(i,7,0)
                     else:
                         self.my_buffer.led_map(0,0,(np.concatenate((np.asarray(np.split(self.my_buffer.levels,[7],axis=1)[0]),np.roll((self.my_pos_buffer).astype(int),self.current_track.pos[self.k_mode.value],axis=1).T,),axis=1)))
-                        #display play pcurrent_rowosition of current track & current parameter
-                        #previous_step = [0,0,0,0]
-                        #print(0+self.current_track.track_id,self.current_track.pos[self.k_mode.value])
-                        #if self.buffer.levels[self.current_track.pos[self.k_mode.value],0+self.current_track.track_id] == 0:
-                        #    self.buffer.led_set(self.current_track.pos[self.k_mode.value]-1, 7, previous_step[self.current_track.track_id])
-                        #    self.buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 15)
-                        #    previous_step[self.current_track.track_id] = 0
-                        #else: #toggle an already lit led as we pass over it
-                        #    previous_step[self.current_track.track_id] = 15
-                        #    self.buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 0)
                 elif self.k_mode == Modes.mPattern:
                     if self.k_mod_mode == ModModes.modTime:
                         self.my_buffer.led_set(self.state.cue_div, 6, 15)
