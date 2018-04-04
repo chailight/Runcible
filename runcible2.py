@@ -525,7 +525,7 @@ class Runcible(monome.App):
                     track_3_pos = np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[2].pos[self.k_mode.value],axis=1)
                     track_4_pos = np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[3].pos[self.k_mode.value],axis=1)
                     remaining_screen = np.split(self.my_buffer.levels,[5],axis=1)[0]
-                    self.my_buffer.led_map(0,0,(np.block([remaining_screen,track_4_pos.T,track_3_pos.T,track_2_pos.T,track_1_pos.T],axis=1)))
+                    self.my_buffer.led_map(0,0,(np.block([remaining_screen,track_4_pos.T,track_3_pos.T,track_2_pos.T,track_1_pos.T])))
                     #self.my_buffer.led_map(0,0,(np.concatenate((np.asarray(np.split(self.my_buffer.levels,[5],axis=1)[0]),np.roll((self.my_pos_buffer).astype(int),self.current_track.pos[self.k_mode.value],axis=1).T,),axis=1)))
                     #previous_step = [0,0,0,0]
                     #track 1
