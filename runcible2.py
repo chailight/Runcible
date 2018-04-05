@@ -624,14 +624,27 @@ class Runcible(monome.App):
             self.my_buffer.led_set(3,0,15)  #set the channel 4 indicator off
             #buffer.led_set(render_pos[0], render_pos[1], self.step_ch4[y][x] * 11 + highlight)
 
+    #def set_trigger_param_display(self):
+
+
+
+        for track in self.current_pattern.tracks:
+
     def draw_trigger_page(self):
-        self.my_buffer.led_set(5,0,15) #set the channel 1 indicator on
-        self.my_buffer.led_set(6,0,0)  #set the channel 2 indicator off
-        self.my_buffer.led_set(7,0,0)  #set the channel 3 indicator off
-        self.my_buffer.led_set(8,0,0)  #set the channel 4 indicator off
-        self.my_buffer.led_set(9,0,0)
-        self.my_buffer.led_set(14,0,0)
-        self.my_buffer.led_set(15,0,0)
+        #draw scale toggles
+        self.my_scale_toggle_buffer = np.concatenate(np.array([[self.current_pattern.tracks[0].scale_toggle,self.current_pattern.tracks[1].scale_toggle,self.current_pattern.tracks[2].scale_toggle,self.current_pattern.tracks[3].scale_toggle]]),[[0,0,0,0,0,0,0,0,0,0,0,0]])
+        #draw mute toggles
+        self.my_mute_toggle_buffer = np.concatenate(np.array([[self.current_pattern.tracks[0].track_mute,self.current_pattern.tracks[1].scale_toggle,self.current_pattern.tracks[2].scale_toggle,self.current_pattern.tracks[3].scale_toggle]]),[[0,0,0,0,0,0,0,0,0,0,0,0]])
+        self.my_buffer.led_row(0,1,self.my_mute_toggle_buffer)
+        self.my_buffer.led_row(0,2,self.my_scale_toggle_buffer)
+
+        #self.my_buffer.led_set(5,0,15) #set the channel 1 indicator on
+        #self.my_buffer.led_set(6,0,0)  #set the channel 2 indicator off
+        #self.my_buffer.led_set(7,0,0)  #set the channel 3 indicator off
+        #self.my_buffer.led_set(8,0,0)  #set the channel 4 indicator off
+        #self.my_buffer.led_set(9,0,0)
+        #self.my_buffer.led_set(14,0,0)
+        #self.my_buffer.led_set(15,0,0)
 
         # display triggers for each track
         #for x in range(self.grid.width):
@@ -683,40 +696,19 @@ class Runcible(monome.App):
             blank_top_section = np.zeros((1,7-y),int)
             blank_bottom_section = np.zeros((1,3),int)
             octave_col = np.block([blank_bottom_section,positive,blank_top_section])
-            print(octave_col)
+            #print(octave_col)
             self.my_buffer.led_col(x,0,octave_col[0])
         if y < 4:
             negative = np.ones((1,4-y),int)
             blank_top_section = np.zeros((1,4),int)
             blank_bottom_section = np.zeros((1,y),int)
             octave_col = np.block([blank_bottom_section,negative,blank_top_section])
-            print(octave_col)
+            #print(octave_col)
             self.my_buffer.led_col(x,0,octave_col[0])
 
     def draw_octave_page(self):
         for x in range(self.grid.width):
-            #show the triggers for that track on the top row
-            #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
-            #if self.current_channel == 1:
-            #fill a column bottom up in the x position
-            #current_oct = self.current_track.octave[x]
             self.set_octave(x,self.current_track.octave[x])
-            #if current_oct >= 0:
-            #    #print("start = ", 1, "end = ", 4-current_oct)
-            #    for i in range (4,4+current_oct+1):
-            #        self.my_buffer.led_set(x, i, 15)
-            #        #print("current oct: ", current_oct, " drawing in row: ", i)
-            #if current_oct < 0:
-            #    for i in range (4+current_oct,5):
-            #        self.my_buffer.led_set(x, i, 15)
-            #        #print("current oct: ", current_oct, " drawing in row: ", i)
-        #self.my_buffer.led_set(5,0,0)
-        #self.my_buffer.led_set(6,0,0)
-        #self.my_buffer.led_set(7,0,15)
-        #self.my_buffer.led_set(8,0,0)
-        #self.my_buffer.led_set(9,0,0)
-        #self.my_buffer.led_set(14,0,0)
-        #self.my_buffer.led_set(15,0,0)
         self.draw_current_position()
 
     def set_duration(self,x,duration):
@@ -732,43 +724,6 @@ class Runcible(monome.App):
     def draw_duration_page(self):
         for x in range(self.grid.width):
             self.set_duration(x,self.current_track.duration[x])
-            #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
-            #for i in range (7-(self.current_track.duration[x]),7): #ignore bottom row
-            #    #print(x,i)
-            #    self.my_buffer.led_set(x, i, 15)
-            #for i in range (1,7-(self.current_track.duration[x])): #ignore top row
-            #    self.my_buffer.led_set(x, i, 0)
-            #show the triggers for that track on the top row
-            #self.my_buffer.led_set(x, 7, self.current_track.tr[x])
-        #for x in range(self.grid.width):
-            #show the triggers for that track on the top row
-            #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
-            #draw the accent toggles - this will move to a velocity page?
-            #if self.current_track.velocity[x]:
-            #    buffer.led_set(x, 7, 15)
-            #else:
-            #    buffer.led_set(x, 7, 0)
-            #if self.current_channel == 1:
-                #fill a column top down in the x position
-            #for i in range (6,7-self.current_track.duration[x]-1): #ignore top row
-            #    self.buffer.led_set(x, i, 15)
-            #for i in range (7-self.current_track.duration[x]-1,1): #ignore bottom row
-            #    self.buffer.led_set(x, i, 0)
-            #self.buffer.led_set(x, 7, self.current_track.tr[x] * 15)
-            #elif self.current_channel == 2:
-                #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
-                #    buffer.led_set(x, i, 15)
-                #for i in range (self.current_pattern.tracks[1].duration[x]+1,7):
-                #    buffer.led_set(x, i, 0)
-        #print("octave page level")
-        #print(self.buffer.levels)
-        #self.my_buffer.led_set(5,0,0)
-        #self.my_buffer.led_set(6,0,0)
-        #self.my_buffer.led_set(7,0,0)
-        #self.my_buffer.led_set(8,0,15)
-        #self.my_buffer.led_set(9,0,0)
-        #self.my_buffer.led_set(14,0,0)
-        #self.my_buffer.led_set(15,0,0)
         self.draw_current_position()
 
     def set_velocity(self,x,velocity):
@@ -784,25 +739,6 @@ class Runcible(monome.App):
     def draw_velocity_page(self):
         for x in range(self.grid.width):
             self.set_velocity(x,self.current_track.velocity[x])
-            #buffer.led_set(x, 7, self.current_track.tr[x] * 15)
-        #    for i in range (1,self.current_track.velocity[x]+1): #ignore bottom row
-        #        self.my_buffer.led_set(x, i, 15)
-        #    for i in range (self.current_track.velocity[x]+1,6): #ignore top row
-        #        self.my_buffer.led_set(x, i, 0)
-        #    #show the triggers for that track on the top row
-        #    self.my_buffer.led_set(x, 7, self.current_track.tr[x])
-        #    #elif self.current_channel == 2:
-        #        #for i in range (1,self.current_pattern.tracks[1].duration[x]+1):
-        #        #    buffer.led_set(x, i, 15)
-        #        #for i in range (self.current_pattern.tracks[1].duration[x]+1,7):
-        #        #    buffer.led_set(x, i, 0)
-        #self.my_buffer.led_set(5,0,0)
-        #self.my_buffer.led_set(6,0,0)
-        #self.my_buffer.led_set(7,0,0)
-        #self.my_buffer.led_set(8,0,0)
-        #self.my_buffer.led_set(9,0,15)
-        #self.my_buffer.led_set(14,0,0)
-        #self.my_buffer.led_set(15,0,0)
         self.draw_current_position()
 
     def draw_scale_page(self):
@@ -880,15 +816,9 @@ class Runcible(monome.App):
             indicator_row = np.block([self.track_buffer,self.mode_buffer])
             #split off the first row of the map and concatenate the remainder with the indicator row
             self.my_buffer.led_map(0,0,(np.concatenate((indicator_row.T,np.asarray(np.split(self.my_buffer.levels,[1,8],axis=1)[1])),axis=1)))
-                        #self.my_buffer.led_map(0,0,(np.concatenate((np.asarray(np.split(self.my_buffer.levels,[7],axis=1)[0]),np.roll((self.my_pos_buffer).astype(int),self.current_track.pos[self.k_mode.value],axis=1).T,),axis=1)))
-        #self.buffer.levels.reverse()
         self.grid.led_map(0,0,self.my_buffer.levels)
         #print(len(self.buffer.levels[0]))
         #print(self.buffer.levels)
-        #for y in range(8):
-        #    for x in range(16):
-        #        self.grid.led_set(x,y,self.buffer.levels[y][x])
-        #self.buffer.levels.reverse()
         self.my_buffer.led_level_all(0)
         self.frame_dirty = False 
 
@@ -1109,7 +1039,7 @@ class Runcible(monome.App):
             # update grid
             #buffer.render(self.grid)
             self.grid.led_level_map(0,0,my_buffer.levels)
-            self.frame_dirty = False 
+            self.frame_dirty = False
 
     def select_track(self, x, s):
         if x == 0:
