@@ -628,10 +628,10 @@ class Runcible(monome.App):
     def draw_trigger_page(self):
         #draw scale toggles
         self.my_scale_toggle_buffer = np.concatenate((np.array([[self.current_pattern.tracks[0].scale_toggle,self.current_pattern.tracks[1].scale_toggle,self.current_pattern.tracks[2].scale_toggle,self.current_pattern.tracks[3].scale_toggle]]),np.array([[0,0,0,0,0,0,0,0,0,0,0,0]])),axis=1)
-        #draw mute toggles
-        self.my_mute_toggle_buffer = np.concatenate((np.array([[self.current_pattern.tracks[0].track_mute,self.current_pattern.tracks[1].scale_toggle,self.current_pattern.tracks[2].scale_toggle,self.current_pattern.tracks[3].scale_toggle]]),np.array([[0,0,0,0,0,0,0,0,0,0,0,0]])),axis=1)
-        self.my_buffer.led_row(0,1,self.my_mute_toggle_buffer)
         self.my_buffer.led_row(0,2,self.my_scale_toggle_buffer)
+        #draw mute toggles
+        self.my_mute_toggle_buffer = np.concatenate((np.array([[self.current_pattern.tracks[0].track_mute,self.current_pattern.tracks[1].track_mute,self.current_pattern.tracks[2].track_mute,self.current_pattern.tracks[3].track_mute]]),np.array([[0,0,0,0,0,0,0,0,0,0,0,0]])),axis=1)
+        self.my_buffer.led_row(0,1,self.my_mute_toggle_buffer)
 
         #self.my_buffer.led_set(5,0,15) #set the channel 1 indicator on
         #self.my_buffer.led_set(6,0,0)  #set the channel 2 indicator off

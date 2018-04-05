@@ -303,7 +303,7 @@ class myGridBuffer:
     #        self.led_row(x_offset, y_offset + r, row)
 
     def led_row(self, x_offset, y, data):
-        print(self.levels.T[y])
+        #print(self.levels.T[y])
         np.copyto(self.levels.T[y], data)
     #    for x, s in enumerate(data):
     #        self.led_set(x_offset + x, y, s)
