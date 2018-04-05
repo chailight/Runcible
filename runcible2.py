@@ -624,11 +624,6 @@ class Runcible(monome.App):
             self.my_buffer.led_set(3,0,15)  #set the channel 4 indicator off
             #buffer.led_set(render_pos[0], render_pos[1], self.step_ch4[y][x] * 11 + highlight)
 
-    #def set_trigger_param_display(self):
-
-
-
-        for track in self.current_pattern.tracks:
 
     def draw_trigger_page(self):
         #draw scale toggles
