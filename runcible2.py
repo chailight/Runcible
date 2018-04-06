@@ -532,12 +532,20 @@ class Runcible(monome.App):
                             else:
                                 self.my_buffer.led_set(i,7-track.track_id,0)
                 else:
-                    track_1_pos = np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[0].pos[self.k_mode.value],axis=1)
-                    track_2_pos = np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[1].pos[self.k_mode.value],axis=1)
-                    track_3_pos = np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[2].pos[self.k_mode.value],axis=1)
-                    track_4_pos = np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[3].pos[self.k_mode.value],axis=1)
-                    remaining_screen = np.split(self.my_buffer.levels,[4],axis=1)[0]
-                    self.my_buffer.led_map(0,0,(np.block([remaining_screen,track_4_pos.T,track_3_pos.T,track_2_pos.T,track_1_pos.T])))
+                    self.my_buffer.led_row(0,7,np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[0].pos[self.k_mode.value],axis=1))
+                    self.my_buffer.led_row(0,6,np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[1].pos[self.k_mode.value],axis=1))
+                    self.my_buffer.led_row(0,5,np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[2].pos[self.k_mode.value],axis=1))
+                    self.my_buffer.led_row(0,4,np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[3].pos[self.k_mode.value],axis=1))
+                    #track_2_pos = np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[1].pos[self.k_mode.value],axis=1)
+                    #track_3_pos = np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[2].pos[self.k_mode.value],axis=1)
+                    #track_4_pos = np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[3].pos[self.k_mode.value],axis=1)
+
+                    #track_1_pos = np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[0].pos[self.k_mode.value],axis=1)
+                    #track_2_pos = np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[1].pos[self.k_mode.value],axis=1)
+                    #track_3_pos = np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[2].pos[self.k_mode.value],axis=1)
+                    #track_4_pos = np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[3].pos[self.k_mode.value],axis=1)
+                    #remaining_screen = np.split(self.my_buffer.levels,[4],axis=1)[0]
+                    #self.my_buffer.led_map(0,0,(np.block([remaining_screen,track_4_pos.T,track_3_pos.T,track_2_pos.T,track_1_pos.T])))
                     #self.my_buffer.led_map(0,0,(np.concatenate((np.asarray(np.split(self.my_buffer.levels,[5],axis=1)[0]),np.roll((self.my_pos_buffer).astype(int),self.current_track.pos[self.k_mode.value],axis=1).T,),axis=1)))
                     #previous_step = [0,0,0,0]
                     #track 1
@@ -659,7 +667,7 @@ class Runcible(monome.App):
         # display loop sync mode
         #self.buffer.led_set(5+self.current_track.sync_mode, 3, 15) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
         #print(buffer.levels)
-        #self.draw_current_position()
+        self.draw_current_position()
 
     def set_track_display(self):
         if self.current_track.track_id == 0:
