@@ -635,19 +635,17 @@ class Runcible(monome.App):
         #draw scale toggles
         self.my_scale_toggle_buffer = np.concatenate((np.array([[self.current_pattern.tracks[0].scale_toggle,self.current_pattern.tracks[1].scale_toggle,self.current_pattern.tracks[2].scale_toggle,self.current_pattern.tracks[3].scale_toggle]]),np.array([[0,self.current_pattern.tracks[0].sync_mode,self.current_pattern.tracks[1].sync_mode,self.current_pattern.tracks[2].sync_mode,self.current_pattern.tracks[3].sync_mode,0,0,0,0,0,0,0]])),axis=1)
         self.my_buffer.led_row(0,2,self.my_scale_toggle_buffer)
+
         #draw mute toggles
         self.my_mute_toggle_buffer = np.concatenate((np.array([[self.current_pattern.tracks[0].track_mute,self.current_pattern.tracks[1].track_mute,self.current_pattern.tracks[2].track_mute,self.current_pattern.tracks[3].track_mute]]),np.array([[0,0,0,0,0,0,0,0,0,0,0,0]])),axis=1)
         self.my_buffer.led_row(0,1,self.my_mute_toggle_buffer)
 
-        #self.my_buffer.led_set(5,0,15) #set the channel 1 indicator on
-        #self.my_buffer.led_set(6,0,0)  #set the channel 2 indicator off
-        #self.my_buffer.led_set(7,0,0)  #set the channel 3 indicator off
-        #self.my_buffer.led_set(8,0,0)  #set the channel 4 indicator off
-        #self.my_buffer.led_set(9,0,0)
-        #self.my_buffer.led_set(14,0,0)
-        #self.my_buffer.led_set(15,0,0)
-
         # display triggers for each track
+        self.my_buffer.led_row(0,7,np.array([self.current_pattern.tracks[0].tr])
+        self.my_buffer.led_row(0,6,np.array([self.current_pattern.tracks[1].tr])
+        self.my_buffer.led_row(0,5,np.array([self.current_pattern.tracks[2].tr])
+        self.my_buffer.led_row(0,4,np.array([self.current_pattern.tracks[3].tr])
+
         #for x in range(self.grid.width):
         #    if x > 4 and x < 8: #clear the sync mode
         #        self.buffer.led_set(x, 3, 0) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
