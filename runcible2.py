@@ -532,7 +532,8 @@ class Runcible(monome.App):
                             else:
                                 self.my_buffer.led_set(i,7-track.track_id,0)
                 else:
-                    self.my_buffer.led_row(0,7,np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[0].pos[self.k_mode.value],axis=1))
+                    self.my_buffer.led_row(0,7,np.array([self.current_pattern.tracks[0].tr])-np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[0].pos[self.k_mode.value]-1,axis=1))
+                    self.my_buffer.led_row(0,7,np.array([self.current_pattern.tracks[0].tr])+np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[0].pos[self.k_mode.value],axis=1))
                     self.my_buffer.led_row(0,6,np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[1].pos[self.k_mode.value],axis=1))
                     self.my_buffer.led_row(0,5,np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[2].pos[self.k_mode.value],axis=1))
                     self.my_buffer.led_row(0,4,np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[3].pos[self.k_mode.value],axis=1))
