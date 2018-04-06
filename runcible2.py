@@ -641,10 +641,10 @@ class Runcible(monome.App):
         self.my_buffer.led_row(0,1,self.my_mute_toggle_buffer)
 
         # display triggers for each track
-        self.my_buffer.led_row(0,7,np.array([self.current_pattern.tracks[0].tr])
-        self.my_buffer.led_row(0,6,np.array([self.current_pattern.tracks[1].tr])
-        self.my_buffer.led_row(0,5,np.array([self.current_pattern.tracks[2].tr])
-        self.my_buffer.led_row(0,4,np.array([self.current_pattern.tracks[3].tr])
+        self.my_buffer.led_row(0,7,np.array([self.current_pattern.tracks[0].tr]))
+        self.my_buffer.led_row(0,6,np.array([self.current_pattern.tracks[1].tr]))
+        self.my_buffer.led_row(0,5,np.array([self.current_pattern.tracks[2].tr]))
+        self.my_buffer.led_row(0,4,np.array([self.current_pattern.tracks[3].tr]))
 
         #for x in range(self.grid.width):
         #    if x > 4 and x < 8: #clear the sync mode
