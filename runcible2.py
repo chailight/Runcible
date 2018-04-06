@@ -659,7 +659,7 @@ class Runcible(monome.App):
         # display loop sync mode
         #self.buffer.led_set(5+self.current_track.sync_mode, 3, 15) #display is inverted - as if to turn tracks "off" rather than turn mutes "on"
         #print(buffer.levels)
-        self.draw_current_position()
+        #self.draw_current_position()
 
     def set_track_display(self):
         if self.current_track.track_id == 0:
