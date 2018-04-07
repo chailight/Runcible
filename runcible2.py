@@ -387,7 +387,8 @@ class Runcible(monome.App):
                                 self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
                                 #print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
 
-            asyncio.async(self.trigger())
+            #asyncio.async(self.trigger())
+            self.trigger()
             self.current_pos = yield from self.clock.sync(self.ticks)
 
             self.cue_sub_pos = self.cue_sub_pos + 1
@@ -408,39 +409,40 @@ class Runcible(monome.App):
                 track.play_position = (self.current_pos//self.ticks)%track.loop_length + track.loop_start
 
     def insert_note(self,track,position,pitch,velocity,duration):
-        asyncio.async(self.set_note_on(track,position,pitch,velocity,duration))
+        self.set_note_on(track,position,pitch,velocity,duration)
+        #asyncio.async(self.set_note_on(track,position,pitch,velocity,duration))
         #self.insert_note_off(track,(position+duration)%16,pitch)
         #print("setting note on at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
         #print("setting note off at: ", position, " + ", self.current_pattern.tracks[track].duration[position])
         #asyncio.async(self.set_note_off_timer(track,duration,pitch))
 
     ####### deprecated !!!
-    def insert_note_on(self,track,position,pitch,velocity):
-        already_exists = False
-        for n in self.note_on[position]:
-            if n.pitch == pitch:
-                already_exists = True
-                #print("note on exists", self.channel + track, pitch, "at position: ", position)
-        if not already_exists:
-            new_note = Note(track,pitch,velocity)
-            self.note_on[position].append(new_note)
-            #pos = yield from self.clock.sync()
-            #print("setting note on ", self.channel + track, pitch, "at pos: ", position)
+    #def insert_note_on(self,track,position,pitch,velocity):
+        #already_exists = False
+        #for n in self.note_on[position]:
+            #if n.pitch == pitch:
+                #already_exists = True
+                ##print("note on exists", self.channel + track, pitch, "at position: ", position)
+        #if not already_exists:
+            #new_note = Note(track,pitch,velocity)
+            #self.note_on[position].append(new_note)
+            ##pos = yield from self.clock.sync()
+            ##print("setting note on ", self.channel + track, pitch, "at pos: ", position)
 
     ####### deprecated !!!
-    def insert_note_off(self,track,position,pitch):
-        already_exists = False
-        for n in self.note_off[position]:
-            if n.pitch == pitch:
-                already_exists = True
-                #print("note off exists", self.channel + track, pitch, "at position: ", position)
-        if not already_exists:
-            new_note = Note(track,pitch,0)
-            self.note_off[position].append(new_note)
-            #pos = yield from self.clock.sync()
-            print("setting note off ", self.channel + track, pitch, "at pos: ", position)
+    #def insert_note_off(self,track,position,pitch):
+        #already_exists = False
+        #for n in self.note_off[position]:
+            #if n.pitch == pitch:
+                #already_exists = True
+                ##print("note off exists", self.channel + track, pitch, "at position: ", position)
+        #if not already_exists:
+            #new_note = Note(track,pitch,0)
+            #self.note_off[position].append(new_note)
+            ##pos = yield from self.clock.sync()
+            #print("setting note off ", self.channel + track, pitch, "at pos: ", position)
 
-    @asyncio.coroutine
+    #@asyncio.coroutine
     def set_note_on(self,track,position,pitch,velocity,duration):
         already_exists = False
         for n in self.note_on[position]:
@@ -455,11 +457,11 @@ class Runcible(monome.App):
             self.duration_timers.append(new_note) # add this to the list of notes to track for when they end
             #print("set note on: ", self.channel + track, pitch, "at: ", position)
 
-    @asyncio.coroutine
-    def set_note_off_timer(self,track,duration,pitch):
-        pos = yield from self.clock.sync(duration*4)
-        #self.midi_out.send_noteon(self.channel + track, pitch,0)
-        #print("note off timer", self.channel + track, pitch, "at: ", pos%16)
+    #@asyncio.coroutine
+    #def set_note_off_timer(self,track,duration,pitch):
+    #    pos = yield from self.clock.sync(duration*4)
+    #    #self.midi_out.send_noteon(self.channel + track, pitch,0)
+    #    #print("note off timer", self.channel + track, pitch, "at: ", pos%16)
 
     def calc_scale(self, s):
         self.cur_scale[0] = self.current_preset.scale_data[s][0] + self.cur_trans
@@ -467,8 +469,8 @@ class Runcible(monome.App):
             self.cur_scale[i1] = self.cur_scale[i1-1] + self.current_preset.scale_data[s][i1]
 
 
-    @asyncio.coroutine
-    def trigger(self):
+    #@asyncio.coroutine
+    async def trigger(self):
         #print("trigger called")
         # play all notes in this position
         for t in self.current_pattern.tracks:
@@ -503,19 +505,19 @@ class Runcible(monome.App):
         #    del self.duration_timers[n] #clear the timer once it's exhausted 
 
 
-    @asyncio.coroutine
-    def clock_out(self):
-        yield from self.clock.sync(self.ticks)
+    #@asyncio.coroutine
+    #def clock_out(self):
+    #    yield from self.clock.sync(self.ticks)
 
-    def draw_current_position_test(self):
-        previous_step = [0,0,0,0]
-        if self.my_buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
-            self.my_buffer.led_set(self.current_track.pos[self.k_mode.value]-1, 7, previous_step[self.current_track.track_id])
-            self.my_buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 15)
-            previous_step[self.current_track.track_id] = 0
-        else: #toggle an already lit led as we pass over it
-            previous_step[self.current_track.track_id] = 15
-            self.my_buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 0)
+    #def draw_current_position_test(self):
+    #    previous_step = [0,0,0,0]
+    #    if self.my_buffer.levels[0+self.current_track.track_id][self.current_track.pos[self.k_mode.value]] == 0:
+    #        self.my_buffer.led_set(self.current_track.pos[self.k_mode.value]-1, 7, previous_step[self.current_track.track_id])
+    #        self.my_buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 15)
+    #        previous_step[self.current_track.track_id] = 0
+    #    else: #toggle an already lit led as we pass over it
+    #        previous_step[self.current_track.track_id] = 15
+    #        self.my_buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 0)
 
     def draw_current_position(self):
             if self.k_mode == Modes.mTr:
