@@ -647,8 +647,7 @@ class Runcible(monome.App):
     def draw_trigger_page(self):
         #draw scale toggles & sync mode indicator
         #default sync mode display is 1 - but then update if needed
-        if self.current_pattern.tracks[0].sync_mode == 1:
-            sync_mode_display = np.array([[0,1,0,0,0,0,0,0,0,0,0,0]])
+        sync_mode_display = np.array([[0,1,0,0,0,0,0,0,0,0,0,0]])
         if self.current_pattern.tracks[0].sync_mode == 2:
             sync_mode_display = np.array([[0,0,1,0,0,0,0,0,0,0,0,0]])
         elif self.current_pattern.tracks[0].sync_mode == 3:
