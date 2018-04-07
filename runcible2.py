@@ -648,9 +648,9 @@ class Runcible(monome.App):
         #draw scale toggles & sync mode indicator
         #default sync mode display is 1 - but then update if needed
         sync_mode_display = np.array([[0,1,0,0,0,0,0,0,0,0,0,0]])
-        if self.current_pattern.tracks[0].sync_mode == 2:
+        if self.current_pattern.tracks[0].sync_mode == 1:
             sync_mode_display = np.array([[0,0,1,0,0,0,0,0,0,0,0,0]])
-        elif self.current_pattern.tracks[0].sync_mode == 3:
+        elif self.current_pattern.tracks[0].sync_mode == 2:
             sync_mode_display = np.array([[0,0,0,1,0,0,0,0,0,0,0,0]])
         self.my_scale_toggle_buffer = np.concatenate((np.array([[self.current_pattern.tracks[0].scale_toggle,self.current_pattern.tracks[1].scale_toggle,self.current_pattern.tracks[2].scale_toggle,self.current_pattern.tracks[3].scale_toggle]]),sync_mode_display),axis=1)
         #self.my_scale_toggle_buffer = np.concatenate((np.array([[self.current_pattern.tracks[0].scale_toggle,self.current_pattern.tracks[1].scale_toggle,self.current_pattern.tracks[2].scale_toggle,self.current_pattern.tracks[3].scale_toggle]]),np.array([[0,self.current_pattern.tracks[0].sync_mode,self.current_pattern.tracks[1].sync_mode,self.current_pattern.tracks[2].sync_mode,self.current_pattern.tracks[3].sync_mode,0,0,0,0,0,0,0]])),axis=1)
