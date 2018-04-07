@@ -1170,7 +1170,7 @@ class Runcible(monome.App):
                 self.current_track.tmul[Modes.mDur.value] = x
                 self.current_track.tmul[Modes.mVel.value] = x
             else:
-                for track in self.current_preset.tracks: # change time for all tracks
+                for track in self.current_pattern.tracks: # change time for all tracks
                     track.tmul[Modes.mTr.value] = x
                     track.tmul[Modes.mNote.value] = x 
                     track.tmul[Modes.mOct.value] = x
