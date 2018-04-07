@@ -470,7 +470,8 @@ class Runcible(monome.App):
 
 
     #@asyncio.coroutine
-    async def trigger(self):
+    #async def trigger(self):
+    def trigger(self):
         #print("trigger called")
         # play all notes in this position
         for t in self.current_pattern.tracks:
