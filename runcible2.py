@@ -526,7 +526,7 @@ class Runcible(monome.App):
                 if self.k_mod_mode == ModModes.modTime:
                     for track in self.current_pattern.tracks:
                         # light up the current time multiplier
-                        self.my_buffer.led_row(0,7-track.track_id,np.roll((self.my_pos_buffer).astype(int),self.current_track.tmul[self.k_mode.value],axis=1))
+                        self.my_buffer.led_row(0,7-track.track_id,np.roll((self.my_pos_buffer).astype(int),track.tmul[self.k_mode.value],axis=1))
                 elif self.k_mod_mode == ModModes.modLoop:
                     for track in self.current_pattern.tracks:
                         for i in range(16):
@@ -573,7 +573,7 @@ class Runcible(monome.App):
                 if self.k_mode.value < Modes.mScale.value : # all other modes except scale or pattern
                     if self.k_mod_mode == ModModes.modTime:
                         # light up the current time multiplier
-                        self.my_buffer.led_row(0,7-track.track_id,np.roll((self.my_pos_buffer).astype(int),self.current_track.tmul[self.k_mode.value],axis=1))
+                        self.my_buffer.led_row(0,7-self.current_track.track_id,np.roll((self.my_pos_buffer).astype(int),self.current_track.tmul[self.k_mode.value],axis=1))
                     elif self.k_mod_mode == ModModes.modLoop:
                             for i in range(16):
                                 if i >= self.current_track.lstart[self.k_mode.value] and i <= self.current_track.lend[self.k_mode.value]:
