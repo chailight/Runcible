@@ -1,12 +1,13 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
-#fix sync display - there are multiple global settings
 #fix time multiplyer mod display
 #fix input to handle re-sync
 #fix note triggering so that it runs according to trigger time, not currently displayed page time
 #fix loop display
-#fix position market displaying over top of trigger indicators
+#fix position market displaying over top of trigger indicators for octave duration velocity
+#fix polyphonic mode
+#add polyphonic mutes
 
 #fix pattern copy - current pattern is wiped during copy? problem arises after introducing cue
 #fix pattern cuing not quite in sync?
@@ -524,10 +525,8 @@ class Runcible(monome.App):
             if self.k_mode == Modes.mTr:
                 if self.k_mod_mode == ModModes.modTime:
                     for track in self.current_pattern.tracks:
-                        for i in range(16):
-                            self.my_buffer.led_set(i,7-track.track_id,0)
                         # light up the current time multiplier
-                        self.my_buffer.led_set(track.tmul[self.k_mode.value], 7-track.track_id, 15)
+                        self.my_buffer.led_row(0,7-track.track_id,np.roll((self.my_pos_buffer).astype(int),self.current_track.tmul[self.k_mode.value],axis=1))
                 elif self.k_mod_mode == ModModes.modLoop:
                     for track in self.current_pattern.tracks:
                         for i in range(16):
