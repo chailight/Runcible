@@ -525,11 +525,11 @@ class Runcible(monome.App):
                         self.my_buffer.led_row(0,7-track.track_id,np.roll((self.my_pos_buffer).astype(int),track.tmul[self.k_mode.value],axis=1))
                 elif self.k_mod_mode == ModModes.modLoop:
                     for track in self.current_pattern.tracks:
-                        print("loop start/end",track.lstart[Modes.mTr.value],track.lend[Modes.mTr.value])
-                        loop_display_start = np.zeros(track.lstart[Modes.mTr.value],int).tolist()
-                        loop_display_middle = np.ones(track.lend[Modes.mTr.value]+1,int).tolist()
-                        loop_display_end = np.ones(15-track.lend[Modes.mTr.value],int).tolist()
-                        print(loop_display_start,loop_display_middle,loop_display_end)
+                        #print("loop start/end",track.lstart[Modes.mTr.value],track.lend[Modes.mTr.value])
+                        #loop_display_start = np.zeros(track.lstart[Modes.mTr.value],int).tolist()
+                        #loop_display_middle = np.ones(track.lend[Modes.mTr.value]+1,int).tolist()
+                        #loop_display_end = np.ones(15-track.lend[Modes.mTr.value],int).tolist()
+                        #print(loop_display_start,loop_display_middle,loop_display_end)
                         #print(np.asarray(np.block([np.zeros(track.lstart),np.ones(track.lend+1),np.zeros(15-track.lend)])))
                         self.my_buffer.led_row(0,7-track.track_id,np.block([np.zeros(track.lstart[Modes.mTr.value],int),np.ones(track.lend[Modes.mTr.value]+1,int),np.zeros(15-track.lend[Modes.mTr.value],int)]).tolist())
                         #for i in range(16):
@@ -578,11 +578,12 @@ class Runcible(monome.App):
                         # light up the current time multiplier
                         self.my_buffer.led_row(0,7-self.current_track.track_id,np.roll((self.my_pos_buffer).astype(int),self.current_track.tmul[self.k_mode.value],axis=1))
                     elif self.k_mod_mode == ModModes.modLoop:
-                            for i in range(16):
-                                if i >= self.current_track.lstart[self.k_mode.value] and i <= self.current_track.lend[self.k_mode.value]:
-                                    self.my_buffer.led_set(i,7,15)
-                                else:
-                                    self.my_buffer.led_set(i,7,0)
+                        self.my_buffer.led_row(0,7,np.block([np.zeros(self.current_track.lstart[Modes.mTr.value],int),np.ones(self.current_track.lend[Modes.mTr.value]+1,int),np.zeros(15-self.current_track.lend[Modes.mTr.value],int)]).tolist())
+                        #    for i in range(16):
+                        #        if i >= self.current_track.lstart[self.k_mode.value] and i <= self.current_track.lend[self.k_mode.value]:
+                        #            self.my_buffer.led_set(i,7,15)
+                        #        else:
+                        #            self.my_buffer.led_set(i,7,0)
                     else:
                         if self.k_mode.value > Modes.mNote.value : # all other modes except note scale or pattern
                             self.my_buffer.led_row(0,7,np.array([self.current_track.tr])-np.roll((self.my_pos_buffer).astype(int),self.current_track.pos[self.k_mode.value]-1,axis=1))
