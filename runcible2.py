@@ -525,6 +525,7 @@ class Runcible(monome.App):
                         self.my_buffer.led_row(0,7-track.track_id,np.roll((self.my_pos_buffer).astype(int),track.tmul[self.k_mode.value],axis=1))
                 elif self.k_mod_mode == ModModes.modLoop:
                     for track in self.current_pattern.tracks:
+                        print(track.lstart,track.lend)
                         loop_display_start = np.zeros(track.lstart)
                         loop_display_middle = np.ones(track.lend+1)
                         loop_display_end = np.ones(15-track.lend)
