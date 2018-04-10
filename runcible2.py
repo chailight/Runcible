@@ -1,8 +1,6 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
-#fix time multiplyer mod display
-#fix input to handle re-sync
 #fix note triggering so that it runs according to trigger time, not currently displayed page time
 #fix loop display
 #fix position market displaying over top of trigger indicators for octave duration velocity
@@ -581,7 +579,9 @@ class Runcible(monome.App):
                                 else:
                                     self.my_buffer.led_set(i,7,0)
                     else:
-                        self.my_buffer.led_map(0,0,(np.concatenate((np.asarray(np.split(self.my_buffer.levels,[7],axis=1)[0]),np.roll((self.my_pos_buffer).astype(int),self.current_track.pos[self.k_mode.value],axis=1).T,),axis=1)))
+                        self.my_buffer.led_row(0,7,np.array([self.track.tr])-np.roll((self.my_pos_buffer).astype(int),self.track.pos[self.k_mode.value]-1,axis=1))
+                        self.my_buffer.led_row(0,7,np.array([self.track.tr])+np.roll((self.my_pos_buffer).astype(int),self.track.pos[self.k_mode.value],axis=1))
+                        #self.my_buffer.led_map(0,0,(np.concatenate((np.asarray(np.split(self.my_buffer.levels,[7],axis=1)[0]),np.roll((self.my_pos_buffer).astype(int),self.current_track.pos[self.k_mode.value],axis=1).T,),axis=1)))
                 elif self.k_mode == Modes.mPattern:
                     if self.k_mod_mode == ModModes.modTime:
                         self.my_buffer.led_set(self.state.cue_div, 6, 15)
@@ -724,6 +724,7 @@ class Runcible(monome.App):
             self.my_buffer.led_col(x,0,octave_col[0])
 
     def draw_octave_page(self):
+        self.my_buffer.led_row(0,7,np.array([self.current_track.tr]))
         for x in range(self.grid.width):
             self.set_octave(x,self.current_track.octave[x])
         self.draw_current_position()
@@ -739,6 +740,7 @@ class Runcible(monome.App):
         self.my_buffer.led_col(x,0,duration_col[0])
 
     def draw_duration_page(self):
+        self.my_buffer.led_row(0,7,np.array([self.current_track.tr]))
         for x in range(self.grid.width):
             self.set_duration(x,self.current_track.duration[x])
         self.draw_current_position()
@@ -754,6 +756,7 @@ class Runcible(monome.App):
         self.my_buffer.led_col(x,0,velocity_col[0])
 
     def draw_velocity_page(self):
+        self.my_buffer.led_row(0,7,np.array([self.current_track.tr]))
         for x in range(self.grid.width):
             self.set_velocity(x,self.current_track.velocity[x])
         self.draw_current_position()
