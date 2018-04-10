@@ -1,9 +1,7 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
-#fix note triggering so that it runs according to trigger time, not currently displayed page time
 #fix loop display
-#fix position market displaying over top of trigger indicators for octave duration velocity
 #fix polyphonic mode
 #add polyphonic mutes
 
@@ -527,11 +525,12 @@ class Runcible(monome.App):
                         self.my_buffer.led_row(0,7-track.track_id,np.roll((self.my_pos_buffer).astype(int),track.tmul[self.k_mode.value],axis=1))
                 elif self.k_mod_mode == ModModes.modLoop:
                     for track in self.current_pattern.tracks:
-                        for i in range(16):
-                            if i >= track.lstart[Modes.mTr.value] and i <= track.lend[Modes.mTr.value]:
-                                self.my_buffer.led_set(i,7-track.track_id,15)
-                            else:
-                                self.my_buffer.led_set(i,7-track.track_id,0)
+                        self.my_buffer.led_row(0,7-track.track_id,np.block([np.zeros((track.lstart,1)),np.ones((track.lend+1,1)),np.zeros((15-track.lend,1))))
+                        #for i in range(16):
+                        #    if i >= track.lstart[Modes.mTr.value] and i <= track.lend[Modes.mTr.value]:
+                        #        self.my_buffer.led_set(i,7-track.track_id,15)
+                        #    else:
+                        #        self.my_buffer.led_set(i,7-track.track_id,0)
                 else:
                     self.my_buffer.led_row(0,7,np.array([self.current_pattern.tracks[0].tr])-np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[0].pos[self.k_mode.value]-1,axis=1))
                     self.my_buffer.led_row(0,7,np.array([self.current_pattern.tracks[0].tr])+np.roll((self.my_pos_buffer).astype(int),self.current_pattern.tracks[0].pos[self.k_mode.value],axis=1))
