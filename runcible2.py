@@ -531,7 +531,7 @@ class Runcible(monome.App):
                         loop_display_end = np.ones(15-track.lend,int).tolist()
                         print(loop_display_start,loop_display_middle,loop_display_end)
                         #print(np.asarray(np.block([np.zeros(track.lstart),np.ones(track.lend+1),np.zeros(15-track.lend)])))
-                        self.my_buffer.led_row(0,7-track.track_id,np.block([np.zeros(track.lstart),np.ones(track.lend+1),np.zeros(15-track.lend)].).tolist())
+                        self.my_buffer.led_row(0,7-track.track_id,np.block([np.zeros(track.lstart),np.ones(track.lend+1),np.zeros(15-track.lend)]).tolist())
                         #for i in range(16):
                         #    if i >= track.lstart[Modes.mTr.value] and i <= track.lend[Modes.mTr.value]:
                         #        self.my_buffer.led_set(i,7-track.track_id,15)
