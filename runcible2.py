@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
-#fix loop display
+#text loop display
 #fix polyphonic mode
 #add polyphonic mutes
 
