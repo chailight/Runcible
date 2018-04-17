@@ -2,6 +2,8 @@
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
 #text loop display
+#fix scale display
+#fix pattern dispaly
 #fix polyphonic mode
 #add polyphonic mutes
 
@@ -576,7 +578,7 @@ class Runcible(monome.App):
                 if self.k_mode.value < Modes.mScale.value : # all other modes except scale or pattern
                     if self.k_mod_mode == ModModes.modTime:
                         # light up the current time multiplier
-                        self.my_buffer.led_row(0,7-self.current_track.track_id,np.roll((self.my_pos_buffer).astype(int),self.current_track.tmul[self.k_mode.value],axis=1))
+                        self.my_buffer.led_row(0,7,np.roll((self.my_pos_buffer).astype(int),self.current_track.tmul[self.k_mode.value],axis=1))
                     elif self.k_mod_mode == ModModes.modLoop:
                         self.my_buffer.led_row(0,7,np.block([np.zeros(self.current_track.lstart[Modes.mTr.value],int),np.ones(self.current_track.lend[Modes.mTr.value]+1,int),np.zeros(15-self.current_track.lend[Modes.mTr.value],int)]).tolist())
                         #    for i in range(16):
@@ -771,22 +773,22 @@ class Runcible(monome.App):
         self.draw_current_position()
 
     def draw_scale_page(self):
-        self.my_buffer.led_set(5,0,0)
-        self.my_buffer.led_set(6,0,0)
-        self.my_buffer.led_set(7,0,0)
-        self.my_buffer.led_set(8,0,0)
-        self.my_buffer.led_set(9,0,0)
-        self.my_buffer.led_set(14,0,15)
-        self.my_buffer.led_set(15,0,0)
-        self.my_buffer.led_set(15,0,0)
+        #self.my_buffer.led_set(5,0,0)
+        #self.my_buffer.led_set(6,0,0)
+        #self.my_buffer.led_set(7,0,0)
+        #self.my_buffer.led_set(8,0,0)
+        #self.my_buffer.led_set(9,0,0)
+        #self.my_buffer.led_set(14,0,15)
+        #self.my_buffer.led_set(15,0,0)
+        #self.my_buffer.led_set(15,0,0)
         #clear any previous scale
-        for ix in range (15):
-            for iy in range (1,7):
-                self.my_buffer.led_set(ix,iy, 0)
+        #for ix in range (15):
+        #    for iy in range (1,7):
+        #        self.my_buffer.led_set(ix,iy, 0)
         # show the selected scale 
         self.my_buffer.led_set(self.cur_scale_id//6,7-self.cur_scale_id%6-1, 15)
         # set a transpose reference point
-        self.my_buffer.led_set(7,7,15)
+        self.my_buffer.led_set(7,1,15)
         #display the actual scale
         for sd in range (1,8):
             self.my_buffer.led_set(7+self.cur_trans+self.current_preset.scale_data[self.cur_scale_id][sd],7-sd, 15)
