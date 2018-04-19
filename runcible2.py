@@ -795,7 +795,7 @@ class Runcible(monome.App):
         #    for iy in range (1,7):
         #        self.my_buffer.led_set(ix,iy, 0)
         # show the selected scale 
-        self.my_buffer.led_set(self.cur_scale_id//6,7-self.cur_scale_id%6-1, 15)
+        self.my_buffer.led_set(self.cur_scale_id//6,self.cur_scale_id%6-1, 15)
         # set a transpose reference point
         self.my_buffer.led_set(7,1,15)
         #display the actual scale
