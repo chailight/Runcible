@@ -791,7 +791,9 @@ class Runcible(monome.App):
         self.my_buffer.led_set(7,1,15)
         #display the actual scale
         for sd in range (1,8):
-            self.my_buffer.led_set(7+self.cur_trans+self.current_preset.scale_data[self.cur_scale_id][sd],7-sd, 15)
+            #self.my_buffer.led_set(7+self.cur_trans+self.current_preset.scale_data[self.cur_scale_id][sd],7-sd, 15)
+            # set the scale note indicator for each row. - probably need to combine with the scale selection indicator above
+            self.my_buffer.led_row(0,sd,np.roll((self.my_pos_buffer).astype(int),7+self.cur_trans+self.current_preset.scale_data[self.cur_scale_id[sd],axis=1))
             #print("sd: ", sd, "scale val: ", self.scale_data[self.cur_scale_id][sd], "pos: ", 4+self.scale_data[self.cur_scale_id][sd],7-sd-1)
         #self.draw_current_position()
 
