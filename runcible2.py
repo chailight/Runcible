@@ -606,24 +606,33 @@ class Runcible(monome.App):
 
 
     def draw_notes_page(self):
-        self.my_buffer.led_set(5,0,0)
-        self.my_buffer.led_set(6,0,15)
-        self.my_buffer.led_set(7,0,0)
-        self.my_buffer.led_set(8,0,0)
-        self.my_buffer.led_set(9,0,0)
-        self.my_buffer.led_set(14,0,0)
-        self.my_buffer.led_set(15,0,0)
-        for x in range(self.grid.width):
-            for y in range(1,self.grid.height): #ignore bottom row
-                #render_pos = self.spanToGrid(x,y)
+        #self.my_buffer.led_set(5,0,0)
+        #self.my_buffer.led_set(6,0,15)
+        #self.my_buffer.led_set(7,0,0)
+        #self.my_buffer.led_set(8,0,0)
+        #self.my_buffer.led_set(9,0,0)
+        #self.my_buffer.led_set(14,0,0)
+        #self.my_buffer.led_set(15,0,0)
+        #for x in range(self.grid.width):
+        #    for y in range(1,self.grid.height): #ignore bottom row
+        #        #render_pos = self.spanToGrid(x,y)
+        #        if self.current_track.track_id == 0:
+        #            self.my_buffer.led_set(x, y, self.current_pattern.step_ch1[y][x])
+        #        elif self.current_track.track_id == 1:
+        #            self.my_buffer.led_set(x, y, self.current_pattern.step_ch2[y][x])
+        #        elif self.current_track.track_id == 2:
+        #            self.my_buffer.led_set(x, y, self.current_pattern.step_ch3[y][x])
+        #        elif self.current_track.track_id == 3:
+        #            self.my_buffer.led_set(x, y, self.current_pattern.step_ch4[y][x])
+        for y in range(1,self.grid.height): #ignore bottom row
                 if self.current_track.track_id == 0:
-                    self.my_buffer.led_set(x, y, self.current_pattern.step_ch1[y][x])
+                    self.my_buffer.led_row(0, y, self.current_pattern.step_ch1[y])
                 elif self.current_track.track_id == 1:
-                    self.my_buffer.led_set(x, y, self.current_pattern.step_ch2[y][x])
+                    self.my_buffer.led_row(0, y, self.current_pattern.step_ch2[y])
                 elif self.current_track.track_id == 2:
-                    self.my_buffer.led_set(x, y, self.current_pattern.step_ch3[y][x])
+                    self.my_buffer.led_row(0, y, self.current_pattern.step_ch3[y])
                 elif self.current_track.track_id == 3:
-                    self.my_buffer.led_set(x, y, self.current_pattern.step_ch4[y][x])
+                    self.my_buffer.led_row(0, y, self.current_pattern.step_ch4[y])
         self.draw_current_position()
 
     def draw_current_track_indicator(self):
