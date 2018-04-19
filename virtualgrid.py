@@ -298,7 +298,7 @@ class myGridBuffer:
 
         if level == 0:
             self.my_buffer.led_row(x, y, self.my_buffer.levels.T[y]-np.roll((self.my_pos_buffer).astype(int),x,axis=1))
-        else
+        else:
             self.my_buffer.led_row(x, y, self.my_buffer.levels.T[y]+np.roll((self.my_pos_buffer).astype(int),x,axis=1))
 
     #def led_all(self, s):
