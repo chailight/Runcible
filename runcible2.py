@@ -582,9 +582,9 @@ class Runcible(monome.App):
                     elif self.k_mod_mode == ModModes.modLoop:
                         print("track",self.current_track.track_id,"lstart",self.current_track.lstart[self.k_mode.value],"lend",self.current_track.lend[self.k_mode.value])
                         print("start",np.zeros(self.current_track.lstart[self.k_mode.value]).shape)
-                        print("middle",np.ones(self.current_track.lend[self.k_mode.value]+1).shape)
+                        print("middle",np.ones(self.current_track.lend[self.k_mode.value]+1-self.current_track.lend[self.k_mode.value]).shape)
                         print("end",np.zeros(15-self.current_track.lend[self.k_mode.value]).shape)
-                        self.my_buffer.led_row(0,7,np.block([np.zeros(self.current_track.lstart[self.k_mode.value],int),np.ones(self.current_track.lend[self.k_mode.value]+1,int),np.zeros(15-self.current_track.lend[self.k_mode.value],int)]).tolist())
+                        self.my_buffer.led_row(0,7,np.block([np.zeros(self.current_track.lstart[self.k_mode.value],int),np.ones(self.current_track.lend[self.k_mode.value]+1-self.current_track.lstart[self.k_mode.value],int),np.zeros(15-self.current_track.lend[self.k_mode.value],int)]).tolist())
                         #    for i in range(16):
                         #        if i >= self.current_track.lstart[self.k_mode.value] and i <= self.current_track.lend[self.k_mode.value]:
                         #            self.my_buffer.led_set(i,7,15)
