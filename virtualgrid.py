@@ -262,6 +262,7 @@ class myGridBuffer:
         print("init buffer levels", self.levels.shape)
         self.width = width
         self.height = height
+        self.pixel_buffer = np.array([[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]])
 
     def __and__(self, other):
         result = myGridBuffer(self.width, self.height)
@@ -297,9 +298,9 @@ class myGridBuffer:
             level = s
 
         if level == 0:
-            self.my_buffer.led_row(x, y, self.my_buffer.levels.T[y]-np.roll((self.my_pos_buffer).astype(int),x,axis=1))
+            self.led_row(x, y, self.levels.T[y]-np.roll((self.pixel_buffer).astype(int),x,axis=1))
         else:
-            self.my_buffer.led_row(x, y, self.my_buffer.levels.T[y]+np.roll((self.my_pos_buffer).astype(int),x,axis=1))
+            self.led_row(x, y, self.levels.T[y]+np.roll((self.pixel_buffer).astype(int),x,axis=1))
 
     #def led_all(self, s):
     #    self.led_level_all(s * 15)
