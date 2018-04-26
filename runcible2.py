@@ -1,10 +1,9 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
-#text loop display
-#fix scale display
+#text loop display on trigger page
 #fix pattern dispaly
-#fix polyphonic mode
+#fix polyphonic mode, including scale toggle
 #add polyphonic mutes
 
 #fix pattern copy - current pattern is wiped during copy? problem arises after introducing cue
@@ -811,16 +810,17 @@ class Runcible(monome.App):
         #self.draw_current_position()
 
     def draw_pattern_page(self):
-        self.my_buffer.led_set(5,0,0)
-        self.my_buffer.led_set(6,0,0)
-        self.my_buffer.led_set(7,0,0)
-        self.my_buffer.led_set(8,0,0)
-        self.my_buffer.led_set(9,0,0)
-        self.my_buffer.led_set(14,0,0)
-        self.my_buffer.led_set(15,0,15)
-        for i in range(16):
-            self.my_buffer.led_set(i,7,0)
-        self.my_buffer.led_set(self.current_pattern.pattern_id,7,15)
+        #self.my_buffer.led_set(5,0,0)
+        #self.my_buffer.led_set(6,0,0)
+        #self.my_buffer.led_set(7,0,0)
+        #self.my_buffer.led_set(8,0,0)
+        #self.my_buffer.led_set(9,0,0)
+        #self.my_buffer.led_set(14,0,0)
+        #self.my_buffer.led_set(15,0,15)
+        #for i in range(16):
+        #    self.my_buffer.led_set(i,7,0)
+        #self.my_buffer.led_set(self.current_pattern.pattern_id,7,15)
+        self.my_buffer.led_row(0, 7, self.my_buffer.levels.T[7]+np.roll((self.my_pos_buffer).astype(int),self.current_pattern.pattern_id,axis=1))
         #self.draw_current_position(buffer)
 
     def draw_mod_indicators(self):
