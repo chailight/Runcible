@@ -598,13 +598,15 @@ class Runcible(monome.App):
                         #self.my_buffer.led_map(0,0,(np.concatenate((np.asarray(np.split(self.my_buffer.levels,[7],axis=1)[0]),np.roll((self.my_pos_buffer).astype(int),self.current_track.pos[self.k_mode.value],axis=1).T,),axis=1)))
                 elif self.k_mode == Modes.mPattern:
                     if self.k_mod_mode == ModModes.modTime:
-                        self.my_buffer.led_set(self.state.cue_div, 6, 15)
+                        #self.my_buffer.led_set(self.state.cue_div, 6, 15)
+                        self.my_buffer.led_row(0, 6, self.my_buffer.levels.T[6]+np.roll((self.my_pos_buffer).astype(int),self.state.cue_div,axis=1))
                     else:
-                        if self.cue_pos > 0:
-                            self.my_buffer.led_set(self.cue_pos-1, 6, 0) # set the previous cue indicator off
-                        else:
-                            self.my_buffer.led_set(self.state.cue_steps, 6, 0) 
-                        self.my_buffer.led_set(self.cue_pos, 1, 15) #set the current cue indicator on
+                        #if self.cue_pos > 0:
+                        #    self.my_buffer.led_set(self.cue_pos-1, 6, 0) # set the previous cue indicator off
+                        #else:
+                        #    self.my_buffer.led_set(self.state.cue_steps, 6, 0) 
+                        #self.my_buffer.led_set(self.cue_pos, 1, 15) #set the current cue indicator on
+                        self.my_buffer.led_row(0, 6, np.roll((self.my_pos_buffer).astype(int),self.state.cue_pos,axis=1))
 
 
 
