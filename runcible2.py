@@ -606,7 +606,7 @@ class Runcible(monome.App):
                         #else:
                         #    self.my_buffer.led_set(self.state.cue_steps, 6, 0) 
                         #self.my_buffer.led_set(self.cue_pos, 1, 15) #set the current cue indicator on
-                        self.my_buffer.led_row(0, 1, np.roll((self.my_pos_buffer).astype(int),self.state.cue_pos,axis=1))
+                        self.my_buffer.led_row(0, 1, np.roll((self.my_pos_buffer).astype(int),self.cue_pos,axis=1))
 
 
 
