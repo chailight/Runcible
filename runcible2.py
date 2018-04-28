@@ -522,37 +522,37 @@ class Runcible(monome.App):
         tmul_value = 0
         if multiplier == TICKS_32ND - 1:
             tmul_value = 0
-        elif x == TICKS_SEXTUPLET - 1:
+        elif multiplier == TICKS_SEXTUPLET - 1:
             tmul_value = 1
-        elif x == TICKS_16TH - 1:
+        elif multiplier == TICKS_16TH - 1:
             tmul_value = 2
-        elif x == TICKS_TRIPLET - 1:
+        elif multiplier == TICKS_TRIPLET - 1:
             tmul_value = 3
-        elif x == TICKS_8TH - 1:
+        elif multiplier == TICKS_8TH - 1:
             tmul_value =4
-        elif x == TICKS_QUARTER - 1:
+        elif multiplier == TICKS_QUARTER - 1:
             tmul_value = 5
-        elif x == TICKS_HALF - 1:
+        elif multiplier == TICKS_HALF - 1:
             tmul_value = 5
-        elif x == TICKS_WHOLE - 1:
+        elif multiplier == TICKS_WHOLE - 1:
             tmul_value = 6
-        elif x == (TICKS_WHOLE * 2) - 1:
+        elif multiplier == (TICKS_WHOLE * 2) - 1:
             tmul_value = 7
-        elif x == (TICKS_WHOLE * 3) - 1:
+        elif multiplier == (TICKS_WHOLE * 3) - 1:
             tmul_value = 8
-        elif x == (TICKS_WHOLE * 4) - 1:
+        elif multiplier == (TICKS_WHOLE * 4) - 1:
             tmul_value = 9
-        elif x == (TICKS_WHOLE * 5) - 1:
+        elif multiplier == (TICKS_WHOLE * 5) - 1:
             tmul_value = 10
-        elif x == (TICKS_WHOLE * 6) - 1:
+        elif multiplier == (TICKS_WHOLE * 6) - 1:
             tmul_value = 11
-        elif x == (TICKS_WHOLE * 7) - 1:
+        elif multiplier == (TICKS_WHOLE * 7) - 1:
             tmul_value = 12
-        elif x == (TICKS_WHOLE * 8) - 1:
+        elif multiplier == (TICKS_WHOLE * 8) - 1:
             tmul_value = 13
-        elif x == (TICKS_WHOLE * 9) - 1:
+        elif multiplier == (TICKS_WHOLE * 9) - 1:
             tmul_value = 14
-        elif x == (TICKS_WHOLE * 10) - 1:
+        elif multiplier == (TICKS_WHOLE * 10) - 1:
             tmul_value = 15
         return tmul_value
 
