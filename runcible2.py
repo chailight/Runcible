@@ -518,7 +518,8 @@ class Runcible(monome.App):
     #        previous_step[self.current_track.track_id] = 15
     #        self.my_buffer.led_set(self.current_track.pos[self.k_mode.value], 7, 0)
 
-    def get_tmul_display(self, mutliplier):
+    def get_tmul_display(self, multiplier):
+        tmul_value = 0
         if multiplier == TICKS_32ND - 1:
             tmul_value = 0
         elif x == TICKS_SEXTUPLET - 1:
