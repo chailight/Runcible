@@ -187,7 +187,7 @@ class State:
         self.current_preset_id = 0
         self.note_sync = True
         self.loop_sync = 0
-        self.cue_div = 4
+        self.cue_div = 5 #defalut to 16th, i.e. 6-1
         self.cue_steps = 4
         self.meta = 0
         self.presets = [Preset() for i in range(15)]
@@ -637,14 +637,14 @@ class Runcible(monome.App):
                 elif self.k_mode == Modes.mPattern:
                     if self.k_mod_mode == ModModes.modTime:
                         #self.my_buffer.led_set(self.state.cue_div, 6, 15)
-                        self.my_buffer.led_row(0, 6, self.my_buffer.levels.T[6]+np.roll((self.my_pos_buffer).astype(int),self.state.cue_div,axis=1))
+                        self.my_buffer.led_row(0, 6, self.my_buffer.levels.T[6]+np.roll((self.my_pos_buffer).astype(int),self.get_tmul_display(self.state.cue_div),axis=1))
                     else:
                         #if self.cue_pos > 0:
                         #    self.my_buffer.led_set(self.cue_pos-1, 6, 0) # set the previous cue indicator off
                         #else:
                         #    self.my_buffer.led_set(self.state.cue_steps, 6, 0) 
                         #self.my_buffer.led_set(self.cue_pos, 1, 15) #set the current cue indicator on
-                        self.my_buffer.led_row(0, 1, np.roll((self.my_pos_buffer).astype(int),self.cue_pos,axis=1))
+                        self.my_buffer.led_row(0, 6, np.roll((self.my_pos_buffer).astype(int),self.cue_pos,axis=1))
 
 
 
@@ -1380,7 +1380,7 @@ class Runcible(monome.App):
         if self.k_mode == Modes.mPattern:
             if y == 6:
                 if self.k_mod_mode == ModModes.modTime:
-                    self.state.cue_div = x
+                    self.state.cue_div = self.set_tmul_value(x)
                 else:
                     self.state.cue_steps = x
             if x < 3:
