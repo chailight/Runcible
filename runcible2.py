@@ -1188,15 +1188,15 @@ class Runcible(monome.App):
         if x == 0:
             tmul_value = TICKS_32ND - 1
         elif x == 1:
-            tmul_value = TICKS_SEXTUPLETS - 1
+            tmul_value = TICKS_SEXTUPLET - 1
         elif x == 2:
-            tmul_value = TICKS_16THS - 1
+            tmul_value = TICKS_16TH - 1
         elif x == 3:
-            tmul_value = TICKS_TRIPLETS - 1
+            tmul_value = TICKS_TRIPLET - 1
         elif x == 4:
-            tmul_value = TICKS_8THS - 1
+            tmul_value = TICKS_8TH - 1
         elif x == 5:
-            tmul_value = TICKS_4THS - 1
+            tmul_value = TICKS_QUARTER - 1
         elif x == 5:
             tmul_value = TICKS_HALF - 1
         elif x == 6:
