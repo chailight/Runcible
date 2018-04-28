@@ -1393,7 +1393,7 @@ class Runcible(monome.App):
             if y == 7:
                 self.keys_held = self.keys_held + (s * 2) - 1
                 self.key_last.append(x)
-                print("keys_held: ", self.keys_held, self.key_last, s)
+                print("pattern page keys_held: ", self.keys_held, self.key_last, s)
                 if s == 1 and self.keys_held == 1:
                     if self.state.cue_steps == 0: #change pattern immediately
                         self.current_preset.current_pattern = x
