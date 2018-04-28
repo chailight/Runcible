@@ -2,7 +2,7 @@
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
 #text loop display on trigger page
-#fix pattern dispaly
+#fix pattern dispaly - display meta pattern details
 #fix polyphonic mode, including scale toggle
 #add polyphonic mutes
 
@@ -68,14 +68,14 @@ LOCAL_CONTROL = LOCAL_CONTROL_ONOFF = 0x7A
 ALL_NOTES_OFF = 0x7B
 # controller value byte should be 0, also causes ANO
 
-TICKS_32ND = 96 // 32
-TICKS_SEXTUPLET = 96 // 24
-TICKS_16TH = 96 // 16
-TICKS_TRIPLET = 96 // 12
-TICKS_8TH = 96 // 8
-TICKS_QUARTER = 96 // 4
-TICKS_HALF = 96 // 2
-TICKS_WHOLE = 96 // 1
+TICKS_32ND = 96 // 32         # 3
+TICKS_SEXTUPLET = 96 // 24    # 4
+TICKS_16TH = 96 // 16         # 6
+TICKS_TRIPLET = 96 // 12      # 8
+TICKS_8TH = 96 // 8           # 12 
+TICKS_QUARTER = 96 // 4       # 24
+TICKS_HALF = 96 // 2          # 48
+TICKS_WHOLE = 96 // 1         # 96
 
 def cancel_task(task):
     if task:
@@ -599,7 +599,7 @@ class Runcible(monome.App):
                 elif self.k_mode == Modes.mPattern:
                     if self.k_mod_mode == ModModes.modTime:
                         #self.my_buffer.led_set(self.state.cue_div, 6, 15)
-                        self.my_buffer.led_row(0, 1, self.my_buffer.levels.T[6]+np.roll((self.my_pos_buffer).astype(int),self.state.cue_div,axis=1))
+                        self.my_buffer.led_row(0, 6, self.my_buffer.levels.T[6]+np.roll((self.my_pos_buffer).astype(int),self.state.cue_div,axis=1))
                     else:
                         #if self.cue_pos > 0:
                         #    self.my_buffer.led_set(self.cue_pos-1, 6, 0) # set the previous cue indicator off
@@ -1185,23 +1185,57 @@ class Runcible(monome.App):
                     self.current_pattern.tracks[7-y].tmul[Modes.mVel.value] = x
 
     def set_track_time_multiplier(self,x):
+        if x == 0:
+            tmul_value = TICKS_32ND - 1
+        elif x == 1:
+            tmul_value = TICKS_SEXTUPLETS - 1
+        elif x == 2:
+            tmul_value = TICKS_16THS - 1
+        elif x == 3:
+            tmul_value = TICKS_TRIPLETS - 1
+        elif x == 4:
+            tmul_value = TICKS_8THS - 1
+        elif x == 5:
+            tmul_value = TICKS_4THS - 1
+        elif x == 5:
+            tmul_value = TICKS_HALF - 1
+        elif x == 6:
+            tmul_value = TICKS_WHOLE - 1
+        elif x == 7:
+            tmul_value = (TICKS_WHOLE * 2) - 1
+        elif x == 8:
+            tmul_value = (TICKS_WHOLE * 3) - 1
+        elif x == 9:
+            tmul_value = (TICKS_WHOLE * 4) - 1
+        elif x == 10:
+            tmul_value = (TICKS_WHOLE * 5) - 1
+        elif x == 11:
+            tmul_value = (TICKS_WHOLE * 6) - 1
+        elif x == 12:
+            tmul_value = (TICKS_WHOLE * 7) - 1
+        elif x == 13:
+            tmul_value = (TICKS_WHOLE * 8) - 1
+        elif x == 14:
+            tmul_value = (TICKS_WHOLE * 9) - 1
+        elif x == 15:
+            tmul_value = (TICKS_WHOLE * 10) - 1
         #if self.k_mode == Modes.mTr: # enable this in all modes
         if self.k_mod_mode == ModModes.modTime:
             if self.current_track.sync_mode == 0: # set the time multiplier for this parameter only
-                self.current_track.tmul[self.k_mode.value] = x 
+                self.current_track.tmul[self.k_mode.value] = tmul_value 
             elif self.current_track.sync_mode == 1: #set the time multiplier for all parameters of this track
-                self.current_track.tmul[Modes.mTr.value] = x
-                self.current_track.tmul[Modes.mNote.value] = x 
-                self.current_track.tmul[Modes.mOct.value] = x
-                self.current_track.tmul[Modes.mDur.value] = x
-                self.current_track.tmul[Modes.mVel.value] = x
+                self.current_track.tmul[Modes.mTr.value] = tmul_value
+                self.current_track.tmul[Modes.mNote.value] = tmul_value
+                self.current_track.tmul[Modes.mOct.value] = tmul_value
+                self.current_track.tmul[Modes.mDur.value] = tmul_value
+                self.current_track.tmul[Modes.mVel.value] = tmul_value
             else:
                 for track in self.current_pattern.tracks: # change time for all tracks
-                    track.tmul[Modes.mTr.value] = x
-                    track.tmul[Modes.mNote.value] = x 
-                    track.tmul[Modes.mOct.value] = x
-                    track.tmul[Modes.mDur.value] = x
-                    track.tmul[Modes.mVel.value] = x
+                    track.tmul[Modes.mTr.value] = tmul_value
+                    track.tmul[Modes.mNote.value] = tmul_value 
+                    track.tmul[Modes.mOct.value] = tmul_value
+                    track.tmul[Modes.mDur.value] = tmul_value
+                    track.tmul[Modes.mVel.value] = tmul_value
             print("tmul: ", self.k_mode, self.current_track.tmul[Modes.mTr.value])
 
     def set_track_settings(self,x,y):
