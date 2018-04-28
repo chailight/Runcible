@@ -1209,20 +1209,8 @@ class Runcible(monome.App):
             self.k_mod_mode = ModModes.modProb
             print("Selected:", self.k_mod_mode)
 
-    def set_global_time_multiplier(self,x,y):
-        if self.k_mode == Modes.mTr and self.k_mod_mode == ModModes.modTime:
-            # handle time multiplier setting
-            if y > 3 and y < 8:
-                if self.current_pattern.tracks[7-y].sync_mode == 0: # set the time multiplier for this parameter only
-                    self.current_pattern.tracks[7-y].tmul[self.k_mode.value] = x
-                elif self.current_pattern.tracks[7-y].sync_mode == 1: #set the time multiplier for all parameters of this track
-                    self.current_pattern.tracks[7-y].tmul[Modes.mTr.value] = x
-                    self.current_pattern.tracks[7-y].tmul[Modes.mNote.value] = x
-                    self.current_pattern.tracks[7-y].tmul[Modes.mOct.value] = x
-                    self.current_pattern.tracks[7-y].tmul[Modes.mDur.value] = x
-                    self.current_pattern.tracks[7-y].tmul[Modes.mVel.value] = x
-
-    def set_track_time_multiplier(self,x):
+    def set_tmul_value(self, x):
+        tmul_value = 0
         if x == 0:
             tmul_value = TICKS_32ND - 1
         elif x == 1:
@@ -1257,23 +1245,40 @@ class Runcible(monome.App):
             tmul_value = (TICKS_WHOLE * 9) - 1
         elif x == 15:
             tmul_value = (TICKS_WHOLE * 10) - 1
+        return tmul_value
+
+
+    def set_global_time_multiplier(self,x,y):
+        if self.k_mode == Modes.mTr and self.k_mod_mode == ModModes.modTime:
+            # handle time multiplier setting
+            if y > 3 and y < 8:
+                if self.current_pattern.tracks[7-y].sync_mode == 0: # set the time multiplier for this parameter only
+                    self.current_pattern.tracks[7-y].tmul[self.k_mode.value] = self.set_tmul_value(x)
+                elif self.current_pattern.tracks[7-y].sync_mode == 1: #set the time multiplier for all parameters of this track
+                    self.current_pattern.tracks[7-y].tmul[Modes.mTr.value] = self.set_tmul_value(x)
+                    self.current_pattern.tracks[7-y].tmul[Modes.mNote.value] = self.set_tmul_value(x)
+                    self.current_pattern.tracks[7-y].tmul[Modes.mOct.value] = self.set_tmul_value(x)
+                    self.current_pattern.tracks[7-y].tmul[Modes.mDur.value] = self.set_tmul_value(x)
+                    self.current_pattern.tracks[7-y].tmul[Modes.mVel.value] = self.set_tmul_value(x)
+
+    def set_track_time_multiplier(self,x):
         #if self.k_mode == Modes.mTr: # enable this in all modes
         if self.k_mod_mode == ModModes.modTime:
             if self.current_track.sync_mode == 0: # set the time multiplier for this parameter only
-                self.current_track.tmul[self.k_mode.value] = tmul_value 
+                self.current_track.tmul[self.k_mode.value] = self.set_tmul_value(x)
             elif self.current_track.sync_mode == 1: #set the time multiplier for all parameters of this track
-                self.current_track.tmul[Modes.mTr.value] = tmul_value
-                self.current_track.tmul[Modes.mNote.value] = tmul_value
-                self.current_track.tmul[Modes.mOct.value] = tmul_value
-                self.current_track.tmul[Modes.mDur.value] = tmul_value
-                self.current_track.tmul[Modes.mVel.value] = tmul_value
+                self.current_track.tmul[Modes.mTr.value] = self.set_tmul_value(x)
+                self.current_track.tmul[Modes.mNote.value] = self.set_tmul_value(x)
+                self.current_track.tmul[Modes.mOct.value] = self.set_tmul_value(x)
+                self.current_track.tmul[Modes.mDur.value] = self.set_tmul_value(x)
+                self.current_track.tmul[Modes.mVel.value] = self.set_tmul_value(x)
             else:
                 for track in self.current_pattern.tracks: # change time for all tracks
-                    track.tmul[Modes.mTr.value] = tmul_value
-                    track.tmul[Modes.mNote.value] = tmul_value 
-                    track.tmul[Modes.mOct.value] = tmul_value
-                    track.tmul[Modes.mDur.value] = tmul_value
-                    track.tmul[Modes.mVel.value] = tmul_value
+                    track.tmul[Modes.mTr.value] = self.set_tmul_value(x)
+                    track.tmul[Modes.mNote.value] = self.set_tmul_value(x)
+                    track.tmul[Modes.mOct.value] = self.set_tmul_value(x)
+                    track.tmul[Modes.mDur.value] = self.set_tmul_value(x)
+                    track.tmul[Modes.mVel.value] = self.set_tmul_value(x)
             print("tmul: ", self.k_mode, self.current_track.tmul[Modes.mTr.value])
 
     def set_track_settings(self,x,y):
@@ -1397,6 +1402,7 @@ class Runcible(monome.App):
                     else:
                         self.cue_pat_next = x+1
                 elif s == 1 and self.keys_held == 2:
+                    print("copying pattern ", self.key_last[0],"to ", x)
                     self.current_preset.patterns[x] = copy.deepcopy(self.current_preset.patterns[self.key_last[0]])
                     self.current_preset.patterns[x].pattern_id = x #need to set the pattern id again after deep copy
                     self.keys_held = 0
