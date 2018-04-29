@@ -330,7 +330,7 @@ class Runcible(monome.App):
 
                 if self.next_step(track, Modes.mNote.value):
                     #if track.note[track.pos[Modes.mNote.value]]:
-                    for i in range(len(track.note[track.pos[Modes.mTr.value]]))-1: #this needs to be fixed so that polyphonic mode forces track sync
+                    for i in range(len(track.note[track.pos[Modes.mTr.value]])-1): #this needs to be fixed so that polyphonic mode forces track sync
                         print("current_pitch: ", i, self.current_pitch[i])
                         self.current_pitch[i] = track.note[track.pos[Modes.mNote.value]][i] #need to adjust for polyphonic
 
