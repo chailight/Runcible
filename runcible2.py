@@ -238,9 +238,9 @@ class Runcible(monome.App):
         #self.loop_end = [self.grid.width - 1, self.grid.width -1, self.grid.width -1, self.grid.width -1]
         #self.loop_length = [self.grid.width, self.grid.width, self.grid.width, self.grid.width]
         self.keys_held = 0
-        self.key_last = list() 
+        self.key_last = list()
 
-        self.current_pitch = 0
+        self.current_pitch = [0,0,0,0,0,0]
         self.current_oct = 0
         self.current_dur = 1
         self.current_vel = 3
@@ -330,8 +330,9 @@ class Runcible(monome.App):
 
                 if self.next_step(track, Modes.mNote.value):
                     if track.note[track.pos[Modes.mNote.value]]:
-                        self.current_pitch = track.note[track.pos[Modes.mNote.value]][0] #need to adjust for polyphonic
-                        #print("current_pitch: ", self.current_pitch)
+                        for i in range(len(track.note[track.pos[Modes.mTr.value]])): #this needs to be fixed so that polyphonic mode forces track sync
+                            self.current_pitch[i] = track.note[track.pos[Modes.mNote.value]][i] #need to adjust for polyphonic
+                            print("current_pitch: ", self.current_pitch[i])
 
                 if self.next_step(track, Modes.mOct.value):
                     self.current_oct = track.octave[track.pos[Modes.mOct.value]]
@@ -354,13 +355,13 @@ class Runcible(monome.App):
                             if track.scale_toggle:
                                 #current_note = self.cur_scale[track.note[track.play_position][i]-1]+track.octave[track.play_position]*12
                                 #print("track.pos: ", track.pos[note_pos], "i: ", i, "current_note: ", track.note[track.pos[note_pos]])
-                                current_note = abs(self.cur_scale[self.current_pitch-1] + self.current_oct*12) #may have to introduce a check for self.current_pitch not being zero
+                                current_note = abs(self.cur_scale[self.current_pitch[i]-1] + self.current_oct*12) #may have to introduce a check for self.current_pitch not being zero
                                 #print("input note: ", self.current_pitch, "current note: ", current_note)
                             else:
                                 #set the note to an increment from some convenient base
                                 #current_note = track.note[track.play_position][i]+35+track.octave[track.play_position]*12
                                 #current_note = track.note[track.pos[note_pos]][i]+35+track.octave[track.pos[oct_pos]]*12
-                                current_note = abs(self.current_pitch+35 + self.current_oct*12)
+                                current_note = abs(self.current_pitch[i]+35 + self.current_oct*12)
                                 #print("input note: ", self.current_pitch, "current note: ", current_note)
 
                             #print("input note: ", track.note[track.playposition[i], "scaled_note: ", current_note)
