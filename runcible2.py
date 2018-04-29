@@ -1,9 +1,11 @@
 #! /usr/bin/env python3
 #RUNCIBLE - a raspberry pi / python sequencer for spanned 40h monomes inspired by Ansible Kria
 #TODO:
-#text loop display on trigger page
+#fix cutting crash
+#fix cueing so it stays in sync
+#fix loop display on trigger page
 #fix pattern dispaly - display meta pattern details
-#fix polyphonic mode, including scale toggle
+#fix polyphonic mode, including scale toggle / there is also note stealing from other channels 
 #add polyphonic mutes
 
 #fix pattern copy - current pattern is wiped during copy? problem arises after introducing cue
@@ -570,7 +572,7 @@ class Runcible(monome.App):
                         #loop_display_end = np.ones(15-track.lend[Modes.mTr.value],int).tolist()
                         #print(loop_display_start,loop_display_middle,loop_display_end)
                         #print(np.asarray(np.block([np.zeros(track.lstart),np.ones(track.lend+1),np.zeros(15-track.lend)])))
-                        self.my_buffer.led_row(0,7-track.track_id,np.block([np.zeros(track.lstart[Modes.mTr.value],int),np.ones(track.lend[Modes.mTr.value]+1,int),np.zeros(15-track.lend[Modes.mTr.value],int)]).tolist())
+                        self.my_buffer.led_row(0,7-track.track_id,np.block([np.zeros(track.lstart[Modes.mTr.value],int),np.ones(track.lend[Modes.mTr.value]+1-self.current_track.lstart[self.k_mode.value],int),np.zeros(15-track.lend[Modes.mTr.value],int)]).tolist())
                         #for i in range(16):
                         #    if i >= track.lstart[Modes.mTr.value] and i <= track.lend[Modes.mTr.value]:
                         #        self.my_buffer.led_set(i,7-track.track_id,15)
