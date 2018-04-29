@@ -352,6 +352,7 @@ class Runcible(monome.App):
                     if track.tr[track.pos[Modes.mTr.value]] == 1:
                         #for i in range(len(track.note[track.play_position])):
                         #print("pos: ", track.pos, "notes: ", track.note[track.pos[Modes.mTr.value]])
+                        print("track_trig: ", track.note[track.pos[Modes.mTr.value]])
                         for i in range(len(track.note[track.pos[Modes.mTr.value]])): #this needs to be fixed so that polyphonic mode forces track sync
                             # add toggles here for loop sync - if track then set position to mTr.value, else set to parameter 
                             if track.scale_toggle:
