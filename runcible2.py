@@ -388,7 +388,7 @@ class Runcible(monome.App):
                             if not track.track_mute:
                                 #self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
                                 self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
-                                #print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
+                                print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
 
             #asyncio.async(self.trigger())
             self.trigger()
@@ -451,7 +451,7 @@ class Runcible(monome.App):
         for n in self.note_on[position]:
             if n.pitch == pitch:
                 already_exists = True
-                print("note on exists", self.channel + track, pitch, "at position: ", position)
+                print("warning! duplicate note. pitch:", pitch,  " ch: ", self.channel + track, "at position: ", position)
         if not already_exists:
             new_note = Note(track,pitch,velocity,duration)
             self.note_on[position].append(new_note)
