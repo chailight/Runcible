@@ -3,7 +3,7 @@
 #TODO:
 #fix cutting crash
 #fix cueing so it stays in sync
-#fix loop display on trigger page
+#fix loop input on trigger page
 #fix pattern dispaly - display meta pattern details
 #fix polyphonic mode, including scale toggle / there is also note stealing from other channels 
 #add polyphonic mutes
@@ -111,13 +111,15 @@ class Note:
 
 class Track:
     def __init__(self,track_id):
-        self.num_params = 4
+        self.num_params = 6
         self.tr = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         self.octave = [0 for i in range(16)]
         self.note = [list() for i in range(16)]
+        self.alt_note = [list() for i in range(16)]
         self.duration = [1 for i in range(16)]
         self.velocity = [3 for i in range(16)]
-        self.params = [[0] * self.num_params for i in range (16)] #initialise a 4x16 array
+        #self.params = [[0] * self.num_params for i in range (16)] #initialise a 4x16 array
+        self.prob  = [[4] * self.num_params for i in range (16)] #initialise probability for each parameter
         self.dur_mul = 1; #duration multiplier
         self.lstart = [0,0,0,0,0]
         self.lend = [15,15,15,15,15]
@@ -346,6 +348,7 @@ class Runcible(monome.App):
                     #if track.tr[track.play_position] == 1:
                     if track.tr[track.pos[Modes.mTr.value]] == 1:
                         #for i in range(len(track.note[track.play_position])):
+                        print("pos: ", track.pos, "notes: ", track.note[track.pos[Modes.mTr.value]])
                         for i in range(len(track.note[track.pos[Modes.mTr.value]])): #this needs to be fixed so that polyphonic mode forces track sync
                             # add toggles here for loop sync - if track then set position to mTr.value, else set to parameter 
                             if track.scale_toggle:
@@ -448,7 +451,7 @@ class Runcible(monome.App):
         for n in self.note_on[position]:
             if n.pitch == pitch:
                 already_exists = True
-                #print("note on exists", self.channel + track, pitch, "at position: ", position)
+                print("note on exists", self.channel + track, pitch, "at position: ", position)
         if not already_exists:
             new_note = Note(track,pitch,velocity,duration)
             self.note_on[position].append(new_note)
@@ -1311,7 +1314,7 @@ class Runcible(monome.App):
                 self.current_pattern.step_ch4[y][x] ^= 1
             if y not in self.current_track.note[x]:
                 self.current_track.note[x].append(y)
-                #print("append: ", y, "at ", x)
+                print("append: ", y, "at ", x)
             else:
                 self.current_track.note[x].remove(y)
                 #print("remove: ", y, "at ", x)
