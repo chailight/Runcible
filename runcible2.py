@@ -349,7 +349,7 @@ class Runcible(monome.App):
                     #if track.tr[track.play_position] == 1:
                     if track.tr[track.pos[Modes.mTr.value]] == 1:
                         #for i in range(len(track.note[track.play_position])):
-                        print("pos: ", track.pos, "notes: ", track.note[track.pos[Modes.mTr.value]])
+                        #print("pos: ", track.pos, "notes: ", track.note[track.pos[Modes.mTr.value]])
                         for i in range(len(track.note[track.pos[Modes.mTr.value]])): #this needs to be fixed so that polyphonic mode forces track sync
                             # add toggles here for loop sync - if track then set position to mTr.value, else set to parameter 
                             if track.scale_toggle:
@@ -389,7 +389,7 @@ class Runcible(monome.App):
                             if not track.track_mute:
                                 #self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
                                 self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
-                                print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
+                                #print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
 
             #asyncio.async(self.trigger())
             self.trigger()
