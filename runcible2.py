@@ -335,14 +335,14 @@ class Runcible(monome.App):
                     #if track.note[track.pos[Modes.mNote.value]]:
                     if track.polyphonic:
                         for i in range(len(track.note[track.pos[Modes.mNote.value]])): #this needs to be fixed so that polyphonic mode forces track sync
-                            print("poly current_pitch: ", track.pos, i, self.current_pitch[i])
+                            print("poly current_pitch: ", track.pos[Modes.mNote.value], i, self.current_pitch[i])
                             self.current_pitch[i] = track.note[track.pos[Modes.mNote.value]][i] #need to adjust for polyphonic
                     elif len(track.note[track.pos[Modes.mNote.value]]) == 1: #need to allow for situations where there is no notes yet
                         self.current_pitch[0] = track.note[track.pos[Modes.mNote.value]][0] #need to adjust for polyphonic
-                        print("mono current_pitch: ", track.pos, self.current_pitch[0])
+                        print("mono current_pitch: ", track.pos[Modes.mNote.value].pos, self.current_pitch[0])
                     else:
                         self.current_pitch[0] = 35 # default???
-                        print("default current_pitch: ", track.pos, self.current_pitch[0])
+                        print("default current_pitch: ", track.pos[Modes.mNote.value], self.current_pitch[0])
 
                 if self.next_step(track, Modes.mOct.value):
                     self.current_oct = track.octave[track.pos[Modes.mOct.value]]
@@ -358,9 +358,9 @@ class Runcible(monome.App):
                 if self.next_step(track, Modes.mTr.value):
                     #if track.tr[track.play_position] == 1:
                     if track.tr[track.pos[Modes.mTr.value]] == 1:
-                        polyphony = 0
+                        polyphony = 1 #assume monophonic and therefore iterate one time only
                         if track.polyphonic:
-                            polyphony = len(track.note[track.pos[Modes.mTr.value]])
+                            polyphony = len(track.note[track.pos[Modes.mTr.value]]) #set polyphony to number of notes at this position if track is polyphonic
                         for i in range(polyphony): #this needs to be fixed so that polyphonic mode forces track sync
                             # add toggles here for loop sync - if track then set position to mTr.value, else set to parameter 
                             if track.scale_toggle:
@@ -718,6 +718,10 @@ class Runcible(monome.App):
 
 
     def draw_trigger_page(self):
+        #draw polyphony toggles
+        self.my_polyphony_toggle_buffer = np.concatenate((np.array([[self.current_pattern.tracks[0].polyphonic,self.current_pattern.tracks[1].polyphonic,self.current_pattern.tracks[2].polyphonic,self.current_pattern.tracks[3].polyphonic]]),[[0,0,0,0,0,0,0,0,0,0,0,0]]),axis=1)
+        self.my_buffer.led_row(0,3,self.my_polyphony_toggle_buffer)
+
         #draw scale toggles & sync mode indicator
         #default sync mode display is 1 - but then update if needed
         sync_mode_display = np.array([[0,1,0,0,0,0,0,0,0,0,0,0]])
@@ -725,10 +729,6 @@ class Runcible(monome.App):
             sync_mode_display = np.array([[0,0,1,0,0,0,0,0,0,0,0,0]])
         elif self.current_pattern.tracks[0].sync_mode == 2:
             sync_mode_display = np.array([[0,0,0,1,0,0,0,0,0,0,0,0]])
-
-        #draw polyphony toggles
-        self.my_polyphony_toggle_buffer = np.concatenate((np.array([[self.current_pattern.tracks[0].polyphonic,self.current_pattern.tracks[1].polyphonic,self.current_pattern.tracks[2].polyphonic,self.current_pattern.tracks[3].polyphonic]]),[[0,0,0,0,0,0,0,0,0,0,0,0]]),axis=1)
-        self.my_buffer.led_row(0,4,self.my_polyphony_toggle_buffer)
 
         #draw scale toggles
         self.my_scale_toggle_buffer = np.concatenate((np.array([[self.current_pattern.tracks[0].scale_toggle,self.current_pattern.tracks[1].scale_toggle,self.current_pattern.tracks[2].scale_toggle,self.current_pattern.tracks[3].scale_toggle]]),sync_mode_display),axis=1)
