@@ -341,7 +341,7 @@ class Runcible(monome.App):
                         self.current_pitch[0] = track.note[track.pos[Modes.mNote.value]][0] #need to adjust for polyphonic
                         print("mono current_pitch: ", track.pos[Modes.mNote.value], self.current_pitch[0])
                     else:
-                        self.current_pitch[0] = 35 # default???
+                        self.current_pitch[0] = 0 # default???
                         print("default current_pitch: ", track.pos[Modes.mNote.value], self.current_pitch[0])
 
                 if self.next_step(track, Modes.mOct.value):
