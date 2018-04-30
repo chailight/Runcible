@@ -331,7 +331,7 @@ class Runcible(monome.App):
 
                 if self.next_step(track, Modes.mNote.value):
                     if len(track.note[track.pos[Modes.mNote.value]]) > 0: #need to allow for situations where there is no notes yet
-                        self.current_pitch = [0,0,0,0,0,0] # clear any residual values, assuming monophonic
+                        #self.current_pitch = [0,0,0,0,0,0] # clear any residual values, assuming monophonic
                         self.current_pitch[0] = track.note[track.pos[Modes.mNote.value]][0] #need to adjust for polyphonic
                     #self.current_pitch = [0,0,0,0,0,0] # clear any residual values
                     #print("track_note: ", track.note[track.pos[Modes.mNote.value]])
@@ -391,7 +391,7 @@ class Runcible(monome.App):
                         for i in range(polyphony): #this needs to be fixed so that polyphonic mode forces track sync
                             #print("track: ", track.track_id, "note# ", i+1, "of", polyphony, "current_pitch", self.current_pitch)
                             # add toggles here for loop sync - if track then set position to mTr.value, else set to parameter 
-                            self.current_pitch[i] = track.note[track.pos[Modes.mNote.value]][i] #need to adjust for polyphonic
+                            #self.current_pitch[i] = track.note[track.pos[Modes.mNote.value]][i] #need to adjust for polyphonic
                             if track.scale_toggle:
                                 current_note = abs(self.cur_scale[self.current_pitch[i]-1] + self.current_oct*12) #may have to introduce a check for self.current_pitch not being zero
                                 #print("input note: ", self.current_pitch, "current note: ", current_note)
