@@ -334,7 +334,7 @@ class Runcible(monome.App):
                         #self.current_pitch = [0,0,0,0,0,0] # clear any residual values, assuming monophonic
                     #    self.current_pitch[0] = track.note[track.pos[Modes.mNote.value]][0] #need to adjust for polyphonic
                     #self.current_pitch = [0,0,0,0,0,0] # clear any residual values
-                    print("track_note: ", track.note[track.pos[Modes.mNote.value]])
+                    #print("track_note: ", track.note[track.pos[Modes.mNote.value]])
                     #print("track_trig: ", track.note[track.pos[Modes.mTr.value]])
                     #if track.note[track.pos[Modes.mNote.value]]:
                     if track.polyphonic:
@@ -389,21 +389,21 @@ class Runcible(monome.App):
                         if track.polyphonic:
                             polyphony = len(track.note[track.pos[Modes.mNote.value]]) #set polyphony to number of notes at this position if track is polyphonic
                         for i in range(polyphony): #this needs to be fixed so that polyphonic mode forces track sync
-                            print("track: ", track.track_id, "note# ", i+1, "of", polyphony, "current_pitch", self.current_pitch)
+                            #print("track: ", track.track_id, "note# ", i+1, "of", polyphony, "current_pitch", self.current_pitch)
                             # add toggles here for loop sync - if track then set position to mTr.value, else set to parameter 
                             #self.current_pitch[i] = track.note[track.pos[Modes.mNote.value]][i] #need to adjust for polyphonic
                             if track.scale_toggle:
                                 current_note = abs(self.cur_scale[self.current_pitch[track.track_id][i]-1] + self.current_oct*12) #may have to introduce a check for self.current_pitch not being zero
-                                print("input note: ", self.current_pitch, "current note: ", current_note)
+                            #    print("input note: ", self.current_pitch, "current note: ", current_note)
                             else:
                                 #set the note to an increment from some convenient base
                                 current_note = abs(self.current_pitch[track.track_id][i]+35 + self.current_oct*12)
-                                print("input note: ", self.current_pitch, "current note: ", current_note)
+                            #    print("input note: ", self.current_pitch, "current note: ", current_note)
 
                             if not track.track_mute:
                                 #self.insert_note(track.track_id, track.play_position, current_note, velocity, scaled_duration) # hard coding velocity
                                 self.insert_note(track.track_id, track.pos[Modes.mTr.value], current_note, velocity, scaled_duration) # hard coding velocity
-                                print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
+                            #    print("calling insert note: ",current_note, velocity,scaled_duration, "on track: ", track.track_id, "at pos: ", track.pos[Modes.mTr.value])
 
             #asyncio.async(self.trigger())
             self.trigger()
