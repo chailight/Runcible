@@ -1304,7 +1304,7 @@ class Runcible(monome.App):
         if self.k_mode == Modes.mTr:
             #print("Trigger page key:", x, y)
             if y == 3 and x < 4:
-                self.current_pattern.tracks[x].scale_toggle ^= 1
+                self.current_pattern.tracks[x].polyphonic ^= 1
                 print ("toggling polyphonic for track: ", x)
             if y == 2 and x < 4:
                 self.current_pattern.tracks[x].scale_toggle ^= 1
