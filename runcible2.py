@@ -330,19 +330,19 @@ class Runcible(monome.App):
                     track.pos_reset = False
 
                 if self.next_step(track, Modes.mNote.value):
-                    if len(track.note[track.pos[Modes.mNote.value]]) > 0: #need to allow for situations where there is no notes yet
+                    #if len(track.note[track.pos[Modes.mNote.value]]) > 0: #need to allow for situations where there is no notes yet
                         #self.current_pitch = [0,0,0,0,0,0] # clear any residual values, assuming monophonic
-                        self.current_pitch[0] = track.note[track.pos[Modes.mNote.value]][1] #need to adjust for polyphonic
+                    #    self.current_pitch[0] = track.note[track.pos[Modes.mNote.value]][0] #need to adjust for polyphonic
                     #self.current_pitch = [0,0,0,0,0,0] # clear any residual values
                     print("track_note: ", track.note[track.pos[Modes.mNote.value]])
                     #print("track_trig: ", track.note[track.pos[Modes.mTr.value]])
                     #if track.note[track.pos[Modes.mNote.value]]:
-                    #if track.polyphonic:
-                        #for i in range(len(track.note[track.pos[Modes.mNote.value]])): #this needs to be fixed so that polyphonic mode forces track sync
+                    if track.polyphonic:
+                        for i in range(len(track.note[track.pos[Modes.mNote.value]])): #this needs to be fixed so that polyphonic mode forces track sync
                             #print("poly current_pitch: ", track.pos[Modes.mNote.value], i, self.current_pitch[i])
-                    #        self.current_pitch[i] = track.note[track.pos[Modes.mNote.value]][i] #need to adjust for polyphonic
-                    #elif len(track.note[track.pos[Modes.mNote.value]]) > 0: #need to allow for situations where there is no notes yet
-                        #self.current_pitch[0] = track.note[track.pos[Modes.mNote.value]][0] #need to adjust for polyphonic
+                            self.current_pitch[i] = track.note[track.pos[Modes.mNote.value]][i] #need to adjust for polyphonic
+                    elif len(track.note[track.pos[Modes.mNote.value]]) > 0: #need to allow for situations where there is no notes yet
+                        self.current_pitch[0] = track.note[track.pos[Modes.mNote.value]][0] #need to adjust for polyphonic
                     #else:
                     #    self.current_pitch[0] = track.note[track.pos[Modes.mNote.value]][0] #need to adjust for polyphonic
                         #print("mono current_pitch: ", track.pos[Modes.mNote.value], self.current_pitch[0])
