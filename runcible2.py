@@ -142,6 +142,7 @@ class Track:
         self.scale_toggle = 1
         self.track_mute = 0
         self.sync_mode = 1
+        self.polyphonic = 0
 
 
 class Pattern:
@@ -332,9 +333,12 @@ class Runcible(monome.App):
                     #print("track_note: ", track.note[track.pos[Modes.mNote.value]])
                     #print("track_trig: ", track.note[track.pos[Modes.mTr.value]])
                     #if track.note[track.pos[Modes.mNote.value]]:
-                    for i in range(len(track.note[track.pos[Modes.mNote.value]])): #this needs to be fixed so that polyphonic mode forces track sync
-                    #    print("current_pitch: ", i, self.current_pitch[i])
-                        self.current_pitch[i] = track.note[track.pos[Modes.mNote.value]][i] #need to adjust for polyphonic
+                    if track.polyphonic:
+                        for i in range(len(track.note[track.pos[Modes.mNote.value]])): #this needs to be fixed so that polyphonic mode forces track sync
+                        #    print("current_pitch: ", i, self.current_pitch[i])
+                            self.current_pitch[i] = track.note[track.pos[Modes.mNote.value]][i] #need to adjust for polyphonic
+                    else:
+                        self.current_pitch[0] = track.note[track.pos[Modes.mNote.value]][0] #need to adjust for polyphonic
 
                 if self.next_step(track, Modes.mOct.value):
                     self.current_oct = track.octave[track.pos[Modes.mOct.value]]
@@ -350,24 +354,19 @@ class Runcible(monome.App):
                 if self.next_step(track, Modes.mTr.value):
                     #if track.tr[track.play_position] == 1:
                     if track.tr[track.pos[Modes.mTr.value]] == 1:
-                        #for i in range(len(track.note[track.play_position])):
-                        #print("pos: ", track.pos, "notes: ", track.note[track.pos[Modes.mTr.value]])
-                        print("track_trig: ", track.tr[track.pos[Modes.mTr.value]])
-                        for i in range(len(track.note[track.pos[Modes.mTr.value]])): #this needs to be fixed so that polyphonic mode forces track sync
+                        polyphony = 0
+                        if track.polyphonic:
+                            polyphony = len(track.note[track.pos[Modes.mTr.value]])
+                        for i in range(polyphony): #this needs to be fixed so that polyphonic mode forces track sync
                             # add toggles here for loop sync - if track then set position to mTr.value, else set to parameter 
                             if track.scale_toggle:
-                                #current_note = self.cur_scale[track.note[track.play_position][i]-1]+track.octave[track.play_position]*12
-                                #print("track.pos: ", track.pos[note_pos], "i: ", i, "current_note: ", track.note[track.pos[note_pos]])
                                 current_note = abs(self.cur_scale[self.current_pitch[i]-1] + self.current_oct*12) #may have to introduce a check for self.current_pitch not being zero
                                 #print("input note: ", self.current_pitch, "current note: ", current_note)
                             else:
                                 #set the note to an increment from some convenient base
-                                #current_note = track.note[track.play_position][i]+35+track.octave[track.play_position]*12
-                                #current_note = track.note[track.pos[note_pos]][i]+35+track.octave[track.pos[oct_pos]]*12
                                 current_note = abs(self.current_pitch[i]+35 + self.current_oct*12)
                                 #print("input note: ", self.current_pitch, "current note: ", current_note)
 
-                            #print("input note: ", track.note[track.playposition[i], "scaled_note: ", current_note)
                             scaled_duration = 0
                             #entered_duration = track.duration[track.play_position]
                             entered_duration = self.current_dur
@@ -722,8 +721,13 @@ class Runcible(monome.App):
             sync_mode_display = np.array([[0,0,1,0,0,0,0,0,0,0,0,0]])
         elif self.current_pattern.tracks[0].sync_mode == 2:
             sync_mode_display = np.array([[0,0,0,1,0,0,0,0,0,0,0,0]])
+
+        #draw polyphony toggles
+        self.my_polyphony_toggle_buffer = np.concatenate((np.array([[self.current_pattern.tracks[0].polyphonic,self.current_pattern.tracks[1].polyphonic,self.current_pattern.tracks[2].polyphonic,self.current_pattern.tracks[3].polyphonic]]),[[0,0,0,0,0,0,0,0,0,0,0,0]]),axis=1)
+        self.my_buffer.led_row(0,3,self.my_polyphony_toggle_buffer)
+
+        #draw scale toggles
         self.my_scale_toggle_buffer = np.concatenate((np.array([[self.current_pattern.tracks[0].scale_toggle,self.current_pattern.tracks[1].scale_toggle,self.current_pattern.tracks[2].scale_toggle,self.current_pattern.tracks[3].scale_toggle]]),sync_mode_display),axis=1)
-        #self.my_scale_toggle_buffer = np.concatenate((np.array([[self.current_pattern.tracks[0].scale_toggle,self.current_pattern.tracks[1].scale_toggle,self.current_pattern.tracks[2].scale_toggle,self.current_pattern.tracks[3].scale_toggle]]),np.array([[0,self.current_pattern.tracks[0].sync_mode,self.current_pattern.tracks[1].sync_mode,self.current_pattern.tracks[2].sync_mode,self.current_pattern.tracks[3].sync_mode,0,0,0,0,0,0,0]])),axis=1)
         self.my_buffer.led_row(0,2,self.my_scale_toggle_buffer)
 
         #draw mute toggles
@@ -1293,6 +1297,9 @@ class Runcible(monome.App):
     def set_track_settings(self,x,y):
         if self.k_mode == Modes.mTr:
             #print("Trigger page key:", x, y)
+            if y == 3 and x < 4:
+                self.current_pattern.tracks[x].scale_toggle ^= 1
+                print ("toggling polyphonic for track: ", x)
             if y == 2 and x < 4:
                 self.current_pattern.tracks[x].scale_toggle ^= 1
                 print ("toggling scale for track: ", x)
