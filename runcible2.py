@@ -387,7 +387,7 @@ class Runcible(monome.App):
                         #print("entered: ", entered_duration, "scaled duration: ", scaled_duration)
                         polyphony = 1 #assume monophonic and therefore iterate one time only
                         if track.polyphonic:
-                            polyphony = len(track.note[track.pos[Modes.mTr.value]]) #set polyphony to number of notes at this position if track is polyphonic
+                            polyphony = len(track.note[track.pos[Modes.mNote.value]]) #set polyphony to number of notes at this position if track is polyphonic
                         for i in range(polyphony): #this needs to be fixed so that polyphonic mode forces track sync
                             #print("track: ", track.track_id, "note# ", i+1, "of", polyphony, "current_pitch", self.current_pitch)
                             # add toggles here for loop sync - if track then set position to mTr.value, else set to parameter 
