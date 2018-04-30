@@ -335,12 +335,14 @@ class Runcible(monome.App):
                     #if track.note[track.pos[Modes.mNote.value]]:
                     if track.polyphonic:
                         for i in range(len(track.note[track.pos[Modes.mNote.value]])): #this needs to be fixed so that polyphonic mode forces track sync
-                        #    print("current_pitch: ", i, self.current_pitch[i])
+                            print("poly current_pitch: ", track.pos, i, self.current_pitch[i])
                             self.current_pitch[i] = track.note[track.pos[Modes.mNote.value]][i] #need to adjust for polyphonic
                     elif len(track.note[track.pos[Modes.mNote.value]]) == 1: #need to allow for situations where there is no notes yet
                         self.current_pitch[0] = track.note[track.pos[Modes.mNote.value]][0] #need to adjust for polyphonic
+                        print("mono current_pitch: ", track.pos, self.current_pitch[0])
                     else:
                         self.current_pitch[0] = 35 # default???
+                        print("default current_pitch: ", track.pos, self.current_pitch[0])
 
                 if self.next_step(track, Modes.mOct.value):
                     self.current_oct = track.octave[track.pos[Modes.mOct.value]]
@@ -726,7 +728,7 @@ class Runcible(monome.App):
 
         #draw polyphony toggles
         self.my_polyphony_toggle_buffer = np.concatenate((np.array([[self.current_pattern.tracks[0].polyphonic,self.current_pattern.tracks[1].polyphonic,self.current_pattern.tracks[2].polyphonic,self.current_pattern.tracks[3].polyphonic]]),[[0,0,0,0,0,0,0,0,0,0,0,0]]),axis=1)
-        self.my_buffer.led_row(0,3,self.my_polyphony_toggle_buffer)
+        self.my_buffer.led_row(0,4,self.my_polyphony_toggle_buffer)
 
         #draw scale toggles
         self.my_scale_toggle_buffer = np.concatenate((np.array([[self.current_pattern.tracks[0].scale_toggle,self.current_pattern.tracks[1].scale_toggle,self.current_pattern.tracks[2].scale_toggle,self.current_pattern.tracks[3].scale_toggle]]),sync_mode_display),axis=1)
