@@ -329,6 +329,7 @@ class Runcible(monome.App):
                         track.pos[p] = track.lend[p] 
                     track.pos_reset = False
 
+                self.current_pitch = [0,0,0,0,0,0] # clear any residual values
                 if self.next_step(track, Modes.mNote.value):
                     print("track_note: ", track.note[track.pos[Modes.mNote.value]])
                     #print("track_trig: ", track.note[track.pos[Modes.mTr.value]])
