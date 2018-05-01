@@ -828,10 +828,12 @@ class Runcible(monome.App):
         self.my_buffer.led_col(x,0,duration_col[0])
 
     def draw_duration_page(self):
-        #self.my_buffer.led_row(0,7,np.array([self.current_track.tr]))
         #for x in range(self.grid.width):
         #    self.set_duration(x,self.current_track.duration[x])
+        # more efficient rendering technique
+        # convert duration values into binary representations and render directly, instead of using a for loop
         self.my_buffer.led_map(0,0,np.roll(np.unpackbits(np.invert((256-np.exp2(np.reshape(np.asarray(self.current_track.duration),(16,1)))).astype(np.uint8)),axis=1),-1,axis=1))
+        self.my_buffer.led_row(0,7,np.array([self.current_track.tr]))
         self.draw_current_position()
 
     def set_velocity(self,x,velocity):
@@ -845,9 +847,10 @@ class Runcible(monome.App):
         self.my_buffer.led_col(x,0,velocity_col[0])
 
     def draw_velocity_page(self):
+        #for x in range(self.grid.width):
+        #    self.set_velocity(x,self.current_track.velocity[x])
+        self.my_buffer.led_map(0,0,np.roll(np.flipud(np.unpackbits(np.invert((256-np.exp2(np.reshape(np.asarray(self.current_track.velocity),(16,1)))).astype(np.uint8)),axis=1)),-1,axis=1))
         self.my_buffer.led_row(0,7,np.array([self.current_track.tr]))
-        for x in range(self.grid.width):
-            self.set_velocity(x,self.current_track.velocity[x])
         self.draw_current_position()
 
     def draw_scale_page(self):
