@@ -5,7 +5,7 @@
 #fix cueing so it stays in sync
 #fix loop input on trigger page
 #fix pattern dispaly - display meta pattern details
-#fix polyphonic mode - only generate polyphonic notes for polyphonic tracks - triggers on one track are generating notes on another track if there is no trigger there to mask it
+#fix polyphonic mode - monophonic notes are bleeding between tracks - use polyphonic fix?? 
 #add polyphonic mutes
 
 #fix pattern copy - current pattern is wiped during copy? problem arises after introducing cue
@@ -828,9 +828,10 @@ class Runcible(monome.App):
         self.my_buffer.led_col(x,0,duration_col[0])
 
     def draw_duration_page(self):
-        self.my_buffer.led_row(0,7,np.array([self.current_track.tr]))
-        for x in range(self.grid.width):
-            self.set_duration(x,self.current_track.duration[x])
+        #self.my_buffer.led_row(0,7,np.array([self.current_track.tr]))
+        #for x in range(self.grid.width):
+        #    self.set_duration(x,self.current_track.duration[x])
+        self.my_buffer.led_map(np.unpackbits(np.invert((256-np.exp2(self.current_track.duration)).astype(np.uint8)),axis=1).T)
         self.draw_current_position()
 
     def set_velocity(self,x,velocity):
