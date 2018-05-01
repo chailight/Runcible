@@ -831,7 +831,7 @@ class Runcible(monome.App):
         #self.my_buffer.led_row(0,7,np.array([self.current_track.tr]))
         #for x in range(self.grid.width):
         #    self.set_duration(x,self.current_track.duration[x])
-        self.my_buffer.led_map(np.unpackbits(np.invert((256-np.exp2(self.current_track.duration)).astype(np.uint8)),axis=1).T)
+        self.my_buffer.led_map(np.unpackbits(np.invert((256-np.exp2(self.current_track.duration)).astype(np.uint8)),axis=0).T)
         self.draw_current_position()
 
     def set_velocity(self,x,velocity):
