@@ -849,7 +849,7 @@ class Runcible(monome.App):
     def draw_velocity_page(self):
         #for x in range(self.grid.width):
         #    self.set_velocity(x,self.current_track.velocity[x])
-        self.my_buffer.led_map(0,0,np.roll(np.fliplr(np.unpackbits(np.invert((256-np.exp2(np.reshape(np.asarray(self.current_track.velocity),(16,1)))).astype(np.uint8)),axis=1)),-1,axis=1))
+        self.my_buffer.led_map(0,0,np.roll(np.fliplr(np.unpackbits(np.invert((256-np.exp2(np.reshape(np.asarray(self.current_track.velocity),(16,1)))).astype(np.uint8)),axis=1)),1,axis=1))
         self.my_buffer.led_row(0,7,np.array([self.current_track.tr]))
         self.draw_current_position()
 
