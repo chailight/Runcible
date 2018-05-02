@@ -699,11 +699,11 @@ class Runcible(monome.App):
         if self.current_track.track_id == 0:
             self.my_buffer.led_map(0, 0, np.asarray(self.current_pattern.step_ch1).T)
         elif self.current_track.track_id == 1:
-            self.my_buffer.led_row(0, 0, np.asarray(self.current_pattern.step_ch2).T)
+            self.my_buffer.led_map(0, 0, np.asarray(self.current_pattern.step_ch2).T)
         elif self.current_track.track_id == 2:
-            self.my_buffer.led_row(0, 0, np.asarray(self.current_pattern.step_ch3).T)
+            self.my_buffer.led_map(0, 0, np.asarray(self.current_pattern.step_ch3).T)
         elif self.current_track.track_id == 3:
-            self.my_buffer.led_row(0, 0, np.asarray(self.current_pattern.step_ch4).T)
+            self.my_buffer.led_map(0, 0, np.asarray(self.current_pattern.step_ch4).T)
         self.draw_current_position()
 
     def draw_current_track_indicator(self):
