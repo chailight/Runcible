@@ -795,7 +795,7 @@ class Runcible(monome.App):
     def draw_octave_page(self):
         #for x in range(self.grid.width):
         #    self.set_octave(x,self.current_track.octave[x])
-        self.my_buffer.led_map(0,0,np.bitwise_or(np.roll(np.fliplr(np.unpackbits(np.invert((256-np.exp2(np.reshape(np.asarray(self.current_track.octave),(16,1)))).astype(np.uint8)),axis=1)),4,axis=1),np.roll(np.unpackbits(np.invert((256-np.exp2(np.reshape(np.absolute(np.clip(np.asarray(self.current_track.octave),-3,0)),(16,1)))).astype(np.uint8)),axis=1),-5,axis=1)))
+        self.my_buffer.led_map(0,0,np.bitwise_or(np.roll(np.fliplr(np.unpackbits(np.invert((256-np.exp2(np.reshape(np.asarray(self.current_track.octave),(16,1)))).astype(np.uint8)),axis=1)),4,axis=1),np.roll(np.unpackbits(np.invert((256-np.exp2(np.reshape(np.absolute(np.clip(np.asarray(self.current_track.octave),-2,0)-1),(16,1)))).astype(np.uint8)),axis=1),-4,axis=1)))
         self.my_buffer.led_row(0,7,np.array([self.current_track.tr]))
         self.draw_current_position()
 
