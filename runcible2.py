@@ -1360,7 +1360,7 @@ class Runcible(monome.App):
         if self.k_mode == Modes.mOct: 
             #if self.current_channel == 1:
             if y < 7 and y > 0:
-                self.current_track.octave[x] = y-4
+                self.current_track.octave[x] = y-3
                 print("grid_key = ", y, "octave = ", self.current_track.octave[x])
             #else:
             #    if y < 6 and y > 0:
