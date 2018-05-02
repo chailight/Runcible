@@ -687,15 +687,23 @@ class Runcible(monome.App):
         #            self.my_buffer.led_set(x, y, self.current_pattern.step_ch3[y][x])
         #        elif self.current_track.track_id == 3:
         #            self.my_buffer.led_set(x, y, self.current_pattern.step_ch4[y][x])
-        for y in range(1,self.grid.height): #ignore bottom row
-                if self.current_track.track_id == 0:
-                    self.my_buffer.led_row(0, y, self.current_pattern.step_ch1[y])
-                elif self.current_track.track_id == 1:
-                    self.my_buffer.led_row(0, y, self.current_pattern.step_ch2[y])
-                elif self.current_track.track_id == 2:
-                    self.my_buffer.led_row(0, y, self.current_pattern.step_ch3[y])
-                elif self.current_track.track_id == 3:
-                    self.my_buffer.led_row(0, y, self.current_pattern.step_ch4[y])
+        #for y in range(1,self.grid.height): #ignore bottom row
+        #        if self.current_track.track_id == 0:
+        #            self.my_buffer.led_row(0, y, self.current_pattern.step_ch1[y])
+        #        elif self.current_track.track_id == 1:
+        #            self.my_buffer.led_row(0, y, self.current_pattern.step_ch2[y])
+        #        elif self.current_track.track_id == 2:
+        #            self.my_buffer.led_row(0, y, self.current_pattern.step_ch3[y])
+        #        elif self.current_track.track_id == 3:
+        #            self.my_buffer.led_row(0, y, self.current_pattern.step_ch4[y])
+        if self.current_track.track_id == 0:
+            self.my_buffer.led_map(0, 0, self.current_pattern.step_ch1)
+        elif self.current_track.track_id == 1:
+            self.my_buffer.led_row(0, 0, self.current_pattern.step_ch2)
+        elif self.current_track.track_id == 2:
+            self.my_buffer.led_row(0, 0, self.current_pattern.step_ch3)
+        elif self.current_track.track_id == 3:
+            self.my_buffer.led_row(0, 0, self.current_pattern.step_ch4)
         self.draw_current_position()
 
     def draw_current_track_indicator(self):
